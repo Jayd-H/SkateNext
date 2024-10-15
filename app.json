@@ -10,17 +10,44 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0F1413"
     },
     "ios": {
       "supportsTablet": true
     },
+    "androidNavigationBar": {
+      "backgroundColor": "#0F1413"
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0F1413"
       }
     },
+
+   "fonts": [
+      {"asset": "assets/fonts/Montserrat/Montserrat-Regular.ttf", "family": "Montserrat"},
+      {"asset": "assets/fonts/Montserrat/Montserrat-Light.ttf", "family": "Montserrat-Light"},
+      {"asset": "assets/fonts/Montserrat/Montserrat-Medium.ttf", "family": "Montserrat-Medium"},
+      {"asset": "assets/fonts/Montserrat/Montserrat-SemiBold.ttf", "family": "Montserrat-SemiBold"},
+      {"asset": "assets/fonts/Montserrat/Montserrat-Bold.ttf", "family": "Montserrat-Bold"},
+      {"asset": "assets/fonts/Montserrat/Montserrat-Italic.ttf", "family": "Montserrat-Italic"},
+      {"asset": "assets/fonts/Montserrat/Montserrat-LightItalic.ttf", "family": "Montserrat-LightItalic"},
+      {"asset": "assets/fonts/Montserrat/Montserrat-MediumItalic.ttf", "family": "Montserrat-MediumItalic"},
+      {"asset": "assets/fonts/Montserrat/Montserrat-SemiBoldItalic.ttf", "family": "Montserrat-SemiBoldItalic"},
+      {"asset": "assets/fonts/Montserrat/Montserrat-BoldItalic.ttf", "family": "Montserrat-BoldItalic"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-Regular.ttf", "family": "MontserratAlternates"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-Light.ttf", "family": "MontserratAlternates-Light"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-Medium.ttf", "family": "MontserratAlternates-Medium"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-SemiBold.ttf", "family": "MontserratAlternates-SemiBold"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-Bold.ttf", "family": "MontserratAlternates-Bold"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-Italic.ttf", "family": "MontserratAlternates-Italic"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-LightItalic.ttf", "family": "MontserratAlternates-LightItalic"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-MediumItalic.ttf", "family": "MontserratAlternates-MediumItalic"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-SemiBoldItalic.ttf", "family": "MontserratAlternates-SemiBoldItalic"},
+      {"asset": "assets/fonts/Montserrat_Alternates/MontserratAlternates-BoldItalic.ttf", "family": "MontserratAlternates-BoldItalic"}
+    ],
+    
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -32,5 +59,6 @@
     "experiments": {
       "typedRoutes": true
     }
+    
   }
 }
