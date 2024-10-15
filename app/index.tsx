@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import BurningSkull from "../assets/icons/burning-skull.svg";
 import SkateboardText from "../assets/icons/skateboard-grey.svg";
+import { AnimatedFlyIn } from "../src/components/AnimatedFlyIn";
 
 export default function Home() {
   const router = useRouter();
@@ -28,48 +29,63 @@ export default function Home() {
 
   return (
     <View className="flex-1 bg-background p-4">
-      <Text className="text-lg text-text font-montserrat-light text-center mt-8 mb-12">
-        S K A T E N E X T
-      </Text>
-      <View className="items-center">
-        <SkateboardText width={28} height={28} />
-      </View>
-      <Text className="text-lg text-grey font-montserrat-alt-light-italic text-center mb-2">
-        Please select one
-      </Text>
-      <View className="flex-1 justify-center items-center -mt-16">
-        {["Beginner", "Intermediate", "Advanced", "Master"].map((level) => (
-          <TouchableOpacity
-            key={level}
-            className="bg-buttonbg border border-accent-2 w-5/6 p-3 rounded-3xl mb-4 items-center"
-            onPress={handleButtonPress}
-          >
-            <View className="flex-row mb-1">
-              {[...Array(getSkullCount(level))].map((_, index) => (
-                <BurningSkull
-                  key={index}
-                  width={24}
-                  height={24}
-                  style={{
-                    marginRight: index < getSkullCount(level) - 1 ? 4 : 0,
-                  }}
-                />
-              ))}
-            </View>
-            <Text className="text-text font-montserrat-alt text-xl">
-              {level}
-            </Text>
-            <Text className="text-grey font-montserrat-alt text-center">
-              {level === "Beginner"
-                ? "I'm completely new"
-                : level === "Intermediate"
-                ? "I can ollie consistently"
-                : level === "Advanced"
-                ? "I can kickflip consistently"
-                : "I can treflip consistently"}
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <AnimatedFlyIn delay={0}>
+        <Text className="text-lg text-text font-montserrat-light text-center mt-8 mb-12">
+          S K A T E N E X T
+        </Text>
+      </AnimatedFlyIn>
+      <AnimatedFlyIn delay={100}>
+        <View className="items-center">
+          <SkateboardText width={28} height={28} />
+        </View>
+      </AnimatedFlyIn>
+      <AnimatedFlyIn delay={200}>
+        <Text className="text-lg text-grey font-montserrat-alt-light-italic text-center mb-2">
+          Please select one
+        </Text>
+      </AnimatedFlyIn>
+      <View className="flex-1 justify-center items-center -mt-16 px-8">
+        {/* using px-8 here is not a good solution and will definitely bite me in the ass */}
+        {["Beginner", "Intermediate", "Advanced", "Master"].map(
+          (level, index) => (
+            <AnimatedFlyIn
+              key={level}
+              delay={300 + index * 100}
+              style={{ width: "100%" }}
+            >
+              <TouchableOpacity
+                className="bg-buttonbg border border-accent-2 w-full p-3 rounded-3xl mb-4 items-center"
+                onPress={handleButtonPress}
+              >
+                {/* silly guy with w-full instead of w-5/6*/}
+                <View className="flex-row mb-1">
+                  {[...Array(getSkullCount(level))].map((_, index) => (
+                    <BurningSkull
+                      key={index}
+                      width={24}
+                      height={24}
+                      style={{
+                        marginRight: index < getSkullCount(level) - 1 ? 4 : 0,
+                      }}
+                    />
+                  ))}
+                </View>
+                <Text className="text-text font-montserrat-alt text-xl">
+                  {level}
+                </Text>
+                <Text className="text-grey font-montserrat-alt text-center">
+                  {level === "Beginner"
+                    ? "I'm completely new"
+                    : level === "Intermediate"
+                    ? "I can ollie consistently"
+                    : level === "Advanced"
+                    ? "I can kickflip consistently"
+                    : "I can treflip consistently"}
+                </Text>
+              </TouchableOpacity>
+            </AnimatedFlyIn>
+          )
+        )}
       </View>
     </View>
   );
