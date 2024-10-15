@@ -1,66 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { styled } from "nativewind";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from "react-native-reanimated";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect } from "react";
+import { View, Text } from "react-native";
+import { useRouter } from "expo-router";
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const AnimatedStyledView = Animated.createAnimatedComponent(StyledView);
-
-export default function Index() {
-  const offset = useSharedValue(0);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+export default function Home() {
+  const router = useRouter();
 
   useEffect(() => {
-    const getAppData = async () => {
-      try {
-        const appDataString = await AsyncStorage.getItem("appData");
-        if (appDataString) {
-          const appData = JSON.parse(appDataString);
-          setLastUpdated(appData.lastUpdated);
-        }
-      } catch (error) {
-        console.error("Error reading app data:", error);
-      }
-    };
+    const timer = setTimeout(() => {
+      router.replace("/tabs/map");
+    }, 2000);
 
-    getAppData();
+    return () => clearTimeout(timer);
   }, []);
 
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: offset.value }],
-    };
-  });
-
   return (
-    <StyledView className="flex-1 justify-center items-center bg-gray-100">
-      <AnimatedStyledView
-        style={animatedStyles}
-        className="bg-blue-500 p-4 rounded-lg"
-      >
-        <StyledText className="text-white text-lg font-bold">
-          Hello, Expo Router with NativeWind and Reanimated!
-        </StyledText>
-      </AnimatedStyledView>
-      <TouchableOpacity
-        onPress={() => {
-          offset.value = withSpring(Math.random() * 255 - 127);
-        }}
-        className="mt-4 bg-green-500 p-2 rounded"
-      >
-        <StyledText className="text-white font-semibold">Animate</StyledText>
-      </TouchableOpacity>
-      {lastUpdated && (
-        <StyledText className="mt-4 text-gray-600">
-          Last Updated: {new Date(lastUpdated).toLocaleString()}
-        </StyledText>
-      )}
-    </StyledView>
+    <View className="flex-1 justify-center items-center bg-background">
+      <Text className="text-2xl text-text font-montserrat-bold">
+        Welcome to SkateNext
+      </Text>
+    </View>
   );
 }
