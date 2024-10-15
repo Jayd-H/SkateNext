@@ -8,9 +8,11 @@ module.exports = {
         accent: '#34CDB3',
         'accent-2': '#77B2A8',
         'accent-dark': '#183C36',
+        buttonbg: '#151F1E',
         yellow: '#FFB53F',
         green: '#00FF44',
         red: '#FF0000',
+        grey: '#A5ABAB',
       },
       fontFamily: {
         'montserrat': ['Montserrat'],

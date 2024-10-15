@@ -1,23 +1,76 @@
-import React, { useEffect } from "react";
-import { View, Text } from "react-native";
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
+import BurningSkull from "../assets/icons/burning-skull.svg";
+import SkateboardText from "../assets/icons/skateboard-grey.svg";
 
 export default function Home() {
   const router = useRouter();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.replace("/tabs/map");
-    }, 2000);
+  const handleButtonPress = () => {
+    router.replace("/tabs/map");
+  };
 
-    return () => clearTimeout(timer);
-  }, []);
+  const getSkullCount = (level: string) => {
+    switch (level) {
+      case "Beginner":
+        return 1;
+      case "Intermediate":
+        return 2;
+      case "Advanced":
+        return 3;
+      case "Master":
+        return 5;
+      default:
+        return 1;
+    }
+  };
 
   return (
-    <View className="flex-1 justify-center items-center bg-background">
-      <Text className="text-2xl text-text font-montserrat-bold">
-        Welcome to SkateNext
+    <View className="flex-1 bg-background p-4">
+      <Text className="text-lg text-text font-montserrat-light text-center mt-8 mb-12">
+        S K A T E N E X T
       </Text>
+      <View className="items-center">
+        <SkateboardText width={28} height={28} />
+      </View>
+      <Text className="text-lg text-grey font-montserrat-alt-light-italic text-center mb-2">
+        Please select one
+      </Text>
+      <View className="flex-1 justify-center items-center -mt-16">
+        {["Beginner", "Intermediate", "Advanced", "Master"].map((level) => (
+          <TouchableOpacity
+            key={level}
+            className="bg-buttonbg border border-accent-2 w-5/6 p-3 rounded-3xl mb-4 items-center"
+            onPress={handleButtonPress}
+          >
+            <View className="flex-row mb-1">
+              {[...Array(getSkullCount(level))].map((_, index) => (
+                <BurningSkull
+                  key={index}
+                  width={24}
+                  height={24}
+                  style={{
+                    marginRight: index < getSkullCount(level) - 1 ? 4 : 0,
+                  }}
+                />
+              ))}
+            </View>
+            <Text className="text-text font-montserrat-alt text-xl">
+              {level}
+            </Text>
+            <Text className="text-grey font-montserrat-alt text-center">
+              {level === "Beginner"
+                ? "I'm completely new"
+                : level === "Intermediate"
+                ? "I can ollie consistently"
+                : level === "Advanced"
+                ? "I can kickflip consistently"
+                : "I can treflip consistently"}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 }
