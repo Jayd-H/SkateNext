@@ -3,11 +3,8 @@ import { View, Text } from "react-native";
 
 export default function Fitness() {
   return (
-    <View className="flex-1 justify-center items-center bg-background">
-      <Text className="text-2xl text-text font-montserrat">Fitness Page</Text>
-      <Text className="text-xl text-accent font-montserrat-alt mt-4">
-        Using custom styles
-      </Text>
+    <View className="flex-1 items-center bg-background">
+      <Text className="text-xl text-text font-montserrat-light mt-10">F I T N E S S</Text>
     </View>
   );
 }
