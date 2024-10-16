@@ -11,6 +11,7 @@ import SettingsIconActive from "../../assets/icons/settings-active.svg";
 import SettingsIconInactive from "../../assets/icons/settings-inactive.svg";
 
 export default function TabLayout(): React.ReactElement {
+  let iconsize: number = 28;
   return (
     <Tabs
       screenOptions={{
@@ -35,9 +36,9 @@ export default function TabLayout(): React.ReactElement {
           title: "Fitness",
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <FitnessIconActive width={28} height={28} />
+              <FitnessIconActive width={iconsize} height={iconsize} />
             ) : (
-              <FitnessIconInactive width={28} height={28} />
+              <FitnessIconInactive width={iconsize} height={iconsize} />
             ),
         }}
       />
@@ -47,9 +48,9 @@ export default function TabLayout(): React.ReactElement {
           title: "Map",
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <MapIconActive width={28} height={28} />
+              <MapIconActive width={iconsize} height={iconsize} />
             ) : (
-              <MapIconInactive width={28} height={28} />
+              <MapIconInactive width={iconsize} height={iconsize} />
             ),
         }}
       />
@@ -59,9 +60,9 @@ export default function TabLayout(): React.ReactElement {
           title: "Settings",
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <SettingsIconActive width={28} height={28} />
+              <SettingsIconActive width={iconsize} height={iconsize} />
             ) : (
-              <SettingsIconInactive width={28} height={28} />
+              <SettingsIconInactive width={iconsize} height={iconsize} />
             ),
         }}
       />

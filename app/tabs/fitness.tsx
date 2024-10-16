@@ -64,6 +64,8 @@ const Fitness: React.FC = () => {
       .join(":");
   };
 
+  let iconsize: number = 36;
+
   return (
     <View className="flex-1 items-center bg-background">
       {showAlert && (
@@ -81,7 +83,7 @@ const Fitness: React.FC = () => {
           <Text className="text-3xl text-text font-montserrat-alt mr-4">
             1 3 7 4
           </Text>
-          <DailyCalories width={36} height={36} />
+          <DailyCalories width={iconsize} height={iconsize} />
         </View>
         <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
           Calories burnt today.
@@ -90,7 +92,7 @@ const Fitness: React.FC = () => {
           <Text className="text-3xl text-text font-montserrat-alt mr-4">
             5 6 4 3
           </Text>
-          <WeeklyCalories width={36} height={36} />
+          <WeeklyCalories width={iconsize} height={iconsize} />
         </View>
         <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
           Calories burnt this week.
@@ -99,7 +101,7 @@ const Fitness: React.FC = () => {
           <Text className="text-3xl text-text font-montserrat-alt mr-4">
             8 5 0 3 5
           </Text>
-          <AllTimeCalories width={36} height={36} />
+          <AllTimeCalories width={iconsize} height={iconsize} />
         </View>
         <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
           All-time calories burnt.
@@ -108,7 +110,7 @@ const Fitness: React.FC = () => {
           <Text className="text-3xl text-text font-montserrat-alt mr-4">
             1 3 %
           </Text>
-          <Skull width={36} height={36} />
+          <Skull width={iconsize} height={iconsize} />
         </View>
         <Text className="pl-8 mt-1 text-xl text-text font-montserrat-alt">
           To skateboard mastery.
