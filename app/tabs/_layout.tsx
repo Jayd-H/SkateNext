@@ -1,10 +1,14 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import FitnessIcon from "../../assets/icons/fire.svg";
-import MapIcon from "../../assets/icons/map.svg"
-import SettingsIcon from "../../assets/icons/settings.svg"
 
-// TODO: icons dont change to the accent colour when selected
+// this is NOT the most optimal way to do this, but for now i will allow it
+// on the plus side its slightly more performant :)
+import FitnessIconActive from "../../assets/icons/fire-active.svg";
+import FitnessIconInactive from "../../assets/icons/fire-inactive.svg";
+import MapIconActive from "../../assets/icons/map-active.svg";
+import MapIconInactive from "../../assets/icons/map-inactive.svg";
+import SettingsIconActive from "../../assets/icons/settings-active.svg";
+import SettingsIconInactive from "../../assets/icons/settings-inactive.svg";
 
 export default function TabLayout(): React.ReactElement {
   return (
@@ -29,27 +33,36 @@ export default function TabLayout(): React.ReactElement {
         name="fitness"
         options={{
           title: "Fitness",
-          tabBarIcon: ({ color }: { color: string }) => (
-            <FitnessIcon height={28} width={28} color={color} />
-          ),
+          tabBarIcon: ({ focused }) =>
+            focused ? (
+              <FitnessIconActive width={28} height={28} />
+            ) : (
+              <FitnessIconInactive width={28} height={28} />
+            ),
         }}
       />
       <Tabs.Screen
         name="map"
         options={{
           title: "Map",
-          tabBarIcon: ({ color }: { color: string }) => (
-            <MapIcon width={28} height={28} color={color} />
-          ),
+          tabBarIcon: ({ focused }) =>
+            focused ? (
+              <MapIconActive width={28} height={28} />
+            ) : (
+              <MapIconInactive width={28} height={28} />
+            ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: ({ color }: { color: string }) => (
-            <SettingsIcon height={28} width={28} color={color} />
-          ),
+          tabBarIcon: ({ focused }) =>
+            focused ? (
+              <SettingsIconActive width={28} height={28} />
+            ) : (
+              <SettingsIconInactive width={28} height={28} />
+            ),
         }}
       />
     </Tabs>
