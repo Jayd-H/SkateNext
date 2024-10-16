@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
+import Act1Grid from "../components/Act1Grid";
 
 const PAGES = ["1", "2", "3", "4"];
 
@@ -13,9 +14,19 @@ export default function Map() {
     );
   };
 
-  let white: string = "#EBEFEF";
-  let grey: string = "#183C36";
-  let iconsize: number = 18;
+  const handleTrickPress = (id: string) => {
+    console.log(`Trick pressed: ${id}`);
+    // TODO: Open modal with trick information from CSV
+  };
+
+  const handleInfoPress = (id: string) => {
+    console.log(`Info pressed: ${id}`);
+    // TODO: Open modal with manually written info
+  };
+
+  const handleBossPress = (id: string) => {
+    console.log(`Boss pressed: ${id}`);
+  };
 
   return (
     <View className="flex-1">
@@ -29,11 +40,11 @@ export default function Map() {
             disabled={currentPage === 0}
           >
             <ChevronRight
-              width={iconsize}
-              height={iconsize}
+              width={18}
+              height={18}
               style={{ transform: [{ rotate: "180deg" }] }}
-              fill={currentPage === 0 ? grey : white}
-              stroke={currentPage === 0 ? grey : white}
+              fill={currentPage === 0 ? "#183C36" : "#EBEFEF"}
+              stroke={currentPage === 0 ? "#183C36" : "#EBEFEF"}
               strokeWidth={1}
             />
           </TouchableOpacity>
@@ -47,13 +58,23 @@ export default function Map() {
             disabled={currentPage === PAGES.length - 1}
           >
             <ChevronRight
-              width={iconsize}
-              height={iconsize}
-              fill={currentPage === PAGES.length - 1 ? grey : white}
-              stroke={currentPage === PAGES.length - 1 ? grey : white}
+              width={18}
+              height={18}
+              fill={currentPage === PAGES.length - 1 ? "#183C36" : "#EBEFEF"}
+              stroke={currentPage === PAGES.length - 1 ? "#183C36" : "#EBEFEF"}
               strokeWidth={1}
             />
           </TouchableOpacity>
+        </View>
+        <View className="flex-1 w-full mt-4">
+          {currentPage === 0 && (
+            <Act1Grid
+              onBossPress={handleBossPress}
+              onTrickPress={handleTrickPress}
+              onInfoPress={handleInfoPress}
+            />
+          )}
+          {/* Add other acts here when you create them */}
         </View>
       </View>
     </View>
