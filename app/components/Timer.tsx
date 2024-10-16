@@ -1,5 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, TouchableOpacity, ViewStyle } from "react-native";
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ViewStyle,
+  AppState,
+} from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -18,7 +24,8 @@ interface TimerProps {
 
 const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
-  const [time, setTime] = useState<number>(0);
+  const [displayTime, setDisplayTime] = useState<number>(0);
+  const startTimeRef = useRef<number | null>(null);
   const opacity = useSharedValue<number>(1);
   const scale = useSharedValue<number>(1);
   const flyingTextOpacity = useSharedValue<number>(0);
@@ -48,6 +55,7 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
     flyingTextOpacity.value = 0;
     flyingTextTranslateY.value = 20;
     if (!isTimerRunning) {
+      startTimeRef.current = Date.now();
       flyingTextOpacity.value = withDelay(
         2000,
         withTiming(1, { duration: 300, easing: Easing.inOut(Easing.ease) })
@@ -57,10 +65,11 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
         withTiming(0, { duration: 300, easing: Easing.inOut(Easing.ease) })
       );
     } else {
-      onTimerStop(time);
-      setTime(0);
+      onTimerStop(displayTime);
+      setDisplayTime(0);
+      startTimeRef.current = null;
     }
-  }, [isTimerRunning, time, onTimerStop]);
+  }, [isTimerRunning, displayTime, onTimerStop]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -73,24 +82,49 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
   }));
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let animationFrameId: number;
+
+    const updateTimer = () => {
+      if (isTimerRunning && startTimeRef.current) {
+        const now = Date.now();
+        const elapsedSeconds = Math.floor((now - startTimeRef.current) / 1000);
+        setDisplayTime(elapsedSeconds);
+        onTimeUpdate(elapsedSeconds);
+      }
+      animationFrameId = requestAnimationFrame(updateTimer);
+    };
+
     if (isTimerRunning) {
-      interval = setInterval(() => {
-        setTime((prevTime) => {
-          const newTime = prevTime + 1;
-          onTimeUpdate(newTime);
-          return newTime;
-        });
-      }, 1000);
+      animationFrameId = requestAnimationFrame(updateTimer);
     }
-    return () => clearInterval(interval);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [isTimerRunning, onTimeUpdate]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState === "active" && isTimerRunning && startTimeRef.current) {
+        const now = Date.now();
+        const elapsedSeconds = Math.floor((now - startTimeRef.current) / 1000);
+        setDisplayTime(elapsedSeconds);
+        onTimeUpdate(elapsedSeconds);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, [isTimerRunning, onTimeUpdate]);
 
   const buttonStyle = isTimerRunning
     ? "bg-accent-2 border-buttonbg"
     : "bg-buttonbg border-accent-2";
 
-  const formattedTime = formatTime(time);
+  const formattedTime = formatTime(displayTime);
 
   return (
     <View style={style} className="relative">
