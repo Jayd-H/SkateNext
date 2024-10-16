@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import BurningSkull from "../assets/icons/burning-skull.svg";
 import SkateboardText from "../assets/icons/skateboard-grey.svg";
-import { AnimatedFlyIn } from "../src/components/AnimatedFlyIn";
+import { AnimatedFlyIn } from "./components/AnimatedFlyIn";
 
 export default function Home() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 import React from "react";
 import Animated from "react-native-reanimated";
 import { View, ViewStyle } from "react-native";
-import { useFlyInAnimation } from "../hooks/useFlyInAnimation";
+import { useFlyInAnimation } from "../../src/hooks/useFlyInAnimation";
 
 interface AnimatedFlyInProps {
   delay?: number;
