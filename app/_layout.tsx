@@ -1,17 +1,25 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { View, SafeAreaView, StatusBar } from "react-native";
 import { Slot } from "expo-router";
 import * as Font from "expo-font";
-import { useCallback } from "react";
 import * as SplashScreen from "expo-splash-screen";
+import * as Notifications from "expo-notifications";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function Layout(): React.ReactElement | null {
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function loadFonts() {
       await Font.loadAsync({
         Montserrat: require("../assets/fonts/Montserrat/Montserrat-Regular.ttf"),
@@ -38,6 +46,22 @@ export default function Layout(): React.ReactElement | null {
       setFontsLoaded(true);
     }
     loadFonts();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        console.log("Failed to get push token for push notification!");
+        return;
+      }
+    })();
   }, []);
 
   const onLayoutRootView = useCallback(async () => {

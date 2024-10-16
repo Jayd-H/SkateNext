@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ViewStyle,
   AppState,
+  AppStateStatus,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -14,6 +15,7 @@ import Animated, {
   withDelay,
   Easing,
 } from "react-native-reanimated";
+import * as Notifications from "expo-notifications";
 import PlayButton from "../../assets/icons/play-button-blue.svg";
 
 interface TimerProps {
@@ -22,10 +24,19 @@ interface TimerProps {
   style?: ViewStyle;
 }
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [displayTime, setDisplayTime] = useState<number>(0);
   const startTimeRef = useRef<number | null>(null);
+  const appState = useRef(AppState.currentState);
   const opacity = useSharedValue<number>(1);
   const scale = useSharedValue<number>(1);
   const flyingTextOpacity = useSharedValue<number>(0);
@@ -40,7 +51,25 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
       .join(":");
   };
 
-  const handleButtonPress = useCallback(() => {
+  // maybe later on i want to change this to a persistent notification but this is harder to test in this early of development so this will have to do for now
+  // also the time elapsed does not seem to work for now but i dont care rn so come back to this
+  const scheduleNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Skate Timer Running",
+        body: `Your skate session is still going! Time elapsed: ${formatTime(
+          displayTime
+        )}`,
+      },
+      trigger: { seconds: 10 },
+    });
+  };
+
+  const cancelNotifications = async () => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+  };
+
+  const handleButtonPress = useCallback(async () => {
     setIsTimerRunning((prev) => !prev);
 
     opacity.value = withSequence(
@@ -55,7 +84,7 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
     flyingTextOpacity.value = 0;
     flyingTextTranslateY.value = 20;
     if (!isTimerRunning) {
-      startTimeRef.current = Date.now();
+      startTimeRef.current = Date.now() - displayTime * 1000;
       flyingTextOpacity.value = withDelay(
         2000,
         withTiming(1, { duration: 300, easing: Easing.inOut(Easing.ease) })
@@ -68,6 +97,7 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
       onTimerStop(displayTime);
       setDisplayTime(0);
       startTimeRef.current = null;
+      await cancelNotifications();
     }
   }, [isTimerRunning, displayTime, onTimerStop]);
 
@@ -82,38 +112,50 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
   }));
 
   useEffect(() => {
-    let animationFrameId: number;
-
-    const updateTimer = () => {
-      if (isTimerRunning && startTimeRef.current) {
+    let intervalId: NodeJS.Timeout;
+    if (isTimerRunning && startTimeRef.current) {
+      intervalId = setInterval(() => {
         const now = Date.now();
-        const elapsedSeconds = Math.floor((now - startTimeRef.current) / 1000);
+        const elapsedSeconds = Math.floor((now - startTimeRef.current!) / 1000);
         setDisplayTime(elapsedSeconds);
         onTimeUpdate(elapsedSeconds);
-      }
-      animationFrameId = requestAnimationFrame(updateTimer);
-    };
-
-    if (isTimerRunning) {
-      animationFrameId = requestAnimationFrame(updateTimer);
+      }, 1000);
     }
-
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
+      if (intervalId) clearInterval(intervalId);
     };
   }, [isTimerRunning, onTimeUpdate]);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      if (nextAppState === "active" && isTimerRunning && startTimeRef.current) {
-        const now = Date.now();
-        const elapsedSeconds = Math.floor((now - startTimeRef.current) / 1000);
-        setDisplayTime(elapsedSeconds);
-        onTimeUpdate(elapsedSeconds);
+    const subscription = AppState.addEventListener(
+      "change",
+      async (nextAppState: AppStateStatus) => {
+        if (isTimerRunning) {
+          if (
+            appState.current === "active" &&
+            nextAppState.match(/inactive|background/)
+          ) {
+            // app is going to the background
+            await scheduleNotification();
+          } else if (
+            appState.current.match(/inactive|background/) &&
+            nextAppState === "active"
+          ) {
+            // app is coming to the foreground
+            await cancelNotifications();
+            if (startTimeRef.current) {
+              const now = Date.now();
+              const elapsedSeconds = Math.floor(
+                (now - startTimeRef.current) / 1000
+              );
+              setDisplayTime(elapsedSeconds);
+              onTimeUpdate(elapsedSeconds);
+            }
+          }
+        }
+        appState.current = nextAppState;
       }
-    });
+    );
 
     return () => {
       subscription.remove();

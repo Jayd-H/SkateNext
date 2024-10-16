@@ -54,8 +54,15 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
-    ],
+  "expo-router",
+  [
+    "expo-notifications",
+    {
+      "icon": "./assets/images/icon.png",
+      "color": "#0F1413"
+    }
+  ]
+],
     "experiments": {
       "typedRoutes": true
     }
