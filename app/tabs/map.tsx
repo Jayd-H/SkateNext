@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
 import Act1Grid from "../components/Act1Grid";
+import TrickModal from "../components/TrickModal";
 
 const PAGES = ["1", "2", "3", "4"];
 
 export default function Map() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedTrickId, setSelectedTrickId] = useState<string | null>(null);
 
   const changePage = (direction: number) => {
     setCurrentPage((prevPage) =>
@@ -15,13 +17,12 @@ export default function Map() {
   };
 
   const handleTrickPress = (id: string) => {
-    console.log(`Trick pressed: ${id}`);
-    // TODO: Open modal with trick information from CSV
+    setSelectedTrickId(id);
   };
 
   const handleInfoPress = (id: string) => {
     console.log(`Info pressed: ${id}`);
-    // TODO: Open modal with manually written info
+    // TODO: open modal with manually written info
   };
 
   const handleBossPress = (id: string) => {
@@ -74,9 +75,14 @@ export default function Map() {
               onInfoPress={handleInfoPress}
             />
           )}
-          {/* Add other acts here when you create them */}
+          {/* TODO: OTHER ACTS GO HERE */}
         </View>
       </View>
+      <TrickModal
+        isVisible={selectedTrickId !== null}
+        onClose={() => setSelectedTrickId(null)}
+        trickId={selectedTrickId || ""}
+      />
     </View>
   );
 }

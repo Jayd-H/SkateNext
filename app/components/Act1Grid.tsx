@@ -2,6 +2,7 @@ import React from "react";
 import { View, Dimensions, ScaledSize } from "react-native";
 import { Svg, Path } from "react-native-svg";
 import { TrickButton, InfoButton, BossButton } from "./ButtonComponents";
+import { TRICK_DATA } from "./trickData";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT }: ScaledSize =
   Dimensions.get("window");
@@ -20,23 +21,16 @@ const CENTER_Y = Math.floor(GRID_ROWS / 2);
 
 interface Trick {
   id: string;
-  name: string;
   type: "trick" | "info" | "boss";
   x?: number;
   y?: number;
 }
 
 const tricks: Trick[] = [
-  { id: "1", name: "Shuvit", x: CENTER_X + 2, y: 6, type: "trick" },
-  {
-    id: "2",
-    name: "Choose Stance",
-    x: CENTER_X,
-    y: 8,
-    type: "info",
-  },
-  { id: "3", name: "Pushing", x: CENTER_X, y: CENTER_Y, type: "info" },
-  { id: "boss", name: "Ollie", type: "boss" },
+  { id: "9", x: CENTER_X + 2, y: 6, type: "trick" },
+  { id: "1", x: CENTER_X, y: 8, type: "trick" },
+  { id: "3", x: CENTER_X, y: CENTER_Y, type: "trick" },
+  { id: "2", type: "boss" },
 ];
 
 interface Connection {
@@ -47,8 +41,8 @@ interface Connection {
 
 const connections: Connection[] = [
   { from: "2", to: "3", type: "lined" },
-  { from: "3", to: "1", type: "dotted" },
-  { from: "1", to: "boss", type: "lined" },
+  { from: "3", to: "9", type: "dotted" },
+  { from: "9", to: "1", type: "lined" },
 ];
 
 interface Act1GridProps {
@@ -110,6 +104,9 @@ const Act1Grid: React.FC<Act1GridProps> = ({
     <View className="flex-1 bg-transparent">
       <Svg className="absolute inset-0">{renderConnections()}</Svg>
       {tricks.map((trick) => {
+        const trickData = TRICK_DATA.find((t) => t.id === trick.id);
+        if (!trickData) return null;
+
         if (trick.type === "boss") {
           return (
             <View
@@ -118,7 +115,7 @@ const Act1Grid: React.FC<Act1GridProps> = ({
             >
               <BossButton
                 id={trick.id}
-                name={trick.name}
+                name={trickData.name}
                 onPress={onBossPress}
                 isCompleted={0}
               />
@@ -141,7 +138,7 @@ const Act1Grid: React.FC<Act1GridProps> = ({
             {trick.type === "trick" && (
               <TrickButton
                 id={trick.id}
-                name={trick.name}
+                name={trickData.name}
                 onPress={onTrickPress}
                 isCompleted={0}
               />
@@ -149,7 +146,7 @@ const Act1Grid: React.FC<Act1GridProps> = ({
             {trick.type === "info" && (
               <InfoButton
                 id={trick.id}
-                name={trick.name}
+                name={trickData.name}
                 onPress={onInfoPress}
                 isCompletedInfo={false}
               />
