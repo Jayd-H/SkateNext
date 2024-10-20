@@ -115,7 +115,6 @@ const Act1Grid: React.FC<Act1GridProps> = ({
             <View
               key={trick.id}
               className="absolute top-0 left-0 right-0 items-center"
-              style={{ paddingTop: CELL_HEIGHT / 4 }}
             >
               <BossButton
                 id={trick.id}
