@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/slider": "^4.5.4",
     "@react-navigation/native": "^6.0.2",
     "expo": "~51.0.38",
     "expo-blur": "^13.0.2",
