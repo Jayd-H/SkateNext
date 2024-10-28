@@ -13,7 +13,7 @@ export const TRICK_DATA: Trick[] = [
     id: "1",
     name: "Ollie",
     description: "The foundation of street skating, the first trick you should learn. Place your back foot on the tail and your front foot in the middle of the board. Pop the tail and slide your front foot up the board. Jump and level out the board with your front foot.",
-    common_mistakes: "[Not leveling out the board] Make sure you are sliding your foot into the board and not just up it. This will help you level it out. [Not jumping after you pop] If you find yourself not getting off the ground after you pop, more than likely you aren't jumping. Make sure you jump off of your back foot when you pop the tail. This will help you with your height.",
+    common_mistakes: "[Not leveling out the board] Make sure you are sliding your foot into the board and not just up it. [Not jumping after you pop] If you find yourself not getting off the ground after you pop, more than likely you aren't jumping. Make sure you jump off of your back foot when you pop the tail.",
     difficulty: "2",
     video_link: "ollie.mp4",
     alt_names: ""
@@ -31,7 +31,7 @@ export const TRICK_DATA: Trick[] = [
     id: "3",
     name: "Kickturn",
     description: "A fundamental trick where you lift the front wheels and pivot on the back wheels to change direction. Place your back foot on the tail and your front foot over the front trucks. Lean back slightly to lift the front wheels, then use your shoulders and hips to guide the turn.",
-    common_mistakes: "[Not lifting the front wheels enough] Make sure to press down on the tail to get the front wheels clear of the ground. [Losing balance] Keep your core engaged and knees bent for stability. [Turning too sharply] Start with small turns and gradually increase the angle as you get comfortable.",
+    common_mistakes: "[Not lifting the front wheels enough] Make sure to press down on the tail to get the front wheels clear of the ground. [Losing balance] Keep your core engaged and knees bent for stability.",
     difficulty: "1",
     video_link: "kickturn.mp4",
     alt_names: "Pivot"
