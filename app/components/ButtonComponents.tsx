@@ -20,20 +20,30 @@ export const TrickButton: React.FC<ButtonProps> = ({
   onPress,
   isCompleted = 0,
 }) => {
-  let iconSize = 35;
+  let iconSize = 32;
+
+  const truncatedName = name.length > 10 ? name.slice(0, 10) + "..." : name;
+  const textSize = name.length < 8 ? "text-sm" : "text-xs";
+
   return (
     <Pressable
-      className={`p-2 rounded-2xl bg-buttonbg items-center justify-center w-[85] shadow-inner border h-[100] ${
+      className={`relative w-[80px] h-[100px] rounded-2xl bg-buttonbg shadow border ${
         isCompleted == 0 ? "border-red shadow-red" : ""
       } ${isCompleted == 1 ? "border-yellow shadow-yellow" : ""} ${
         isCompleted == 2 ? "border-green shadow-green" : ""
       }`}
       onPress={() => onPress(id)}
     >
-      <SkateboardIcon width={iconSize} height={iconSize} />
-      <Text className="text-text font-montserrat-alt mt-2 text-sm text-center">
-        {name}
-      </Text>
+      <View className="w-full h-full flex-1 items-center -mt-6 justify-center">
+        <SkateboardIcon width={iconSize} height={iconSize} />
+      </View>
+      <View className="absolute bottom-4 w-full px-2">
+        <Text
+          className={`text-text font-montserrat-alt ${textSize} text-center`}
+        >
+          {truncatedName}
+        </Text>
+      </View>
     </Pressable>
   );
 };
