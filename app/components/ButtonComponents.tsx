@@ -31,11 +31,7 @@ export const TrickButton: React.FC<ButtonProps> = ({
       onPress={() => onPress(id)}
     >
       <SkateboardIcon width={iconSize} height={iconSize} />
-      <Text
-        className={`text-text font-montserrat-alt mt-2 text-sm text-center ${
-          isCompleted ? "text-accent" : ""
-        }`}
-      >
+      <Text className="text-text font-montserrat-alt mt-2 text-sm text-center">
         {name}
       </Text>
     </Pressable>
