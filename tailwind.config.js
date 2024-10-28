@@ -13,6 +13,7 @@ module.exports = {
         green: '#00FF44',
         red: '#880808',
         grey: '#A5ABAB',
+        greyer: '#7A7A7A',
       },
       fontFamily: {
         'montserrat': ['Montserrat'],
