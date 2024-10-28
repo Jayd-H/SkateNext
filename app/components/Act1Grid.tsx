@@ -7,15 +7,12 @@ import { TRICK_DATA } from "./trickData";
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT }: ScaledSize =
   Dimensions.get("window");
 
-// define grid dimensions
 const GRID_COLS = 6;
 const GRID_ROWS = 12;
 
-// calculate cell dimensions
 const CELL_WIDTH = SCREEN_WIDTH / GRID_COLS;
 const CELL_HEIGHT = SCREEN_HEIGHT / GRID_ROWS;
 
-// define center of the grid
 const CENTER_X = Math.floor(GRID_COLS / 2);
 const CENTER_Y = Math.floor(GRID_ROWS / 2);
 
@@ -49,12 +46,14 @@ interface Act1GridProps {
   onTrickPress: (id: string) => void;
   onInfoPress: (id: string) => void;
   onBossPress: (id: string) => void;
+  trickCompletionStates: Record<string, number>;
 }
 
 const Act1Grid: React.FC<Act1GridProps> = ({
   onTrickPress,
   onInfoPress,
   onBossPress,
+  trickCompletionStates,
 }) => {
   const getPosition = (trick: Trick): { x: number; y: number } => {
     if (trick.type === "boss") {
@@ -79,10 +78,8 @@ const Act1Grid: React.FC<Act1GridProps> = ({
       let d: string;
 
       if (toTrick.type === "boss") {
-        // for connections to the boss, create a straight vertical line
         d = `M${x1},${y1} L${x1},${y2}`;
       } else {
-        // for other connections, create a path with right angles
         const midY = (y1 + y2) / 2;
         d = `M${x1},${y1} L${x1},${midY} L${x2},${midY} L${x2},${y2}`;
       }
@@ -117,7 +114,7 @@ const Act1Grid: React.FC<Act1GridProps> = ({
                 id={trick.id}
                 name={trickData.name}
                 onPress={onBossPress}
-                isCompleted={0}
+                isCompleted={trickCompletionStates[trick.id] || 0}
               />
             </View>
           );
@@ -140,7 +137,7 @@ const Act1Grid: React.FC<Act1GridProps> = ({
                 id={trick.id}
                 name={trickData.name}
                 onPress={onTrickPress}
-                isCompleted={0}
+                isCompleted={trickCompletionStates[trick.id] || 0}
               />
             )}
             {trick.type === "info" && (

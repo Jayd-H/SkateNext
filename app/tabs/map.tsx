@@ -9,6 +9,9 @@ const PAGES = ["1", "2", "3", "4"];
 export default function Map() {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTrickId, setSelectedTrickId] = useState<string | null>(null);
+  const [trickCompletionStates, setTrickCompletionStates] = useState<
+    Record<string, number>
+  >({});
 
   const changePage = (direction: number) => {
     setCurrentPage((prevPage) =>
@@ -27,6 +30,14 @@ export default function Map() {
 
   const handleBossPress = (id: string) => {
     console.log(`Boss pressed: ${id}`);
+    // TODO: this modal will be the same as the trick modal but maybe with like a fire svg in the background or something
+  };
+
+  const handleTrickCompletion = (trickId: string, state: number) => {
+    setTrickCompletionStates((prev) => ({
+      ...prev,
+      [trickId]: state,
+    }));
   };
 
   return (
@@ -73,6 +84,7 @@ export default function Map() {
               onBossPress={handleBossPress}
               onTrickPress={handleTrickPress}
               onInfoPress={handleInfoPress}
+              trickCompletionStates={trickCompletionStates}
             />
           )}
           {/* TODO: OTHER ACTS GO HERE */}
@@ -82,6 +94,10 @@ export default function Map() {
         isVisible={selectedTrickId !== null}
         onClose={() => setSelectedTrickId(null)}
         trickId={selectedTrickId || ""}
+        completionState={
+          selectedTrickId ? trickCompletionStates[selectedTrickId] || 0 : 0
+        }
+        onCompletionChange={handleTrickCompletion}
       />
     </View>
   );
