@@ -292,7 +292,7 @@ const TrickModal: React.FC<TrickModalProps> = ({
           )}
 
           <View className="w-full px-4 mb-3">
-            <Text className="text-text text-lg font-montserrat-alt-light mb-2 mt-4 text-center">
+            <Text className="text-text text-base font-montserrat-alt-light mb-2 mt-4 text-center">
               Can you land a {trick.name}?
             </Text>
             <SelectableButton
