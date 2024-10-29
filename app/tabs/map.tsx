@@ -3,14 +3,19 @@ import { View, Text, TouchableOpacity } from "react-native";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
 import Act1Grid from "../components/Act1Grid";
 import TrickModal from "../components/TrickModal";
+import InfoModal from "../components/InfoModal";
 
 const PAGES = ["1", "2", "3", "4"];
 
 export default function Map() {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTrickId, setSelectedTrickId] = useState<string | null>(null);
+  const [selectedInfoId, setSelectedInfoId] = useState<string | null>(null);
   const [trickCompletionStates, setTrickCompletionStates] = useState<
     Record<string, number>
+  >({});
+  const [infoCompletionStates, setInfoCompletionStates] = useState<
+    Record<string, boolean>
   >({});
 
   const changePage = (direction: number) => {
@@ -24,8 +29,11 @@ export default function Map() {
   };
 
   const handleInfoPress = (id: string) => {
-    console.log(`Info pressed: ${id}`);
-    // TODO: open modal with manually written info
+    setSelectedInfoId(id);
+    setInfoCompletionStates((prev) => ({
+      ...prev,
+      [id]: true,
+    }));
   };
 
   const handleBossPress = (id: string) => {
@@ -85,9 +93,9 @@ export default function Map() {
               onTrickPress={handleTrickPress}
               onInfoPress={handleInfoPress}
               trickCompletionStates={trickCompletionStates}
+              infoCompletionStates={infoCompletionStates}
             />
           )}
-          {/* TODO: OTHER ACTS GO HERE */}
         </View>
       </View>
       <TrickModal
@@ -98,6 +106,11 @@ export default function Map() {
           selectedTrickId ? trickCompletionStates[selectedTrickId] || 0 : 0
         }
         onCompletionChange={handleTrickCompletion}
+      />
+      <InfoModal
+        isVisible={selectedInfoId !== null}
+        onClose={() => setSelectedInfoId(null)}
+        infoId={selectedInfoId || ""}
       />
     </View>
   );
