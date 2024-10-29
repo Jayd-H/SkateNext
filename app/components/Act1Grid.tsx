@@ -6,6 +6,7 @@ import { Svg, Path } from "react-native-svg";
 import { TrickButton, InfoButton, BossButton } from "./ButtonComponents";
 import { TRICK_DATA } from "./trickData";
 import { INFO_DATA } from "./infoData";
+import Gyroscope from "../../assets/icons/gyroscope.svg";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT }: ScaledSize =
   Dimensions.get("window");
@@ -165,6 +166,13 @@ const Act1Grid: React.FC<Act1GridProps> = ({
           </View>
         );
       })}
+      <View className="absolute -z-10 -left-[200px] top-[20px]">
+        <Gyroscope
+          width={400}
+          height={400}
+          style={{ transform: [{ scaleX: -1 }] }}
+        />
+      </View>
     </View>
   );
 };
