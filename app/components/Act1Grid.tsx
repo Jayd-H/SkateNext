@@ -34,6 +34,7 @@ interface Connection {
   type: "lined" | "dotted";
 }
 
+// TODO rename these to actually be the trick they are representing and set up the nodes for act 1
 const nodes: Node[] = [
   { id: "node1", dataId: "9", x: CENTER_X + 2, y: 6, type: "trick" },
   { id: "node2", dataId: "10", x: CENTER_X, y: 8, type: "trick" },
