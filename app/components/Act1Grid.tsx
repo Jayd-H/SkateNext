@@ -36,17 +36,23 @@ interface Connection {
 
 // TODO rename these to actually be the trick they are representing and set up the nodes for act 1
 const nodes: Node[] = [
-  { id: "node1", dataId: "9", x: CENTER_X + 2, y: 6, type: "trick" },
-  { id: "node2", dataId: "10", x: CENTER_X, y: 8, type: "trick" },
-  { id: "node3", dataId: "3", x: CENTER_X, y: CENTER_Y, type: "trick" },
-  { id: "node4", dataId: "1", type: "boss" },
-  { id: "node5", dataId: "2", x: CENTER_X, y: 4, type: "info" },
+  { id: "stance", dataId: "1", x: CENTER_X, y: 8, type: "info" },
+  { id: "pushing", dataId: "2", x: CENTER_X, y: CENTER_Y, type: "info" },
+  { id: "shuv", dataId: "9", x: CENTER_X + 2, y: CENTER_Y, type: "trick" },
+  { id: "fshuv", dataId: "10", x: CENTER_X +2, y: CENTER_Y -2, type: "trick" },
+  { id: "ollie", dataId: "1", type: "boss" },
+  // TODO: make each button smaller and/or add scrollability to the map to include the mannys, powerslide, boneless, shuvs, and no complys
+  // no complys should only cosnsist of a fs180 no comply and standard no comply, the remaining no complys can be just an info button
 ];
 
 const connections: Connection[] = [
-  { fromNode: "node2", toNode: "node3", type: "lined" },
-  { fromNode: "node3", toNode: "node1", type: "dotted" },
+  { fromNode: "stance", toNode: "pushing", type: "lined" },
+  { fromNode: "pushing", toNode: "shuv", type: "lined" },
+  {fromNode: "shuv", toNode:"fshuv", type: "lined"},
   { fromNode: "node1", toNode: "node4", type: "lined" },
+  {fromNode: "fshuv", toNode:"ollie", type: "dotted"},
+  {fromNode: "pushing", toNode:"ollie", type: "dotted"},
+
 ];
 
 interface Act1GridProps {
