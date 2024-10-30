@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
-import Act1Grid from "../components/Act1Grid";
+import Act1Grid from "../components/Act1";
 import TrickModal from "../components/TrickModal";
 import InfoModal from "../components/InfoModal";
 
@@ -51,42 +51,50 @@ export default function Map() {
   return (
     <View className="flex-1">
       <View className="flex-1 items-center bg-background">
-        <Text className="text-xl text-text font-montserrat-light mt-10">
-          M A P
-        </Text>
-        <View className="flex-row items-center justify-between mt-2 w-48">
-          <TouchableOpacity
-            onPress={() => changePage(-1)}
-            disabled={currentPage === 0}
-          >
-            <ChevronRight
-              width={18}
-              height={18}
-              style={{ transform: [{ rotate: "180deg" }] }}
-              fill={currentPage === 0 ? "#183C36" : "#EBEFEF"}
-              stroke={currentPage === 0 ? "#183C36" : "#EBEFEF"}
-              strokeWidth={1}
-            />
-          </TouchableOpacity>
-          <View className="w-20 items-center">
-            <Text className="text-text font-montserrat-bold">
-              {PAGES[currentPage]}
-            </Text>
+        <View className="bg-background z-20 pb-4">
+          <Text className="text-xl text-text font-montserrat-light mt-10 z-30 text-center">
+            M A P
+          </Text>
+          <View className=" flex-row w-full bg-background">
+            <View className="flex-row items-center justify-between mt-2 w-48 z-30">
+              <TouchableOpacity
+                onPress={() => changePage(-1)}
+                disabled={currentPage === 0}
+              >
+                <ChevronRight
+                  width={18}
+                  height={18}
+                  style={{ transform: [{ rotate: "180deg" }] }}
+                  fill={currentPage === 0 ? "#183C36" : "#EBEFEF"}
+                  stroke={currentPage === 0 ? "#183C36" : "#EBEFEF"}
+                  strokeWidth={1}
+                />
+              </TouchableOpacity>
+              <View className="w-20 items-center">
+                <Text className="text-text font-montserrat-bold">
+                  {PAGES[currentPage]}
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => changePage(1)}
+                disabled={currentPage === PAGES.length - 1}
+              >
+                <ChevronRight
+                  width={18}
+                  height={18}
+                  fill={
+                    currentPage === PAGES.length - 1 ? "#183C36" : "#EBEFEF"
+                  }
+                  stroke={
+                    currentPage === PAGES.length - 1 ? "#183C36" : "#EBEFEF"
+                  }
+                  strokeWidth={1}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-          <TouchableOpacity
-            onPress={() => changePage(1)}
-            disabled={currentPage === PAGES.length - 1}
-          >
-            <ChevronRight
-              width={18}
-              height={18}
-              fill={currentPage === PAGES.length - 1 ? "#183C36" : "#EBEFEF"}
-              stroke={currentPage === PAGES.length - 1 ? "#183C36" : "#EBEFEF"}
-              strokeWidth={1}
-            />
-          </TouchableOpacity>
         </View>
-        <View className="flex-1 w-full mt-4">
+        <View className="flex-1 w-full">
           {currentPage === 0 && (
             <Act1Grid
               onBossPress={handleBossPress}
