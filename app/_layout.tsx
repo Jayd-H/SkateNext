@@ -4,6 +4,7 @@ import { Slot } from "expo-router";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as Notifications from "expo-notifications";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -75,14 +76,16 @@ export default function Layout(): React.ReactElement | null {
   }
 
   return (
-    <View
-      style={{ flex: 1, backgroundColor: "#0F1413" }}
-      onLayout={onLayoutRootView}
-    >
-      <StatusBar barStyle="light-content" backgroundColor="#0F1413" />
-      <SafeAreaView style={{ flex: 1 }}>
-        <Slot />
-      </SafeAreaView>
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View
+        style={{ flex: 1, backgroundColor: "#0F1413" }}
+        onLayout={onLayoutRootView}
+      >
+        <StatusBar barStyle="light-content" backgroundColor="#0F1413" />
+        <SafeAreaView style={{ flex: 1 }}>
+          <Slot />
+        </SafeAreaView>
+      </View>
+    </GestureHandlerRootView>
   );
 }
