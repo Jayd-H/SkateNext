@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import Modal from "../components/Modal";
+import Modal from "../components/Modals/Modal";
 
 export default function Settings() {
   const router = useRouter();

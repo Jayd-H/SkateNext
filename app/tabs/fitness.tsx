@@ -6,7 +6,7 @@ import AllTimeCalories from "../../assets/icons/fire4.svg";
 import Skull from "../../assets/icons/burning-skull-white.svg";
 import HoneyComb from "../../assets/icons/honeycomb.svg";
 import Timer from "../components/Timer";
-import Alert from "../components/Alert";
+import Alert from "../components/Generic/Alert";
 
 const Fitness: React.FC = () => {
   const appState = useRef(AppState.currentState);

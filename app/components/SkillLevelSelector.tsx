@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import BurningSkull from "../../assets/icons/burning-skull.svg";
 import SkateboardText from "../../assets/icons/skateboard-grey.svg";
-import { AnimatedFlyIn } from "./AnimatedFlyIn";
+import { AnimatedFlyIn } from "./Generic/AnimatedFlyIn";
 
 type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Master";
 
