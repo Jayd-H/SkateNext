@@ -8,26 +8,26 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-import { TrickButton, InfoButton, BossButton } from "./ButtonComponents";
-import { TRICK_DATA } from "./trickData";
-import { INFO_DATA } from "./infoData";
+import {
+  TrickButton,
+  InfoButton,
+  BossButton,
+  FolderButton,
+} from "../ButtonComponents";
+import { TRICK_DATA } from "../Data/trickData";
+import { INFO_DATA } from "../Data/infoData";
+import { FOLDER_DATA } from "../Data/folderData";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT }: ScaledSize =
   Dimensions.get("window");
 
-const GRID_COLS = 8;
-const GRID_ROWS = 20;
-
-const CELL_WIDTH = SCREEN_WIDTH / GRID_COLS;
-const CELL_HEIGHT = SCREEN_HEIGHT / GRID_ROWS;
-
-export interface Node {
+export type Node = {
   id: string;
-  type: "trick" | "info" | "boss";
+  type: "trick" | "info" | "boss" | "folder";
   dataId: string;
   x?: number;
   y?: number;
-}
+};
 
 export interface Connection {
   fromNode: string;
@@ -41,6 +41,7 @@ interface ActGridProps {
   onTrickPress: (id: string) => void;
   onInfoPress: (id: string) => void;
   onBossPress: (id: string) => void;
+  onFolderPress: (id: string) => void;
   trickCompletionStates: Record<string, number>;
   infoCompletionStates: Record<string, boolean>;
   backgroundComponent?: React.ReactNode;
@@ -64,6 +65,7 @@ const ActGrid: React.FC<ActGridProps> = ({
   onTrickPress,
   onInfoPress,
   onBossPress,
+  onFolderPress,
   trickCompletionStates,
   infoCompletionStates,
   backgroundComponent,
@@ -71,8 +73,8 @@ const ActGrid: React.FC<ActGridProps> = ({
   gridConfig,
 }) => {
   const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const scale = useSharedValue(1);
+  const translateY = useSharedValue(boundaryLimits.maxY / 3.5);
+  const scale = useSharedValue(0.9);
   const baseScale = useSharedValue(1);
   const CELL_WIDTH = SCREEN_WIDTH / gridConfig.cols;
   const CELL_HEIGHT = SCREEN_HEIGHT / gridConfig.rows;
@@ -162,9 +164,15 @@ const ActGrid: React.FC<ActGridProps> = ({
 
   const getNodeData = (node: Node) => {
     if (node.type === "info") {
-      return INFO_DATA.find((i) => i.id === node.dataId);
+      const infoData = INFO_DATA.find((i) => i.id === node.dataId);
+      return infoData ? { name: infoData.name } : null;
     }
-    return TRICK_DATA.find((t) => t.id === node.dataId);
+    if (node.type === "folder") {
+      const folderData = FOLDER_DATA.find((f) => f.id === node.dataId);
+      return folderData ? { name: folderData.nodeTitle } : null;
+    }
+    const trickData = TRICK_DATA.find((t) => t.id === node.dataId);
+    return trickData ? { name: trickData.name } : null;
   };
 
   const bossNodes = nodes.filter((node) => node.type === "boss");
@@ -189,7 +197,7 @@ const ActGrid: React.FC<ActGridProps> = ({
             if (!nodeData) return null;
 
             const { x, y } = getPosition(node);
-            const buttonWidth = node.type === "trick" ? 70 : 80;
+            const buttonWidth = node.type === "info" ? 70 : 70;
 
             return (
               <View
@@ -214,6 +222,24 @@ const ActGrid: React.FC<ActGridProps> = ({
                     name={nodeData.name}
                     onPress={onInfoPress}
                     isCompletedInfo={infoCompletionStates[node.dataId] || false}
+                  />
+                )}
+                {node.type === "folder" && (
+                  <FolderButton
+                    id={node.id}
+                    title={
+                      FOLDER_DATA.find((f) => f.id === node.dataId)?.title || ""
+                    }
+                    nodeTitle={
+                      FOLDER_DATA.find((f) => f.id === node.dataId)
+                        ?.nodeTitle || ""
+                    }
+                    containedTricks={
+                      FOLDER_DATA.find((f) => f.id === node.dataId)
+                        ?.containedTricks || []
+                    }
+                    onPress={onFolderPress}
+                    trickCompletionStates={trickCompletionStates}
                   />
                 )}
               </View>
