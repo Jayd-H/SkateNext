@@ -5,6 +5,7 @@ import InfoIcon from "../../assets/icons/info.svg";
 import SkaterLeftIcon from "../../assets/icons/skater-left.svg";
 import BossSkullIcon from "../../assets/icons/boss-skull.svg";
 import SkaterRightIcon from "../../assets/icons/skater-right.svg";
+import FolderIcon from "../../assets/icons/full-folder.svg";
 
 interface ButtonProps {
   id: string;
@@ -12,6 +13,15 @@ interface ButtonProps {
   onPress: (id: string) => void;
   isCompleted?: number;
   isCompletedInfo?: boolean;
+}
+
+interface FolderButtonProps {
+  id: string;
+  title: string;
+  containedTricks: string[];
+  onPress: (id: string) => void;
+  trickCompletionStates: Record<string, number>;
+  nodeTitle: string;
 }
 
 export const TrickButton: React.FC<ButtonProps> = ({
@@ -123,6 +133,49 @@ export const BossButton: React.FC<ButtonProps> = ({
       >
         {name}
       </Text>
+    </Pressable>
+  );
+};
+
+export const FolderButton: React.FC<FolderButtonProps> = ({
+  id,
+  title,
+  nodeTitle,
+  containedTricks,
+  onPress,
+  trickCompletionStates,
+}) => {
+  const completedTricks = containedTricks.reduce((sum, trickId) => {
+    return sum + (trickCompletionStates[trickId] || 0);
+  }, 0);
+  const maxPossible = containedTricks.length * 2;
+  const completionPercentage = (completedTricks / maxPossible) * 100;
+
+  const iconSize: number = 26;
+
+  const completedStyle =
+    completionPercentage === 100
+      ? "border-green shadow-green"
+      : completionPercentage >= 50
+      ? "border-yellow shadow-yellow"
+      : "border-red shadow-red";
+
+  return (
+    <Pressable
+      className={`relative w-[70px] h-[80px] rounded-2xl bg-buttonbg shadow-md border ${completedStyle}`}
+      onPress={() => onPress(id)}
+    >
+      <View className="w-full h-full flex-1 items-center -mt-6 justify-center">
+        <FolderIcon width={iconSize} height={iconSize} />
+      </View>
+      <View className="absolute bottom-4 w-full px-2">
+        <Text
+          className="text-text font-montserrat-alt text-xs text-center"
+          style={nodeTitle.length >= 8 ? { fontSize: 10 } : undefined}
+        >
+          {nodeTitle.length > 10 ? `${nodeTitle.slice(0, 10)}...` : nodeTitle}
+        </Text>
+      </View>
     </Pressable>
   );
 };
