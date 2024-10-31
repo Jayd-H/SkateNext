@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import Slider from "@react-native-community/slider";
-import { AnimatedFlyIn } from "./AnimatedFlyIn";
+import { AnimatedFlyIn } from "./Generic/AnimatedFlyIn";
+import ChevronRight from "../../assets/icons/chevron-right.svg";
 
 interface AgeSelectorProps {
   onComplete: (age: number) => void;
@@ -37,7 +38,7 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({ onComplete }) => {
       </AnimatedFlyIn>
 
       <AnimatedFlyIn delay={300}>
-        <View className="w-full px-4 mt-4">
+        <View className=" px-8 mt-8">
           <Slider
             style={{ width: "100%", height: 40 }}
             minimumValue={8}
@@ -53,12 +54,12 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({ onComplete }) => {
       </AnimatedFlyIn>
 
       <AnimatedFlyIn delay={400}>
-        <View className="items-center mt-20">
-          <TouchableOpacity
-            className="bg-buttonbg border border-accent-2 w-5/6 p-3 rounded-3xl items-center"
-            onPress={handleNext}
-          >
-            <Text className="text-text font-montserrat-alt text-xl">Next</Text>
+        <View className="absolute top-0 mt-32 right-6">
+          <TouchableOpacity className="items-center" onPress={handleNext}>
+            <Text className="text-text font-montserrat-alt text-sm mb-2">
+              Next
+            </Text>
+            <ChevronRight width={24} height={24} fill="#EBEFEF" />
           </TouchableOpacity>
         </View>
       </AnimatedFlyIn>

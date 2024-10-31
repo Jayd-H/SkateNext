@@ -7,8 +7,8 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
-import { INFO_DATA } from "./infoData";
-import InfoIcon from "../../assets/icons/info.svg";
+import { INFO_DATA } from "../Data/infoData";
+import InfoIcon from "../../../assets/icons/info.svg";
 
 interface InfoModalProps {
   isVisible: boolean;

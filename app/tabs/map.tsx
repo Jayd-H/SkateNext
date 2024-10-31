@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
-import Act1Grid from "../components/Act1";
-import TrickModal from "../components/TrickModal";
-import InfoModal from "../components/InfoModal";
+import Act1Grid from "../components/Acts/Act1";
+import TrickModal from "../components/Modals/TrickModal";
+import InfoModal from "../components/Modals/InfoModal";
+import FolderModal from "../components/Modals/FolderModal";
 
 const PAGES = ["1", "2", "3", "4"];
 
@@ -11,6 +12,7 @@ export default function Map() {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTrickId, setSelectedTrickId] = useState<string | null>(null);
   const [selectedInfoId, setSelectedInfoId] = useState<string | null>(null);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [trickCompletionStates, setTrickCompletionStates] = useState<
     Record<string, number>
   >({});
@@ -38,7 +40,10 @@ export default function Map() {
 
   const handleBossPress = (id: string) => {
     console.log(`Boss pressed: ${id}`);
-    // TODO: this modal will be the same as the trick modal but maybe with like a fire svg in the background or something
+  };
+
+  const handleFolderPress = (id: string) => {
+    setSelectedFolderId(id);
   };
 
   const handleTrickCompletion = (trickId: string, state: number) => {
@@ -100,12 +105,22 @@ export default function Map() {
               onBossPress={handleBossPress}
               onTrickPress={handleTrickPress}
               onInfoPress={handleInfoPress}
+              onFolderPress={handleFolderPress}
               trickCompletionStates={trickCompletionStates}
               infoCompletionStates={infoCompletionStates}
             />
           )}
         </View>
       </View>
+
+      {/* Modals */}
+      <FolderModal
+        isVisible={selectedFolderId !== null}
+        onClose={() => setSelectedFolderId(null)}
+        folderId={selectedFolderId || ""}
+        trickCompletionStates={trickCompletionStates}
+        onTrickSelect={handleTrickPress}
+      />
       <TrickModal
         isVisible={selectedTrickId !== null}
         onClose={() => setSelectedTrickId(null)}

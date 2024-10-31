@@ -8,10 +8,10 @@ import Animated, {
   Easing,
   interpolateColor,
 } from "react-native-reanimated";
-import { TRICK_DATA } from "./trickData";
-import BurningSkull from "../../assets/icons/burning-skull.svg";
-import VHS from "../../assets/icons/vhs.svg";
-import ChevronRight from "../../assets/icons/chevron-right.svg";
+import { TRICK_DATA } from "../Data/trickData";
+import BurningSkull from "../../../assets/icons/burning-skull.svg";
+import VHS from "../../../assets/icons/vhs.svg";
+import ChevronRight from "../../../assets/icons/chevron-right.svg";
 
 interface SelectableButtonProps {
   title: string;
