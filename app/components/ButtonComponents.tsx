@@ -171,9 +171,9 @@ export const FolderButton: React.FC<FolderButtonProps> = ({
       <View className="absolute bottom-4 w-full px-2">
         <Text
           className="text-text font-montserrat-alt text-xs text-center"
-          style={nodeTitle.length >= 8 ? { fontSize: 10 } : undefined}
+          style={nodeTitle.length >= 9 ? { fontSize: 8 } : undefined}
         >
-          {nodeTitle.length > 10 ? `${nodeTitle.slice(0, 10)}...` : nodeTitle}
+          {nodeTitle.length > 8 ? `${nodeTitle.slice(0, 9)}...` : nodeTitle}
         </Text>
       </View>
     </Pressable>
