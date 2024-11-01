@@ -64,6 +64,12 @@ const FolderModal: React.FC<FolderModalProps> = ({
     justifyContent: "flex-end",
   };
 
+  const getModalHeight = () => {
+    const baseHeight = 55;
+    const additionalHeight = Math.max(0, tricks.length - 2) * 13;
+    return Math.min(90, baseHeight + additionalHeight);
+  };
+
   return (
     <BlurView intensity={30} tint="dark" style={blurViewStyle}>
       <TouchableOpacity
@@ -72,8 +78,14 @@ const FolderModal: React.FC<FolderModalProps> = ({
         className="flex-1"
       />
       <Animated.View
-        style={[animatedStyle]}
-        className="bg-background min-h-[55%] -mb-6 rounded-t-3xl"
+        style={[
+          animatedStyle,
+          {
+            minHeight: `${getModalHeight()}%`,
+            maxHeight: "90%",
+          },
+        ]}
+        className="bg-background -mb-6 rounded-t-3xl"
       >
         <View className="p-6 flex-1">
           <View className="w-12 h-1 bg-accent-2 rounded-full mb-2 self-center" />
