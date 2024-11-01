@@ -40,7 +40,7 @@ export const FOLDER_DATA: FolderData[] = [
     nodeTitle: "No-Complys+",
     title: "Further No-Complys",
     description: "Learn some more advanced no-comply variations.",
-    containedTricks: ["fsnc180", "bsnc180"],
+    containedTricks: ["fsnc180", "bsnc180","strawberrymilkshake"],
 
   }
 ];
