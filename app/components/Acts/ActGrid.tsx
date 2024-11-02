@@ -57,6 +57,7 @@ interface ActGridProps {
     cols: number;
     rows: number;
   };
+  initialScale?: number;
 }
 
 const ActGrid: React.FC<ActGridProps> = ({
@@ -71,11 +72,12 @@ const ActGrid: React.FC<ActGridProps> = ({
   backgroundComponent,
   boundaryLimits,
   gridConfig,
+  initialScale = 0.9,
 }) => {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(boundaryLimits.maxY / 3.5);
-  const scale = useSharedValue(0.9);
-  const baseScale = useSharedValue(1);
+  const scale = useSharedValue(initialScale);
+  const baseScale = useSharedValue(initialScale);
   const CELL_WIDTH = SCREEN_WIDTH / gridConfig.cols;
   const CELL_HEIGHT = SCREEN_HEIGHT / gridConfig.rows;
 
