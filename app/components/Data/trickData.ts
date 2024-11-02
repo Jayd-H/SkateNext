@@ -172,6 +172,15 @@ export const TRICK_DATA: Trick[] = [
     alt_names: ""
   },
   {
+    id: "fakieollie",
+    name: "Fakie Ollie",
+    description: "An Ollie performed while riding fakie. Set up like a regular Ollie, but while rolling fakie. Pop the tail and slide your front foot up the board. Jump and level out the board with your front foot.",
+    common_mistakes: "[Not leveling out the board] Make sure you are sliding your foot into the board and not just up it. [Leaning to far back] Keep your weight centered over the board throughout the trick.",
+    difficulty: "3",
+    video_link: "fakie_ollie.mp4",
+    alt_names: ""
+  },
+  {
     id: "fakiebs180",
     name: "Fakie Backside 180",
     description: "A 180° backside rotation performed while riding fakie. Start in fakie stance, wind up your upper body in the direction of the spin. As you pop, use your shoulders and hips to guide the rotation. Land with your feet over the bolts, now riding in your regular stance.",
@@ -188,6 +197,15 @@ export const TRICK_DATA: Trick[] = [
     difficulty: "4",
     video_link: "fakie_frontside_180.mp4",
     alt_names: "Fakie Front 180"
+  },
+  {
+    id: "nollie",
+    name: "Nollie",
+    description: "An Ollie performed from the nose of the board. Start with your front foot on the nose and back foot behind the back bolts. Pop the nose with your front foot and slide your bacl foot up the back of the board. Jump and level out the board with your back foot.",
+    common_mistakes: "[Not getting enough pop] Make sure to give a strong pop off the nose to get the board off the ground. [Not sliding your foot up] Slide your foot up the board to level it out in the air.",
+    difficulty: "4",
+    video_link: "nollie.mp4",
+    alt_names: ""
   },
   {
     id: "nolliebs180",
@@ -281,7 +299,7 @@ export const TRICK_DATA: Trick[] = [
   },
   {
     id: "fsbigspin",
-    name: "Frontside Bigspin",
+    name: "FS Bigspin",
     description: "A Bigspin with a 360° frontside rotation and a 180° body rotation. Start like a regular Bigspin, wind up in the direction of the spin. Scoop the tail and jump, allowing the board to rotate 360° beneath you. Simultaneously, turn your body 180° frontside.",
     common_mistakes: "[Not winding up enough] Make sure to wind up your shoulders before you pop for maximum rotation. [Incomplete rotation] Commit to the full 360° by following through with your shoulders and hips.",
     difficulty: "5",
@@ -290,7 +308,7 @@ export const TRICK_DATA: Trick[] = [
   },
   {
     id: "fakiefsbigspin",
-    name: "Fakie Frontside Bigspin",
+    name: "Fakie FS Bigspin",
     description: "A Bigspin performed while riding fakie with a frontside rotation. Set up like a regular Bigspin, but while rolling fakie. Wind up in the direction of the spin, scoop the tail and jump. The board should rotate 360° beneath you with a 180° body rotation.",
     common_mistakes: "[Leaning back too much] Try to keep your weight centered over the board.",
     difficulty: "5",
@@ -299,7 +317,7 @@ export const TRICK_DATA: Trick[] = [
   },
   {
     id: "nolliefsbigspin",
-    name: "Nollie Frontside Bigspin",
+    name: "Nollie FS Bigspin",
     description: "A Bigspin performed from a nollie position with a frontside rotation. Start with your front foot on the nose, wind up your body in the direction of the spin. Pop off the nose and use your shoulders to guide the 360° board rotation and 180° body rotation.",
     common_mistakes: "[Leaning back too much] Try to keep your weight centered over the board.",
     difficulty: "5",
@@ -596,7 +614,7 @@ export const TRICK_DATA: Trick[] = [
   },
   {
     id: "varialkickflip",
-    name: "Varial Kickflip",
+    name: "Varial Flip",
     description: "A combination of a Kickflip and a backside 180° board rotation (BS Shuvit). Position your front foot like a kickflip and your back foot in the scooping position. Pop while simultaneously scooping backside and flicking the kickflip. The board should flip and rotate 180° beneath you.",
     common_mistakes: "[Flicking down instead of out] Focus on flicking outward to get the flip while allowing the board to rotate. [Poor scoop timing] The scoop and flick need to happen together.",
     difficulty: "8",
