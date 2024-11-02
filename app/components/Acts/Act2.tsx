@@ -5,8 +5,8 @@ import Gyroscope from "../../../assets/icons/gyroscope.svg";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-const GRID_COLS = 32;
-const GRID_ROWS = 60;
+const GRID_COLS = 16;
+const GRID_ROWS = 30;
 
 const boundaryX: number = 6;
 const boundaryY: number = 6;
@@ -19,11 +19,105 @@ const BOUNDARY_LIMITS = {
   maxScale: 1.25,
 };
 
-const nodes: Node[] = [{ id: "kickflip", dataId: "kickflip", type: "boss" }];
+const nodes: Node[] = [
+  { id: "kickflip", dataId: "kickflip", type: "boss", x: 12, y: 5 },
+  {
+    id: "fakieollie",
+    dataId: "fakieollie",
+    type: "trick",
+    x: 12,
+    y: 22,
+  },
+  {
+    id: "nollie",
+    dataId: "nollie",
+    type: "trick",
+    x: 12,
+    y: 14,
+  },
+  {
+    id: "switchollie",
+    dataId: "switchollie",
+    type: "trick",
+    x: 12,
+    y: 6,
+  },
+  {
+    id: "ollievariations",
+    dataId: "ollievariations",
+    type: "folder",
+    x: 8,
+    y: 22,
+  },
+  {
+    id: "fakieollievariations",
+    dataId: "fakieollievariations",
+    type: "folder",
+    x: 12,
+    y: 18,
+  },
+  {
+    id: "nollievariations",
+    dataId: "nollievariations",
+    type: "folder",
+    x: 12,
+    y: 10,
+  },
+  {
+    id: "switchshuvs",
+    dataId: "switchshuvs",
+    type: "folder",
+    x: 3,
+    y: 22,
+  },
+  {
+    id: "bigspin",
+    dataId: "bigspin",
+    type: "trick",
+    x: 4,
+    y: 18,
+  },
+  {
+    id: "fsbigspin",
+    dataId: "fsbigspin",
+    type: "trick",
+    x: 4,
+    y: 10,
+  },
+  {
+    id: "bsbigspins",
+    dataId: "bsbigspins",
+    type: "folder",
+    x: 4,
+    y: 14,
+  },
+  {
+    id: "fsbigspins",
+    dataId: "fsbigspins",
+    type: "folder",
+    x: 4,
+    y: 6,
+  },
+  {
+    id: "kickflipinfo",
+    dataId: "kickflipinfo",
+    type: "info",
+    x: 8,
+    y: 6,
+  },
+];
 
-const connections: Connection[] = [];
+const connections: Connection[] = [
+  { fromNode: "ollievariations", toNode: "kickflip", type: "dotted" },
+  { fromNode: "fakieollie", toNode: "fakieollievariations", type: "lined" },
+  { fromNode: "nollie", toNode: "nollievariations", type: "lined" },
+  { fromNode: "bigspin", toNode: "bsbigspins", type: "lined" },
+  { fromNode: "fsbigspin", toNode: "fsbigspins", type: "lined" },
+  { fromNode: "bigspin", toNode: "kickflip", type: "dotted" },
+  { fromNode: "fakieollie", toNode: "kickflip", type: "dotted" },
+];
 
-interface Act1Props {
+interface Act2Props {
   onTrickPress: (id: string) => void;
   onInfoPress: (id: string) => void;
   onBossPress: (id: string) => void;
@@ -32,7 +126,7 @@ interface Act1Props {
   infoCompletionStates: Record<string, boolean>;
 }
 
-const Act1: React.FC<Act1Props> = (props) => {
+const Act2: React.FC<Act2Props> = (props) => {
   const backgroundComponent = (
     <View className="absolute -z-10 -left-[200px] top-[20px]">
       <Gyroscope
@@ -55,4 +149,4 @@ const Act1: React.FC<Act1Props> = (props) => {
   );
 };
 
-export default Act1;
+export default Act2;

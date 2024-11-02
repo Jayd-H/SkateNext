@@ -56,6 +56,7 @@ const nodes: Node[] = [
   { id: "kickturn", dataId: "kickturn", x: 4, y: 18, type: "trick" },
   { id: "ollie", dataId: "ollie", type: "boss" },
   { id: "powerslide", dataId: "powerslide", x: 4, y: 14, type: "trick" },
+  { id: "boneless", dataId: "boneless", x: 10, y: 6, type: "trick" },
 ];
 
 const connections: Connection[] = [
