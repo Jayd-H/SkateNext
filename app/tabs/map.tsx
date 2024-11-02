@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
-import Act1Grid from "../components/Acts/Act1";
+import Act1 from "../components/Acts/Act1";
+import Act2 from "../components/Acts/Act2";
+import Act3 from "../components/Acts/Act3";
+import Act4 from "../components/Acts/Act4";
 import TrickModal from "../components/Modals/TrickModal";
 import InfoModal from "../components/Modals/InfoModal";
 import FolderModal from "../components/Modals/FolderModal";
@@ -101,7 +104,37 @@ export default function Map() {
         </View>
         <View className="flex-1 w-full">
           {currentPage === 0 && (
-            <Act1Grid
+            <Act1
+              onBossPress={handleBossPress}
+              onTrickPress={handleTrickPress}
+              onInfoPress={handleInfoPress}
+              onFolderPress={handleFolderPress}
+              trickCompletionStates={trickCompletionStates}
+              infoCompletionStates={infoCompletionStates}
+            />
+          )}
+          {currentPage === 1 && (
+            <Act2
+              onBossPress={handleBossPress}
+              onTrickPress={handleTrickPress}
+              onInfoPress={handleInfoPress}
+              onFolderPress={handleFolderPress}
+              trickCompletionStates={trickCompletionStates}
+              infoCompletionStates={infoCompletionStates}
+            />
+          )}
+          {currentPage === 2 && (
+            <Act3
+              onBossPress={handleBossPress}
+              onTrickPress={handleTrickPress}
+              onInfoPress={handleInfoPress}
+              onFolderPress={handleFolderPress}
+              trickCompletionStates={trickCompletionStates}
+              infoCompletionStates={infoCompletionStates}
+            />
+          )}
+          {currentPage === 3 && (
+            <Act4
               onBossPress={handleBossPress}
               onTrickPress={handleTrickPress}
               onInfoPress={handleInfoPress}
