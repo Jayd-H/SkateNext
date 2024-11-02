@@ -98,7 +98,7 @@ const FolderModal: React.FC<FolderModalProps> = ({
                 fill="#EBEFEF"
               />
             </TouchableOpacity>
-            <Text className="text-2xl text-text font-montserrat-alt flex-1 ml-4">
+            <Text className="text-xl text-text font-montserrat-alt flex-1 ml-4">
               {folder.title}
             </Text>
           </View>
@@ -123,11 +123,11 @@ const FolderModal: React.FC<FolderModalProps> = ({
                     : "border-red shadow-red"
                 } rounded-xl p-4 mb-3`}
               >
-                <Text className="text-lg text-text font-montserrat-alt">
+                <Text className="text-base text-text font-montserrat-alt">
                   {trick.name}
                 </Text>
                 {trick.alt_names && (
-                  <Text className="text-sm text-grey font-montserrat mt-1">
+                  <Text className="text-xs text-grey font-montserrat mt-1">
                     {trick.alt_names}
                   </Text>
                 )}
