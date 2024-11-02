@@ -26,7 +26,7 @@ const nodes: Node[] = [
 
 const connections: Connection[] = [];
 
-interface Act1Props {
+interface Act4Props {
   onTrickPress: (id: string) => void;
   onInfoPress: (id: string) => void;
   onBossPress: (id: string) => void;
@@ -35,7 +35,7 @@ interface Act1Props {
   infoCompletionStates: Record<string, boolean>;
 }
 
-const Act1: React.FC<Act1Props> = (props) => {
+const Act4: React.FC<Act4Props> = (props) => {
   const backgroundComponent = (
     <View className="absolute -z-10 -left-[200px] top-[20px]">
       <Gyroscope
@@ -58,4 +58,4 @@ const Act1: React.FC<Act1Props> = (props) => {
   );
 };
 
-export default Act1;
+export default Act4;
