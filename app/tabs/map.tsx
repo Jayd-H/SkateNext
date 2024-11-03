@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
 import Sparkles from "../../assets/icons/sparkles.svg";
 import Telescope from "../../assets/icons/telescope.svg";
@@ -12,22 +12,28 @@ import InfoModal from "../components/Modals/InfoModal";
 import FolderModal from "../components/Modals/FolderModal";
 import LuckyModal from "../components/Modals/LuckyModal";
 import SearchModal from "../components/Modals/SearchModal";
+import { useTrickStates, useInfoStates } from "../components/StorageService";
 
 const PAGES = ["1", "2", "3", "4"];
 
 export default function Map() {
+  const {
+    trickStates,
+    isLoading: tricksLoading,
+    updateTrickState,
+  } = useTrickStates();
+  const {
+    infoStates,
+    isLoading: infoLoading,
+    updateInfoState,
+  } = useInfoStates();
+
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTrickId, setSelectedTrickId] = useState<string | null>(null);
   const [selectedInfoId, setSelectedInfoId] = useState<string | null>(null);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [isLuckyModalVisible, setIsLuckyModalVisible] = useState(false);
   const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
-  const [trickCompletionStates, setTrickCompletionStates] = useState<
-    Record<string, number>
-  >({});
-  const [infoCompletionStates, setInfoCompletionStates] = useState<
-    Record<string, boolean>
-  >({});
 
   const changePage = (direction: number) => {
     setCurrentPage((prevPage) =>
@@ -41,14 +47,11 @@ export default function Map() {
 
   const handleInfoPress = (id: string) => {
     setSelectedInfoId(id);
-    setInfoCompletionStates((prev) => ({
-      ...prev,
-      [id]: true,
-    }));
+    updateInfoState(id, true);
   };
 
   const handleBossPress = (id: string) => {
-    console.log(`Boss pressed: ${id}`);
+    setSelectedTrickId(id); // TODO: make a boss modal thats basically the same but looks cooler
   };
 
   const handleFolderPress = (id: string) => {
@@ -56,17 +59,23 @@ export default function Map() {
   };
 
   const handleTrickCompletion = (trickId: string, state: number) => {
-    setTrickCompletionStates((prev) => ({
-      ...prev,
-      [trickId]: state,
-    }));
+    updateTrickState(trickId, state);
   };
 
   const iconSize: number = 24;
 
+  if (tricksLoading || infoLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1">
       <View className="flex-1 items-center bg-background">
+        {/* Header */}
         <View className="bg-background z-20 pb-4">
           <View className="flex-row items-center justify-between mt-10 px-4 w-full">
             <TouchableOpacity
@@ -85,8 +94,9 @@ export default function Map() {
               <Telescope width={iconSize} height={iconSize} fill="#EBEFEF" />
             </TouchableOpacity>
           </View>
+
+          {/* Page Navigation */}
           <View className="absolute left-0 right-0 -bottom-8 flex items-center justify-center">
-            {/* this is a hacky way of centering but for some reason nothing else worked, will have to fix this properly later */}
             <View className="flex-row items-center px-4 py-2">
               <TouchableOpacity
                 onPress={() => changePage(-1)}
@@ -127,6 +137,8 @@ export default function Map() {
             </View>
           </View>
         </View>
+
+        {/* Acts */}
         <View className="flex-1 w-full mt-6">
           {currentPage === 0 && (
             <Act1
@@ -134,8 +146,8 @@ export default function Map() {
               onTrickPress={handleTrickPress}
               onInfoPress={handleInfoPress}
               onFolderPress={handleFolderPress}
-              trickCompletionStates={trickCompletionStates}
-              infoCompletionStates={infoCompletionStates}
+              trickCompletionStates={trickStates}
+              infoCompletionStates={infoStates}
             />
           )}
           {currentPage === 1 && (
@@ -144,8 +156,8 @@ export default function Map() {
               onTrickPress={handleTrickPress}
               onInfoPress={handleInfoPress}
               onFolderPress={handleFolderPress}
-              trickCompletionStates={trickCompletionStates}
-              infoCompletionStates={infoCompletionStates}
+              trickCompletionStates={trickStates}
+              infoCompletionStates={infoStates}
             />
           )}
           {currentPage === 2 && (
@@ -154,8 +166,8 @@ export default function Map() {
               onTrickPress={handleTrickPress}
               onInfoPress={handleInfoPress}
               onFolderPress={handleFolderPress}
-              trickCompletionStates={trickCompletionStates}
-              infoCompletionStates={infoCompletionStates}
+              trickCompletionStates={trickStates}
+              infoCompletionStates={infoStates}
             />
           )}
           {currentPage === 3 && (
@@ -164,25 +176,26 @@ export default function Map() {
               onTrickPress={handleTrickPress}
               onInfoPress={handleInfoPress}
               onFolderPress={handleFolderPress}
-              trickCompletionStates={trickCompletionStates}
-              infoCompletionStates={infoCompletionStates}
+              trickCompletionStates={trickStates}
+              infoCompletionStates={infoStates}
             />
           )}
         </View>
       </View>
 
+      {/* Modals */}
       <FolderModal
         isVisible={selectedFolderId !== null}
         onClose={() => setSelectedFolderId(null)}
         folderId={selectedFolderId || ""}
-        trickCompletionStates={trickCompletionStates}
+        trickCompletionStates={trickStates}
         onTrickSelect={handleTrickPress}
       />
       <SearchModal
         isVisible={isSearchModalVisible}
         onClose={() => setIsSearchModalVisible(false)}
         onTrickSelect={handleTrickPress}
-        trickCompletionStates={trickCompletionStates}
+        trickCompletionStates={trickStates}
       />
       <LuckyModal
         isVisible={isLuckyModalVisible}
@@ -194,7 +207,7 @@ export default function Map() {
         onClose={() => setSelectedTrickId(null)}
         trickId={selectedTrickId || ""}
         completionState={
-          selectedTrickId ? trickCompletionStates[selectedTrickId] || 0 : 0
+          selectedTrickId ? trickStates[selectedTrickId] || 0 : 0
         }
         onCompletionChange={handleTrickCompletion}
       />

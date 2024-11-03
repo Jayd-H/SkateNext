@@ -9,6 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { INFO_DATA } from "../Data/infoData";
 import InfoIcon from "../../../assets/icons/info.svg";
+import { useInfoStates } from "../StorageService";
 
 interface InfoModalProps {
   isVisible: boolean;
@@ -23,10 +24,13 @@ const InfoModal: React.FC<InfoModalProps> = ({
 }) => {
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.8);
+  const { updateInfoState } = useInfoStates();
   const info = INFO_DATA.find((i) => i.id === infoId);
 
   React.useEffect(() => {
-    if (isVisible) {
+    if (isVisible && info) {
+      updateInfoState(info.id, true);
+
       opacity.value = withTiming(1, {
         duration: 150,
         easing: Easing.out(Easing.quad),
@@ -48,7 +52,7 @@ const InfoModal: React.FC<InfoModalProps> = ({
         easing: Easing.in(Easing.quad),
       });
     }
-  }, [isVisible]);
+  }, [isVisible, info]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -63,7 +67,7 @@ const InfoModal: React.FC<InfoModalProps> = ({
 
   return (
     <View className="flex-1 h-full w-full absolute top-0 left-0 right-0 bottom-0">
-      <TouchableOpacity className="flex-1 " activeOpacity={1} onPress={onClose}>
+      <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose}>
         <View className="flex-1 flex justify-center items-center">
           <Animated.View
             style={[animatedStyle]}
