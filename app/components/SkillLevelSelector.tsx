@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import BurningSkull from "../../assets/icons/burning-skull.svg";
 import SkateboardText from "../../assets/icons/skateboard-grey.svg";
 import { AnimatedFlyIn } from "./Generic/AnimatedFlyIn";
@@ -8,10 +8,12 @@ type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Master";
 
 interface SkillLevelSelectorProps {
   onComplete: (level: SkillLevel) => void;
+  isLoading?: boolean;
 }
 
 const SkillLevelSelector: React.FC<SkillLevelSelectorProps> = ({
   onComplete,
+  isLoading = false,
 }) => {
   const getSkullCount = (level: SkillLevel): number => {
     switch (level) {
@@ -27,7 +29,9 @@ const SkillLevelSelector: React.FC<SkillLevelSelectorProps> = ({
   };
 
   const handleButtonPress = (level: SkillLevel) => {
-    onComplete(level);
+    if (!isLoading) {
+      onComplete(level);
+    }
   };
 
   const getLevelDescription = (level: SkillLevel): string => {
@@ -68,7 +72,6 @@ const SkillLevelSelector: React.FC<SkillLevelSelectorProps> = ({
         </Text>
       </AnimatedFlyIn>
       <View className="flex-1 justify-center items-center -mt-16 px-8">
-        {/* using px-8 here is not a good solution and will definitely bite me in the ass */}
         {levels.map((level, index) => (
           <AnimatedFlyIn
             key={level}
@@ -78,6 +81,8 @@ const SkillLevelSelector: React.FC<SkillLevelSelectorProps> = ({
             <TouchableOpacity
               className="bg-buttonbg border border-accent-2 w-full p-3 rounded-3xl mb-4 items-center"
               onPress={() => handleButtonPress(level)}
+              disabled={isLoading}
+              style={{ opacity: isLoading ? 0.7 : 1 }}
             >
               <View className="flex-row mb-1">
                 {[...Array(getSkullCount(level))].map((_, index) => (
@@ -97,6 +102,11 @@ const SkillLevelSelector: React.FC<SkillLevelSelectorProps> = ({
               <Text className="text-grey font-montserrat-alt text-center">
                 {getLevelDescription(level)}
               </Text>
+              {isLoading && (
+                <View className="absolute right-4 top-1/2 -translate-y-1/2">
+                  <ActivityIndicator size="small" color="#EBEFEF" />
+                </View>
+              )}
             </TouchableOpacity>
           </AnimatedFlyIn>
         ))}
