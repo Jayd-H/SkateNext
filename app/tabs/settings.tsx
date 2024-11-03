@@ -2,15 +2,28 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import Modal from "../components/Modals/Modal";
+import DeleteConfirmModal from "../components/Modals/DeleteConfirmModal";
+import { StorageService } from "../components/StorageService";
 
 export default function Settings() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", content: "" });
 
   const openModal = (title: string, content: string) => {
     setModalContent({ title, content });
     setModalVisible(true);
+  };
+
+  const handleDeleteData = async () => {
+    try {
+      await StorageService.clearAllData();
+      router.replace("/");
+    } catch (error) {
+      console.error("Error deleting data:", error);
+      // TODO: need an error modal perhaps styled like the little popup on the fitness page
+    }
   };
 
   const handleTOSButtonPress = () => {
@@ -70,11 +83,26 @@ export default function Settings() {
         </Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        className="bg-buttonbg border-2 border-red w-5/6 p-3 rounded-3xl mb-4 items-center"
+        onPress={() => setDeleteModalVisible(true)}
+      >
+        <Text className="text-text font-montserrat-alt text-xl">
+          Delete All Data
+        </Text>
+      </TouchableOpacity>
+
       <Modal
         isVisible={modalVisible}
         onClose={() => setModalVisible(false)}
         title={modalContent.title}
         content={modalContent.content}
+      />
+
+      <DeleteConfirmModal
+        isVisible={deleteModalVisible}
+        onClose={() => setDeleteModalVisible(false)}
+        onConfirm={handleDeleteData}
       />
     </View>
   );

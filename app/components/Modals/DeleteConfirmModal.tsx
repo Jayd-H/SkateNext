@@ -7,30 +7,23 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
-import { INFO_DATA } from "../Data/infoData";
-import InfoIcon from "../../../assets/icons/info.svg";
-import { useInfoStates } from "../StorageService";
 
-interface InfoModalProps {
+interface DeleteConfirmModalProps {
   isVisible: boolean;
   onClose: () => void;
-  infoId: string;
+  onConfirm: () => void;
 }
 
-const InfoModal: React.FC<InfoModalProps> = ({
+const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   isVisible,
   onClose,
-  infoId,
+  onConfirm,
 }) => {
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.8);
-  const { updateInfoState } = useInfoStates();
-  const info = INFO_DATA.find((i) => i.id === infoId);
 
   React.useEffect(() => {
-    if (isVisible && info) {
-      updateInfoState(info.id, true);
-
+    if (isVisible) {
       opacity.value = withTiming(1, {
         duration: 150,
         easing: Easing.out(Easing.quad),
@@ -52,7 +45,7 @@ const InfoModal: React.FC<InfoModalProps> = ({
         easing: Easing.in(Easing.quad),
       });
     }
-  }, [isVisible, info]);
+  }, [isVisible]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -61,9 +54,7 @@ const InfoModal: React.FC<InfoModalProps> = ({
     };
   });
 
-  if (!isVisible || !info) return null;
-
-  const iconSize: number = 18;
+  if (!isVisible) return null;
 
   return (
     <View className="flex-1 h-full w-full absolute top-0 left-0 right-0 bottom-0">
@@ -71,23 +62,29 @@ const InfoModal: React.FC<InfoModalProps> = ({
         <View className="flex-1 flex justify-center items-center">
           <Animated.View
             style={[animatedStyle]}
-            className="w-5/6 bg-buttonbg border border-accent-2 rounded-2xl p-4 shadow-lg"
+            className="w-5/6 bg-buttonbg border border-red rounded-2xl p-4 shadow-lg"
           >
-            <TouchableOpacity
-              className="absolute right-2 top-2 w-6 h-6 items-center justify-center"
-              onPress={onClose}
-            >
-              <Text className="text-text text-lg">×</Text>
-            </TouchableOpacity>
-            <View className="flex-row">
-              <Text className="text-lg text-text font-montserrat-alt-semibold mb-2 mr-2 -mt-2">
-                {info.name}
-              </Text>
-              <InfoIcon width={iconSize} height={iconSize} />
-            </View>
-            <Text className="text-sm text-grey font-montserrat">
-              {info.description}
+            <Text className="text-xl text-text font-montserrat-alt-semibold mb-2 text-center">
+              DELETE ALL DATA?
             </Text>
+            <Text className="text-sm text-grey font-montserrat mb-6 text-center">
+              This will reset all your progress and return you to the initial
+              setup. This action cannot be undone.
+            </Text>
+            <View className="flex-row justify-center space-x-4">
+              <TouchableOpacity
+                className="bg-background border border-accent-2 px-8 py-2 rounded-xl"
+                onPress={onClose}
+              >
+                <Text className="text-text font-montserrat-alt">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="bg-background border border-red px-8 py-2 rounded-xl"
+                onPress={onConfirm}
+              >
+                <Text className="text-text font-montserrat-alt">Delete</Text>
+              </TouchableOpacity>
+            </View>
           </Animated.View>
         </View>
       </TouchableOpacity>
@@ -95,4 +92,4 @@ const InfoModal: React.FC<InfoModalProps> = ({
   );
 };
 
-export default InfoModal;
+export default DeleteConfirmModal;
