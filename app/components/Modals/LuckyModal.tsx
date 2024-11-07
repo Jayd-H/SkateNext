@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { View, Text, TouchableOpacity, ViewStyle } from "react-native";
 import { BlurView } from "expo-blur";
 import Animated, {
@@ -7,21 +8,29 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import Sparkles from "../../../assets/icons/sparkles.svg";
+import { getRecommendedTricks } from "../Utils/trickRecommender";
+import { STORAGE_KEYS } from "../StorageService";
+import LoadingSpinner from "../Generic/LoadingSpinner";
 
 interface LuckyModalProps {
   isVisible: boolean;
   onClose: () => void;
   onTrickSelect: (trickId: string) => void;
+  trickStates: Record<string, number>;
+  onShowRecommendations: (recommendations: string[]) => void;
 }
 
 const LuckyModal: React.FC<LuckyModalProps> = ({
   isVisible,
   onClose,
-  onTrickSelect,
+  trickStates,
+  onShowRecommendations,
 }) => {
   const translateY = useSharedValue(1000);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   React.useEffect(() => {
     if (isVisible) {
@@ -36,6 +45,24 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
       });
     }
   }, [isVisible]);
+
+  const handleRecommendation = async () => {
+    try {
+      setIsCalculating(true);
+      const age = await AsyncStorage.getItem(STORAGE_KEYS.USER_AGE);
+      const userAge = age ? parseInt(age) : 25;
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      const newRecommendations = getRecommendedTricks(trickStates, userAge);
+      console.log("Received recommendations:", newRecommendations);
+      onShowRecommendations(newRecommendations);
+    } catch (error) {
+      console.error("Error getting recommendations:", error);
+    } finally {
+      setIsCalculating(false);
+    }
+  };
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -82,6 +109,8 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
           </View>
 
           <TouchableOpacity
+            onPress={handleRecommendation}
+            disabled={isCalculating}
             className="bg-buttonbg border-2 border-accent rounded-xl p-6 pt-4 mb-8 shadow-lg items-center"
             style={{
               shadowColor: "#34CDB3",
@@ -90,13 +119,19 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
               shadowRadius: 8,
             }}
           >
-            <Sparkles width={20} height={20} fill="#34CDB3" className="mb-2" />
-            <Text className="text-xl text-accent font-montserrat-alt-light mb-1 tracking-widest">
-              What's Next?
-            </Text>
-            <Text className="text-sm text-accent-2 font-montserrat text-center">
-              Let's find something new to learn
-            </Text>
+            {isCalculating ? (
+              <LoadingSpinner />
+            ) : (
+              <>
+                <Sparkles width={20} height={20} className="mb-2" />
+                <Text className="text-xl text-accent font-montserrat-alt-light mb-1 tracking-widest">
+                  What's Next?
+                </Text>
+                <Text className="text-sm text-accent-2 font-montserrat text-center">
+                  Let's find something new to learn
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
 
           <View className="flex-row items-center mb-6">
