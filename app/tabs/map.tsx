@@ -12,6 +12,7 @@ import InfoModal from "../components/Modals/InfoModal";
 import FolderModal from "../components/Modals/FolderModal";
 import LuckyModal from "../components/Modals/LuckyModal";
 import SearchModal from "../components/Modals/SearchModal";
+import RecommendationsModal from "../components/Modals/RecommendationsModal";
 import { useTrickStates, useInfoStates } from "../components/StorageService";
 
 const PAGES = ["1", "2", "3", "4"];
@@ -34,6 +35,9 @@ export default function Map() {
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [isLuckyModalVisible, setIsLuckyModalVisible] = useState(false);
   const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
+  const [isRecommendationsVisible, setIsRecommendationsVisible] =
+    useState(false);
+  const [recommendations, setRecommendations] = useState<string[]>([]);
 
   const changePage = (direction: number) => {
     setCurrentPage((prevPage) =>
@@ -51,7 +55,7 @@ export default function Map() {
   };
 
   const handleBossPress = (id: string) => {
-    setSelectedTrickId(id); // TODO: make a boss modal thats basically the same but looks cooler
+    setSelectedTrickId(id);
   };
 
   const handleFolderPress = (id: string) => {
@@ -60,6 +64,15 @@ export default function Map() {
 
   const handleTrickCompletion = (trickId: string, state: number) => {
     updateTrickState(trickId, state);
+  };
+
+  const handleRecommendations = (recommendedTricks: string[]) => {
+    setRecommendations(recommendedTricks);
+    setIsRecommendationsVisible(true);
+  };
+
+  const handleRecommendationsClose = () => {
+    setIsRecommendationsVisible(false);
   };
 
   const iconSize: number = 24;
@@ -201,6 +214,19 @@ export default function Map() {
         isVisible={isLuckyModalVisible}
         onClose={() => setIsLuckyModalVisible(false)}
         onTrickSelect={handleTrickPress}
+        trickStates={trickStates}
+        onShowRecommendations={handleRecommendations}
+      />
+      <RecommendationsModal
+        isVisible={isRecommendationsVisible}
+        onClose={handleRecommendationsClose}
+        onTrickSelect={(trickId) => {
+          handleTrickPress(trickId);
+          setIsRecommendationsVisible(false);
+          setIsLuckyModalVisible(false);
+        }}
+        recommendations={recommendations}
+        trickCompletionStates={trickStates}
       />
       <TrickModal
         isVisible={selectedTrickId !== null}
