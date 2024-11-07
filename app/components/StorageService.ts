@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 
 type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Master";
 
-interface TrickState {
+export interface TrickState {
   [trickId: string]: number;
 }
 
@@ -14,7 +14,7 @@ interface InfoState {
   [infoId: string]: boolean;
 }
 
-const STORAGE_KEYS = {
+export const STORAGE_KEYS = {
   TRICK_STATES: "trick_states",
   INFO_STATES: "info_states",
   USER_AGE: "user_age",
