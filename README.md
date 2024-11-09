@@ -50,4 +50,4 @@ bun run expo start
 
 - This project was developed as part of an Honours Stage Project
 - Icons from https://game-icons.net/
-- Fonts (Montserrat & Montserrat Alternatives from https://fonts.google.com/
+- Fonts (Montserrat & Montserrat Alternatives) from https://fonts.google.com/
