@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import { StorageService } from "./components/StorageService";
+import { StorageService } from "./components/Utils/StorageService";
 import AgeSelector from "./components/AgeSelector";
+import WeightSelector from "./components/WeightSelector";
 import SkillLevelSelector from "./components/SkillLevelSelector";
 
 type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Master";
 
+const DEFAULT_WEIGHT = 70; // Average adult weight in kg
+
 export default function Home() {
   const [age, setAge] = useState<number | null>(null);
+  const [weight, setWeight] = useState<number | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
   const [isCheckingSetup, setIsCheckingSetup] = useState(true);
   const router = useRouter();
@@ -34,12 +38,16 @@ export default function Home() {
     setAge(selectedAge);
   };
 
+  const handleWeightComplete = (selectedWeight: number | null) => {
+    setWeight(selectedWeight || DEFAULT_WEIGHT);
+  };
+
   const handleSkillLevelComplete = async (selectedLevel: SkillLevel) => {
-    if (!age) return;
+    if (!age || !weight) return;
 
     setIsInitializing(true);
     try {
-      await StorageService.initializeWithSkillLevel(selectedLevel, age);
+      await StorageService.initializeWithSkillLevel(selectedLevel, age, weight);
       router.replace("/tabs/map");
     } catch (error) {
       console.error("Error initializing app:", error);
@@ -55,16 +63,18 @@ export default function Home() {
     );
   }
 
+  if (age === null) {
+    return <AgeSelector onComplete={handleAgeComplete} />;
+  }
+
+  if (weight === null) {
+    return <WeightSelector onComplete={handleWeightComplete} />;
+  }
+
   return (
-    <View className="flex-1">
-      {age === null ? (
-        <AgeSelector onComplete={handleAgeComplete} />
-      ) : (
-        <SkillLevelSelector
-          onComplete={handleSkillLevelComplete}
-          isLoading={isInitializing}
-        />
-      )}
-    </View>
+    <SkillLevelSelector
+      onComplete={handleSkillLevelComplete}
+      isLoading={isInitializing}
+    />
   );
 }
