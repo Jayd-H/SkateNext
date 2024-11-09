@@ -13,7 +13,10 @@ import FolderModal from "../components/Modals/FolderModal";
 import LuckyModal from "../components/Modals/LuckyModal";
 import SearchModal from "../components/Modals/SearchModal";
 import RecommendationsModal from "../components/Modals/RecommendationsModal";
-import { useTrickStates, useInfoStates } from "../components/StorageService";
+import {
+  useTrickStates,
+  useInfoStates,
+} from "../components/Utils/StorageService";
 
 const PAGES = ["1", "2", "3", "4"];
 
