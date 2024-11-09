@@ -12,8 +12,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import Sparkles from "../../../assets/icons/sparkles.svg";
 import { getRecommendedTricks } from "../Utils/trickRecommender";
-import { STORAGE_KEYS } from "../StorageService";
+import { STORAGE_KEYS } from "../Utils/StorageService";
 import LoadingSpinner from "../Generic/LoadingSpinner";
+import { TRICK_DATA } from "../Data/trickData";
+import Alert from "../Generic/Alert";
 
 interface LuckyModalProps {
   isVisible: boolean;
@@ -27,10 +29,12 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
   isVisible,
   onClose,
   trickStates,
+  onTrickSelect,
   onShowRecommendations,
 }) => {
   const translateY = useSharedValue(1000);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [alert, setAlert] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (isVisible) {
@@ -64,6 +68,57 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
     }
   };
 
+  const getRandomTrick = (tricks: typeof TRICK_DATA) => {
+    return tricks[Math.floor(Math.random() * tricks.length)].id;
+  };
+
+  const handleRandomTrick = () => {
+    const randomTrickId = getRandomTrick(TRICK_DATA);
+    onTrickSelect(randomTrickId);
+  };
+
+  const handleMasteredTrick = () => {
+    const masteredTricks = TRICK_DATA.filter(
+      (trick) => trickStates[trick.id] === 2
+    );
+
+    if (masteredTricks.length === 0) {
+      setAlert("No mastered tricks yet. Keep practicing!");
+      return;
+    }
+
+    const randomTrickId = getRandomTrick(masteredTricks);
+    onTrickSelect(randomTrickId);
+  };
+
+  const handleInProgressTrick = () => {
+    const inProgressTricks = TRICK_DATA.filter(
+      (trick) => trickStates[trick.id] >= 1
+    );
+
+    if (inProgressTricks.length === 0) {
+      setAlert("No tricks in progress. Try landing some tricks!");
+      return;
+    }
+
+    const randomTrickId = getRandomTrick(inProgressTricks);
+    onTrickSelect(randomTrickId);
+  };
+
+  const handleNotStartedTrick = () => {
+    const notStartedTricks = TRICK_DATA.filter(
+      (trick) => !trickStates[trick.id] || trickStates[trick.id] === 0
+    );
+
+    if (notStartedTricks.length === 0) {
+      setAlert("All tricks have been started! Keep it up!");
+      return;
+    }
+
+    const randomTrickId = getRandomTrick(notStartedTricks);
+    onTrickSelect(randomTrickId);
+  };
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
@@ -88,6 +143,7 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
         onPress={onClose}
         className="flex-1"
       />
+      {alert && <Alert message={alert} onHide={() => setAlert(null)} />}
       <Animated.View
         style={[animatedStyle]}
         className="bg-background rounded-t-3xl h-full pt-8"
@@ -142,7 +198,10 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
             <View className="flex-1 h-[1px] bg-accent-2 opacity-30" />
           </View>
 
-          <TouchableOpacity className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3">
+          <TouchableOpacity
+            className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3"
+            onPress={handleRandomTrick}
+          >
             <Text className="text-base text-text font-montserrat-alt text-center">
               All Tricks
             </Text>
@@ -151,7 +210,10 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3">
+          <TouchableOpacity
+            className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3"
+            onPress={handleMasteredTrick}
+          >
             <Text className="text-base text-center text-text font-montserrat-alt">
               Mastered Only
             </Text>
@@ -160,7 +222,10 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3">
+          <TouchableOpacity
+            className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3"
+            onPress={handleInProgressTrick}
+          >
             <Text className="text-base text-center text-text font-montserrat-alt">
               In Progress
             </Text>
@@ -169,7 +234,10 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3">
+          <TouchableOpacity
+            className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3"
+            onPress={handleNotStartedTrick}
+          >
             <Text className="text-base text-center text-text font-montserrat-alt">
               Not Started
             </Text>
