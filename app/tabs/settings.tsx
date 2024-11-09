@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import Modal from "../components/Modals/Modal";
 import DeleteConfirmModal from "../components/Modals/DeleteConfirmModal";
-import { StorageService } from "../components/StorageService";
+import { StorageService } from "../components/Utils/StorageService";
 
 export default function Settings() {
   const router = useRouter();

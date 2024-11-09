@@ -40,6 +40,7 @@ export default function TabLayout(): React.ReactElement {
             ) : (
               <FitnessIconInactive width={iconsize} height={iconsize} />
             ),
+          unmountOnBlur: true,
         }}
       />
       <Tabs.Screen

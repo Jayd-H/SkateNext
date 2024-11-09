@@ -9,7 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { INFO_DATA } from "../Data/infoData";
 import InfoIcon from "../../../assets/icons/info.svg";
-import { useInfoStates } from "../StorageService";
+import { useInfoStates } from "../Utils/StorageService";
 
 interface InfoModalProps {
   isVisible: boolean;

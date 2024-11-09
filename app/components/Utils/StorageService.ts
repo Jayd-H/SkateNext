@@ -1,8 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TRICK_DATA } from "./Data/trickData";
+import { TRICK_DATA } from "../Data/trickData";
 import { useState, useEffect } from "react";
-
-// TODO: add calorie tracking data :)
 
 type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Master";
 
@@ -14,11 +12,25 @@ interface InfoState {
   [infoId: string]: boolean;
 }
 
+interface CalorieSession {
+  timestamp: number;
+  duration: number;
+  caloriesBurned: number;
+}
+
+interface DailyCalorieLog {
+  date: string;
+  sessions: CalorieSession[];
+  totalCalories: number;
+}
+
 export const STORAGE_KEYS = {
   TRICK_STATES: "trick_states",
   INFO_STATES: "info_states",
   USER_AGE: "user_age",
+  USER_WEIGHT: "user_weight",
   SETUP_COMPLETE: "setup_complete",
+  CALORIE_LOGS: "calorie_logs",
 } as const;
 
 const BOSS_TRICKS = {
@@ -42,7 +54,8 @@ class StorageService {
 
   static async initializeWithSkillLevel(
     skillLevel: SkillLevel,
-    age: number
+    age: number,
+    weight: number
   ): Promise<void> {
     try {
       const initialTrickStates: TrickState = {};
@@ -91,6 +104,7 @@ class StorageService {
           JSON.stringify(initialInfoStates)
         ),
         AsyncStorage.setItem(STORAGE_KEYS.USER_AGE, JSON.stringify(age)),
+        AsyncStorage.setItem(STORAGE_KEYS.USER_WEIGHT, JSON.stringify(weight)),
         AsyncStorage.setItem(STORAGE_KEYS.SETUP_COMPLETE, "true"),
       ]);
     } catch (error) {
@@ -159,10 +173,78 @@ class StorageService {
         STORAGE_KEYS.TRICK_STATES,
         STORAGE_KEYS.INFO_STATES,
         STORAGE_KEYS.USER_AGE,
+        STORAGE_KEYS.USER_WEIGHT,
         STORAGE_KEYS.SETUP_COMPLETE,
+        STORAGE_KEYS.CALORIE_LOGS,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);
+      throw error;
+    }
+  }
+
+  static async getUserStats(): Promise<{
+    age: number;
+    weight: number;
+    skillLevel: SkillLevel;
+  }> {
+    try {
+      const [age, weight] = await Promise.all([
+        AsyncStorage.getItem(STORAGE_KEYS.USER_AGE),
+        AsyncStorage.getItem(STORAGE_KEYS.USER_WEIGHT),
+      ]);
+
+      return {
+        age: age ? JSON.parse(age) : 0,
+        weight: weight ? JSON.parse(weight) : 0,
+        skillLevel: "Beginner", // You'll need to store and retrieve this
+      };
+    } catch (error) {
+      console.error("Error getting user stats:", error);
+      throw error;
+    }
+  }
+
+  static async getCalorieLog(date: string): Promise<DailyCalorieLog | null> {
+    try {
+      const logs = await AsyncStorage.getItem(STORAGE_KEYS.CALORIE_LOGS);
+      if (!logs) return null;
+
+      const allLogs = JSON.parse(logs);
+      return allLogs[date] || null;
+    } catch (error) {
+      console.error("Error getting calorie log:", error);
+      throw error;
+    }
+  }
+
+  static async updateCalorieLog(
+    date: string,
+    log: DailyCalorieLog
+  ): Promise<void> {
+    try {
+      const logsStr = await AsyncStorage.getItem(STORAGE_KEYS.CALORIE_LOGS);
+      const logs = logsStr ? JSON.parse(logsStr) : {};
+
+      logs[date] = log;
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.CALORIE_LOGS,
+        JSON.stringify(logs)
+      );
+    } catch (error) {
+      console.error("Error updating calorie log:", error);
+      throw error;
+    }
+  }
+
+  static async getAllCalorieLogs(): Promise<{
+    [date: string]: DailyCalorieLog;
+  }> {
+    try {
+      const logs = await AsyncStorage.getItem(STORAGE_KEYS.CALORIE_LOGS);
+      return logs ? JSON.parse(logs) : {};
+    } catch (error) {
+      console.error("Error getting all calorie logs:", error);
       throw error;
     }
   }

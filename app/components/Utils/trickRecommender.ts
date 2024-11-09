@@ -1,5 +1,5 @@
 import { TRICK_COMPONENTS, TrickComponents } from "../Data/trickComponents";
-import { TrickState } from "../StorageService";
+import { TrickState } from "./StorageService";
 
 interface ScoredTrick {
   id: string;
