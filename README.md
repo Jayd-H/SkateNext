@@ -6,8 +6,8 @@ SkateNext is a React-Native mobile app designed to gamify the process of learnin
 
 I will mark these off as I go.
 
-- [ ] Trick logging map
-- [ ] Personalised trick recommendations
+- [x] Trick logging map
+- [x] Personalised trick recommendations
 - [ ] Calories burnt estimation and tracking
 
 
