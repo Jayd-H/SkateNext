@@ -63,35 +63,51 @@ const InfoModal: React.FC<InfoModalProps> = ({
 
   if (!isVisible || !info) return null;
 
-  const iconSize: number = 18;
-
   return (
-    <View className="flex-1 h-full w-full absolute top-0 left-0 right-0 bottom-0">
-      <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose}>
-        <View className="flex-1 flex justify-center items-center">
-          <Animated.View
-            style={[animatedStyle]}
-            className="w-5/6 bg-buttonbg border border-accent-2 rounded-2xl p-4 shadow-lg"
+    <TouchableOpacity
+      className="flex-1 h-full w-full absolute top-0 left-0 right-0 bottom-0 bg-black/50 items-center justify-center px-6"
+      activeOpacity={1}
+      onPress={onClose}
+    >
+      <Animated.View
+        style={[animatedStyle]}
+        className="w-full bg-bg-card rounded-3xl overflow-hidden"
+      >
+        {/* Glow effect */}
+        <View
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundColor: "#183C36",
+            shadowColor: "#34CDB3",
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.3,
+            shadowRadius: 20,
+          }}
+        />
+
+        <View className="p-4 pt-3">
+          <TouchableOpacity
+            className="absolute right-3 top-2 h-8 w-8 items-center justify-center rounded-full"
+            onPress={onClose}
           >
-            <TouchableOpacity
-              className="absolute right-2 top-2 w-6 h-6 items-center justify-center"
-              onPress={onClose}
-            >
-              <Text className="text-text text-lg">×</Text>
-            </TouchableOpacity>
-            <View className="flex-row">
-              <Text className="text-lg text-text font-montserrat-alt-semibold mb-2 mr-2 -mt-2">
-                {info.name}
-              </Text>
-              <InfoIcon width={iconSize} height={iconSize} />
-            </View>
-            <Text className="text-sm text-grey font-montserrat">
-              {info.description}
+            <Text className="text-accent-bright text-xl font-montserrat-medium">
+              ×
             </Text>
-          </Animated.View>
+          </TouchableOpacity>
+
+          <View className="flex-row items-center space-x-2 mb-3">
+            <InfoIcon width={20} height={20} fill="#4FEDE2" />
+            <Text className="text-accent-bright font-montserrat-alt-medium text-lg tracking-wide">
+              {info.name}
+            </Text>
+          </View>
+
+          <Text className="text-text-dim font-montserrat leading-6">
+            {info.description}
+          </Text>
         </View>
-      </TouchableOpacity>
-    </View>
+      </Animated.View>
+    </TouchableOpacity>
   );
 };
 

@@ -28,7 +28,7 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({ onComplete }) => {
       </AnimatedFlyIn>
 
       <AnimatedFlyIn delay={100}>
-        <Text className="text-lg text-grey font-montserrat-alt-italic mt-24 text-center mb-8">
+        <Text className="text-lg text-text-muted font-montserrat-alt-italic mt-24 text-center mb-8">
           Select your weight (kg):
         </Text>
       </AnimatedFlyIn>
@@ -60,7 +60,7 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({ onComplete }) => {
       <AnimatedFlyIn delay={400}>
         <View className="flex-row justify-between items-center absolute top-0 mt-32 w-full px-6">
           <TouchableOpacity className="items-center" onPress={handleSkip}>
-            <Text className="text-grey font-montserrat-alt text-sm mb-2">
+            <Text className="text-text-dim font-montserrat-alt text-sm mb-2">
               Skip
             </Text>
           </TouchableOpacity>

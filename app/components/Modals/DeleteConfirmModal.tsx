@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -58,36 +58,57 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
 
   return (
     <View className="flex-1 h-full w-full absolute top-0 left-0 right-0 bottom-0">
-      <TouchableOpacity className="flex-1" activeOpacity={1} onPress={onClose}>
+      <Pressable className="flex-1" onPress={onClose}>
         <View className="flex-1 flex justify-center items-center">
           <Animated.View
             style={[animatedStyle]}
-            className="w-5/6 bg-buttonbg border border-red rounded-2xl p-4 shadow-lg"
+            className="w-5/6 bg-bg-elevated border-2 border-warning rounded-3xl p-6 shadow-lg"
           >
             <Text className="text-xl text-text font-montserrat-alt-semibold mb-2 text-center">
               DELETE ALL DATA?
             </Text>
-            <Text className="text-sm text-grey font-montserrat mb-6 text-center">
+            <Text className="text-sm text-text-muted font-montserrat mb-6 text-center">
               This will reset all your progress and return you to the initial
               setup. This action cannot be undone.
             </Text>
             <View className="flex-row justify-center space-x-4">
-              <TouchableOpacity
-                className="bg-background border border-accent-2 px-8 py-2 rounded-xl"
-                onPress={onClose}
-              >
-                <Text className="text-text font-montserrat-alt">Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="bg-background border border-red px-8 py-2 rounded-xl"
-                onPress={onConfirm}
-              >
-                <Text className="text-text font-montserrat-alt">Delete</Text>
-              </TouchableOpacity>
+              {/* Cancel Button */}
+              <View className="flex-1">
+                <View className="relative">
+                  {/* bottom layer (shadow) */}
+                  <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-accent-dark" />
+                  {/* top layer */}
+                  <Pressable
+                    onPress={onClose}
+                    className="relative rounded-3xl w-full border-2 border-accent-muted bg-accent-surface active:translate-y-1 px-6 py-3"
+                  >
+                    <Text className="text-text font-montserrat-alt-semibold text-center text-base">
+                      Cancel
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              {/* Delete Button */}
+              <View className="flex-1">
+                <View className="relative">
+                  {/* bottom layer (shadow) */}
+                  <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-warning-dark" />
+                  {/* top layer */}
+                  <Pressable
+                    onPress={onConfirm}
+                    className="relative rounded-3xl w-full border-2 border-warning bg-bg-elevated active:translate-y-1 px-6 py-3"
+                  >
+                    <Text className="text-text font-montserrat-alt-semibold text-center text-base">
+                      Delete
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
             </View>
           </Animated.View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };

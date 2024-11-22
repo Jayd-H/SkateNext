@@ -13,6 +13,7 @@ import FolderModal from "../components/Modals/FolderModal";
 import LuckyModal from "../components/Modals/LuckyModal";
 import SearchModal from "../components/Modals/SearchModal";
 import RecommendationsModal from "../components/Modals/RecommendationsModal";
+import { ActHeaderButton } from "../components/Acts/NodeButtons/ActHeaderButton";
 import {
   useTrickStates,
   useInfoStates,
@@ -41,12 +42,6 @@ export default function Map() {
   const [isRecommendationsVisible, setIsRecommendationsVisible] =
     useState(false);
   const [recommendations, setRecommendations] = useState<string[]>([]);
-
-  const changePage = (direction: number) => {
-    setCurrentPage((prevPage) =>
-      Math.max(0, Math.min(prevPage + direction, PAGES.length - 1))
-    );
-  };
 
   const handleTrickPress = (id: string) => {
     setSelectedTrickId(id);
@@ -78,7 +73,65 @@ export default function Map() {
     setIsRecommendationsVisible(false);
   };
 
-  const iconSize: number = 24;
+  const getActInfo = (page: number) => {
+    switch (page) {
+      case 0:
+        return {
+          topText: "Act 1",
+          bottomText: "No-Complys, Shuvs, and Ollies",
+        };
+      case 1:
+        return {
+          topText: "Act 2",
+          bottomText: "Bigspins, Nollies, and Kickflips",
+        };
+      case 2:
+        return {
+          topText: "Act 3",
+          bottomText: "Heelflips, Varials, and Tres",
+        };
+      case 3:
+        return {
+          topText: "Act 4",
+          bottomText: "Biggerflips, Doubles, and Lasers",
+        };
+      default:
+        return {
+          topText: "Unknown Act",
+          bottomText: "Mystery Tricks",
+        };
+    }
+  };
+
+  const changePage = (direction: number) => {
+    setCurrentPage((prevPage) =>
+      Math.max(0, Math.min(prevPage + direction, PAGES.length - 1))
+    );
+  };
+
+  const renderCurrentAct = () => {
+    const commonProps = {
+      onTrickPress: handleTrickPress,
+      onInfoPress: handleInfoPress,
+      onBossPress: handleBossPress,
+      onFolderPress: handleFolderPress,
+      trickCompletionStates: trickStates,
+      infoCompletionStates: infoStates,
+    };
+
+    switch (currentPage) {
+      case 0:
+        return <Act1 {...commonProps} />;
+      case 1:
+        return <Act2 {...commonProps} />;
+      case 2:
+        return <Act3 {...commonProps} />;
+      case 3:
+        return <Act4 {...commonProps} />;
+      default:
+        return null;
+    }
+  };
 
   if (tricksLoading || infoLoading) {
     return (
@@ -88,118 +141,106 @@ export default function Map() {
     );
   }
 
+  const iconSize = 28;
+
   return (
-    <View className="flex-1">
-      <View className="flex-1 items-center bg-background">
-        {/* Header */}
-        <View className="bg-background z-20 pb-4">
-          <View className="flex-row items-center justify-between mt-10 px-4 w-full">
+    <View className="flex-1 bg-background">
+      {/* Header */}
+      <View className="w-full py-2 mt-8">
+        <View className="px-4 flex-row items-center justify-between">
+          {/* Left Side */}
+          <View className="w-20 flex-row items-center">
             <TouchableOpacity
               onPress={() => setIsLuckyModalVisible(true)}
-              className="p-2 -mb-4"
+              className="w-10 h-10 items-center justify-center"
             >
-              <Sparkles width={iconSize} height={iconSize} fill="#EBEFEF" />
+              <Sparkles width={iconSize} height={iconSize} fill="#34CDB3" />
             </TouchableOpacity>
-            <Text className="text-xl text-text font-montserrat-light">
-              M A P
-            </Text>
+            <View className="flex-1 h-[1px] bg-accent-dark ml-2" />
+          </View>
+
+          {/* Center Navigation */}
+          <View className="w-44 flex-row items-center justify-center">
+            <TouchableOpacity
+              onPress={() => changePage(-1)}
+              disabled={currentPage === 0}
+              className="w-10 h-10 items-center justify-center"
+            >
+              <ChevronRight
+                width={20}
+                height={20}
+                style={{ transform: [{ rotate: "180deg" }] }}
+                fill={currentPage === 0 ? "#183C36" : "#34CDB3"}
+              />
+            </TouchableOpacity>
+
+            <View className="w-24 flex-row items-center justify-center">
+              <Text className="text-text font-montserrat-semibold text-lg">
+                {currentPage + 1}
+              </Text>
+              <Text className="text-text-dim font-montserrat-regular text-lg mx-2">
+                of
+              </Text>
+              <Text className="text-text-dim font-montserrat-regular text-lg">
+                {PAGES.length}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => changePage(1)}
+              disabled={currentPage === PAGES.length - 1}
+              className="w-10 h-10 items-center justify-center"
+            >
+              <ChevronRight
+                width={20}
+                height={20}
+                fill={currentPage === PAGES.length - 1 ? "#183C36" : "#34CDB3"}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Right Side */}
+          <View className="w-20 flex-row items-center justify-end">
+            <View className="flex-1 h-[1px] bg-accent-dark mr-2" />
             <TouchableOpacity
               onPress={() => setIsSearchModalVisible(true)}
-              className="p-2 -mb-4"
+              className="w-10 h-10 items-center justify-center"
             >
-              <Telescope width={iconSize} height={iconSize} fill="#EBEFEF" />
+              <Telescope width={iconSize} height={iconSize} fill="#34CDB3" />
             </TouchableOpacity>
           </View>
-
-          {/* Page Navigation */}
-          <View className="absolute left-0 right-0 -bottom-8 flex items-center justify-center">
-            <View className="flex-row items-center px-4 py-2">
-              <TouchableOpacity
-                onPress={() => changePage(-1)}
-                disabled={currentPage === 0}
-                className="p-4"
-              >
-                <ChevronRight
-                  width={18}
-                  height={18}
-                  style={{ transform: [{ rotate: "180deg" }] }}
-                  fill={currentPage === 0 ? "#183C36" : "#EBEFEF"}
-                  stroke={currentPage === 0 ? "#183C36" : "#EBEFEF"}
-                  strokeWidth={1}
-                />
-              </TouchableOpacity>
-              <View className="w-20 items-center">
-                <Text className="text-text font-montserrat-bold">
-                  {PAGES[currentPage]}
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => changePage(1)}
-                disabled={currentPage === PAGES.length - 1}
-                className="p-4"
-              >
-                <ChevronRight
-                  width={18}
-                  height={18}
-                  fill={
-                    currentPage === PAGES.length - 1 ? "#183C36" : "#EBEFEF"
-                  }
-                  stroke={
-                    currentPage === PAGES.length - 1 ? "#183C36" : "#EBEFEF"
-                  }
-                  strokeWidth={1}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-
-        {/* Acts */}
-        <View className="flex-1 w-full mt-6">
-          {currentPage === 0 && (
-            <Act1
-              onBossPress={handleBossPress}
-              onTrickPress={handleTrickPress}
-              onInfoPress={handleInfoPress}
-              onFolderPress={handleFolderPress}
-              trickCompletionStates={trickStates}
-              infoCompletionStates={infoStates}
-            />
-          )}
-          {currentPage === 1 && (
-            <Act2
-              onBossPress={handleBossPress}
-              onTrickPress={handleTrickPress}
-              onInfoPress={handleInfoPress}
-              onFolderPress={handleFolderPress}
-              trickCompletionStates={trickStates}
-              infoCompletionStates={infoStates}
-            />
-          )}
-          {currentPage === 2 && (
-            <Act3
-              onBossPress={handleBossPress}
-              onTrickPress={handleTrickPress}
-              onInfoPress={handleInfoPress}
-              onFolderPress={handleFolderPress}
-              trickCompletionStates={trickStates}
-              infoCompletionStates={infoStates}
-            />
-          )}
-          {currentPage === 3 && (
-            <Act4
-              onBossPress={handleBossPress}
-              onTrickPress={handleTrickPress}
-              onInfoPress={handleInfoPress}
-              onFolderPress={handleFolderPress}
-              trickCompletionStates={trickStates}
-              infoCompletionStates={infoStates}
-            />
-          )}
         </View>
       </View>
 
+      {/* Act Header */}
+      <View className="px-4 mb-12">
+        <ActHeaderButton
+          topText={getActInfo(currentPage).topText}
+          bottomText={getActInfo(currentPage).bottomText}
+          onPress={() => {}}
+        />
+      </View>
+
+      {/* Current Act */}
+      <View className="flex-1 w-full bg-background mt-4">
+        {renderCurrentAct()}
+      </View>
+
       {/* Modals */}
+      <TrickModal
+        isVisible={selectedTrickId !== null}
+        onClose={() => setSelectedTrickId(null)}
+        trickId={selectedTrickId || ""}
+        completionState={
+          selectedTrickId ? trickStates[selectedTrickId] || 0 : 0
+        }
+        onCompletionChange={handleTrickCompletion}
+      />
+      <InfoModal
+        isVisible={selectedInfoId !== null}
+        onClose={() => setSelectedInfoId(null)}
+        infoId={selectedInfoId || ""}
+      />
       <FolderModal
         isVisible={selectedFolderId !== null}
         onClose={() => setSelectedFolderId(null)}
@@ -225,25 +266,9 @@ export default function Map() {
         onClose={handleRecommendationsClose}
         onTrickSelect={(trickId) => {
           handleTrickPress(trickId);
-          setIsRecommendationsVisible(false);
-          setIsLuckyModalVisible(false);
         }}
         recommendations={recommendations}
         trickCompletionStates={trickStates}
-      />
-      <TrickModal
-        isVisible={selectedTrickId !== null}
-        onClose={() => setSelectedTrickId(null)}
-        trickId={selectedTrickId || ""}
-        completionState={
-          selectedTrickId ? trickStates[selectedTrickId] || 0 : 0
-        }
-        onCompletionChange={handleTrickCompletion}
-      />
-      <InfoModal
-        isVisible={selectedInfoId !== null}
-        onClose={() => setSelectedInfoId(null)}
-        infoId={selectedInfoId || ""}
       />
     </View>
   );

@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import Modal from "../components/Modals/Modal";
 import DeleteConfirmModal from "../components/Modals/DeleteConfirmModal";
 import { StorageService } from "../components/Utils/StorageService";
+import Button from "../components/Generic/Button";
 
 export default function Settings() {
   const router = useRouter();
@@ -52,45 +53,25 @@ export default function Settings() {
       <Text className="text-xl text-text font-montserrat-light mt-10">
         S E T T I N G S
       </Text>
-      <Text className="text-sm text-grey font-montserrat-light mb-12">
+      <Text className="text-sm text-text-muted font-montserrat-light mb-12">
         Made by Jaydchw (Jayden Holdsworth){" "}
       </Text>
-
-      <TouchableOpacity
-        className="bg-buttonbg border border-accent-2 w-5/6 p-3 rounded-3xl mb-4 items-center"
-        onPress={handleTOSButtonPress}
-      >
-        <Text className="text-text font-montserrat-alt text-xl">
-          Terms of Service
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        className="bg-buttonbg border border-accent-2 w-5/6 p-3 rounded-3xl mb-4 items-center"
-        onPress={handleLiabilityButtonPress}
-      >
-        <Text className="text-text font-montserrat-alt text-xl">
-          Liability Disclaimer
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        className="bg-buttonbg border border-accent-2 w-5/6 p-3 rounded-3xl mb-4 items-center"
-        onPress={handleAttributionsButtonPress}
-      >
-        <Text className="text-text font-montserrat-alt text-xl">
-          Attributions
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        className="bg-buttonbg border-2 border-red w-5/6 p-3 rounded-3xl mb-4 items-center"
-        onPress={() => setDeleteModalVisible(true)}
-      >
-        <Text className="text-text font-montserrat-alt text-xl">
-          Delete All Data
-        </Text>
-      </TouchableOpacity>
+      <View className="w-5/6">
+        <Button topText="Terms Of Service" onPress={handleTOSButtonPress} />
+        <Button
+          topText="Liability Disclaimer"
+          onPress={handleLiabilityButtonPress}
+        />
+        <Button
+          topText="Attributions"
+          onPress={handleAttributionsButtonPress}
+        />
+        <Button
+          topText="Delete All Data"
+          warning={true}
+          onPress={() => setDeleteModalVisible(true)}
+        />
+      </View>
 
       <Modal
         isVisible={modalVisible}

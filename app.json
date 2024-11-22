@@ -12,7 +12,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#0F1413"
     },
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "androidStatusBar": {
       "backgroundColor": "#0F1413",
       "translucent": false
@@ -21,7 +24,7 @@
       "supportsTablet": true
     },
     "androidNavigationBar": {
-      "backgroundColor": "#0F1413"
+      "backgroundColor": "#131918"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,9 +32,9 @@
         "backgroundColor": "#0F1413"
       },
       "softwareKeyboardLayoutMode": "pan",
-      "backgroundColor": "#0F1413"
+      "backgroundColor": "#0F1413",
+      "package": "com.jaydchw.SkateNext"
     },
-
     "fonts": [
       {
         "asset": "assets/fonts/Montserrat/Montserrat-Regular.ttf",
@@ -114,7 +117,6 @@
         "family": "MontserratAlternates-BoldItalic"
       }
     ],
-
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -132,6 +134,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "1f7131ab-ba99-47b1-892d-13a3c185aae7"
+      }
     }
   }
 }
