@@ -8,17 +8,48 @@ module.exports = {
     extend: {
       colors: {
         background: "#0F1413",
-        text: "#EBEFEF",
+        "bg-card": "#131918",
+        "bg-surface": "#162120",
+        "bg-elevated": "#1B2524",
+
+        // Primary Accent Family (Teal)
         accent: "#34CDB3",
-        "accent-2": "#77B2A8",
-        "accent-dark": "#183C36",
-        buttonbg: "#151F1E",
-        yellow: "#FFB53F",
-        green: "#00FF44",
-        red: "#880808",
-        grey: "#A5ABAB",
-        greyer: "#7A7A7A",
+        "accent-bright": "#4FEDE2",
+        "accent-muted": "#2A9E8A",
+        "accent-dark": "#1D7267",
+        "accent-surface": "#152925",
+
+        // Text Colours
+        text: "#EEFFFE",
+        "text-muted": "#B4D2CF",
+        "text-dim": "#7A9E9B",
+
+        // Essential Greys
+        "grey-light": "#404040",
+        "grey-dark": "#262626",
+
+        // Colour Pairs
+        green: "#3EE9B4",
+        "green-dark": "#2A916F",
+
+        yellow: "#FFD571",
+        "yellow-dark": "#B38834",
+
+        red: "#FF7C98",
+        "red-dark": "#B34359",
+
+        // Achievement Colors
+        gold: "#FFE5A3",
+        silver: "#D8E3E3",
+        bronze: "#E5B199",
+
+        success: "#A5FF75",
+        "success-dark": "#588A3D",
+
+        warning: "#FF3333",
+        "warning-dark": "#B32424",
       },
+
       fontFamily: {
         montserrat: ["Montserrat"],
         "montserrat-light": ["Montserrat-Light"],
