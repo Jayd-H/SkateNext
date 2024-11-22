@@ -13,6 +13,8 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import ChevronRight from "../../../assets/icons/chevron-right.svg";
+import Button from "../Generic/Button";
 
 interface ModalProps {
   isVisible: boolean;
@@ -57,11 +59,10 @@ const Modal: React.FC<ModalProps> = ({
     bottom: 0,
     left: 0,
     right: 0,
-    justifyContent: "flex-end",
   };
 
   return (
-    <BlurView intensity={10} tint="dark" style={blurViewStyle}>
+    <BlurView intensity={30} tint="dark" style={blurViewStyle}>
       <TouchableOpacity
         activeOpacity={1}
         onPress={onClose}
@@ -69,28 +70,53 @@ const Modal: React.FC<ModalProps> = ({
       />
       <Animated.View
         style={[animatedStyle]}
-        className="bg-background h-full rounded-t-3xl p-6 items-center"
+        className="bg-bg-card h-full rounded-t-3xl pt-8"
       >
-        <View className="w-12 h-1 mt-8 bg-accent-2 rounded-full mb-4" />
-        <Text className="text-xl text-text font-montserrat-light mb-4">
-          {title}
-        </Text>
-        <ScrollView className=" w-full mb-6">
-          <Text className="text-sm text-grey font-montserrat-light">
-            {content.split("\n").map((text, index) => (
-              <React.Fragment key={index}>
-                {text}
-                {index !== content.split("\n").length - 1 && "\n"}
-              </React.Fragment>
-            ))}
-          </Text>
-        </ScrollView>
-        <TouchableOpacity
-          onPress={onClose}
-          className="bg-buttonbg border border-accent-2 w-full p-3 rounded-3xl items-center"
-        >
-          <Text className="text-text font-montserrat-alt text-xl">Close</Text>
-        </TouchableOpacity>
+        <View className="p-6 flex-1">
+          <View className="w-12 h-1 bg-accent-bright rounded-full mb-2 self-center opacity-50" />
+          <View className="flex-row justify-between items-center mb-6">
+            <TouchableOpacity
+              onPress={onClose}
+              className="bg-bg-elevated p-3 rounded-2xl"
+            >
+              <ChevronRight
+                width={24}
+                height={24}
+                style={{ transform: [{ rotate: "180deg" }] }}
+                fill="#4FEDE2"
+              />
+            </TouchableOpacity>
+            <Text className="text-xl text-text font-montserrat-alt-medium flex-1 ml-4">
+              {title}
+            </Text>
+          </View>
+
+          <ScrollView
+            className="flex-1 px-2 mb-6"
+            showsVerticalScrollIndicator={false}
+          >
+            <View
+              className="absolute inset-0 rounded-3xl opacity-10"
+              style={{
+                backgroundColor: "#183C36",
+                shadowColor: "#34CDB3",
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.3,
+                shadowRadius: 20,
+              }}
+            />
+            <Text className="text-text-dim font-montserrat leading-6">
+              {content.split("\n").map((text, index) => (
+                <React.Fragment key={index}>
+                  {text}
+                  {index !== content.split("\n").length - 1 && "\n"}
+                </React.Fragment>
+              ))}
+            </Text>
+          </ScrollView>
+
+          <Button topText="C L O S E" onPress={onClose} />
+        </View>
       </Animated.View>
     </BlurView>
   );

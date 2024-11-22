@@ -1,6 +1,12 @@
 import React from "react";
 import { useState } from "react";
-import { View, Text, TouchableOpacity, ViewStyle } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ViewStyle,
+  Pressable,
+} from "react-native";
 import { BlurView } from "expo-blur";
 import Animated, {
   useSharedValue,
@@ -16,6 +22,7 @@ import { STORAGE_KEYS } from "../Utils/StorageService";
 import LoadingSpinner from "../Generic/LoadingSpinner";
 import { TRICK_DATA } from "../Data/trickData";
 import Alert from "../Generic/Alert";
+import Button from "../Generic/Button";
 
 interface LuckyModalProps {
   isVisible: boolean;
@@ -55,11 +62,8 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
       setIsCalculating(true);
       const age = await AsyncStorage.getItem(STORAGE_KEYS.USER_AGE);
       const userAge = age ? parseInt(age) : 25;
-
       await new Promise((resolve) => setTimeout(resolve, 800));
-
       const newRecommendations = getRecommendedTricks(trickStates, userAge);
-      console.log("Received recommendations:", newRecommendations);
       onShowRecommendations(newRecommendations);
     } catch (error) {
       console.error("Error getting recommendations:", error);
@@ -73,50 +77,40 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
   };
 
   const handleRandomTrick = () => {
-    const randomTrickId = getRandomTrick(TRICK_DATA);
-    onTrickSelect(randomTrickId);
+    onTrickSelect(getRandomTrick(TRICK_DATA));
   };
 
   const handleMasteredTrick = () => {
     const masteredTricks = TRICK_DATA.filter(
       (trick) => trickStates[trick.id] === 2
     );
-
     if (masteredTricks.length === 0) {
       setAlert("No mastered tricks yet. Keep practicing!");
       return;
     }
-
-    const randomTrickId = getRandomTrick(masteredTricks);
-    onTrickSelect(randomTrickId);
+    onTrickSelect(getRandomTrick(masteredTricks));
   };
 
   const handleInProgressTrick = () => {
     const inProgressTricks = TRICK_DATA.filter(
       (trick) => trickStates[trick.id] >= 1
     );
-
     if (inProgressTricks.length === 0) {
       setAlert("No tricks in progress. Try landing some tricks!");
       return;
     }
-
-    const randomTrickId = getRandomTrick(inProgressTricks);
-    onTrickSelect(randomTrickId);
+    onTrickSelect(getRandomTrick(inProgressTricks));
   };
 
   const handleNotStartedTrick = () => {
     const notStartedTricks = TRICK_DATA.filter(
       (trick) => !trickStates[trick.id] || trickStates[trick.id] === 0
     );
-
     if (notStartedTricks.length === 0) {
       setAlert("All tricks have been started! Keep it up!");
       return;
     }
-
-    const randomTrickId = getRandomTrick(notStartedTricks);
-    onTrickSelect(randomTrickId);
+    onTrickSelect(getRandomTrick(notStartedTricks));
   };
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -133,7 +127,6 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
     bottom: 0,
     left: 0,
     right: 0,
-    justifyContent: "flex-end",
   };
 
   return (
@@ -146,105 +139,101 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
       {alert && <Alert message={alert} onHide={() => setAlert(null)} />}
       <Animated.View
         style={[animatedStyle]}
-        className="bg-background rounded-t-3xl h-full pt-8"
+        className="bg-bg-card rounded-t-3xl h-full pt-6"
       >
         <View className="p-6">
-          <View className="w-12 h-1 bg-accent-2 rounded-full mb-2 self-center" />
+          <View className="w-12 h-1 bg-accent-bright rounded-full mb-2 self-center opacity-50" />
           <View className="flex-row justify-between items-center mb-6">
-            <TouchableOpacity onPress={onClose} className="p-2">
+            <TouchableOpacity
+              onPress={onClose}
+              className="bg-bg-elevated p-3 rounded-2xl"
+            >
               <ChevronRight
                 width={24}
                 height={24}
                 style={{ transform: [{ rotate: "180deg" }] }}
-                fill="#EBEFEF"
+                fill="#4FEDE2"
               />
             </TouchableOpacity>
-            <Text className="text-xl text-text font-montserrat-alt flex-1 ml-4">
+            <Text className="text-xl text-text font-montserrat-alt-medium flex-1 ml-4">
               Feeling Lucky?
             </Text>
           </View>
 
-          <TouchableOpacity
-            onPress={handleRecommendation}
-            disabled={isCalculating}
-            className="bg-buttonbg border-2 border-accent rounded-xl p-6 pt-4 mb-8 shadow-lg items-center"
-            style={{
-              shadowColor: "#34CDB3",
-              shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-            }}
-          >
-            {isCalculating ? (
-              <LoadingSpinner />
-            ) : (
-              <>
-                <Sparkles width={20} height={20} className="mb-2" />
-                <Text className="text-xl text-accent font-montserrat-alt-light mb-1 tracking-widest">
-                  What's Next?
-                </Text>
-                <Text className="text-sm text-accent-2 font-montserrat text-center">
-                  Let's find something new to learn
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-
-          <View className="flex-row items-center mb-6">
-            <View className="flex-1 h-[1px] bg-accent-2 opacity-30" />
-            <Text className="text-lg text-text font-montserrat-alt-light mx-4">
-              Get a trick
-            </Text>
-            <View className="flex-1 h-[1px] bg-accent-2 opacity-30" />
+          <View className="relative mb-8">
+            {/* Glow effect */}
+            <View
+              className="absolute inset-0 rounded-3xl opacity-20"
+              style={{
+                backgroundColor: "#183C36",
+                shadowColor: "#34CDB3",
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.5,
+                shadowRadius: 40,
+              }}
+            />
+            <View className="relative">
+              {/* bottom layer (shadow) */}
+              <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-accent-dark" />
+              {/* top layer */}
+              <Pressable
+                onPress={handleRecommendation}
+                disabled={isCalculating}
+                className="relative rounded-3xl border-2 border-accent-bright bg-accent-surface active:translate-y-1 py-6 items-center"
+              >
+                {isCalculating ? (
+                  <LoadingSpinner />
+                ) : (
+                  <>
+                    <Sparkles
+                      width={24}
+                      height={24}
+                      className="mb-2"
+                      fill="#4FEDE2"
+                    />
+                    <Text className="text-xl text-accent-bright font-montserrat-alt-medium mb-1 tracking-widest">
+                      WHAT'S NEXT?
+                    </Text>
+                    <Text className="text-sm text-text-dim font-montserrat text-center">
+                      Let's find something new to learn
+                    </Text>
+                  </>
+                )}
+              </Pressable>
+            </View>
           </View>
 
-          <TouchableOpacity
-            className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3"
+          <View className="flex-row items-center mb-6">
+            <View className="flex-1 h-[2px] bg-accent-bright opacity-30" />
+            <Text className="text-lg text-text-muted font-montserrat-alt-light tracking-widest mx-4">
+              Get a trick
+            </Text>
+            <View className="flex-1 h-[2px] bg-accent-bright opacity-30" />
+          </View>
+
+          <Button
+            topText="A L L  T R I C K S"
+            bottomText="Get a trick from all available tricks"
             onPress={handleRandomTrick}
-          >
-            <Text className="text-base text-text font-montserrat-alt text-center">
-              All Tricks
-            </Text>
-            <Text className="text-sm text-grey text-center font-montserrat">
-              Get a trick from all available tricks
-            </Text>
-          </TouchableOpacity>
+          />
 
-          <TouchableOpacity
-            className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3"
+          <Button
+            topText="M A S T E R E D  O N L Y"
+            bottomText="Get a trick you've already mastered"
             onPress={handleMasteredTrick}
-          >
-            <Text className="text-base text-center text-text font-montserrat-alt">
-              Mastered Only
-            </Text>
-            <Text className="text-sm text-grey text-center font-montserrat">
-              Get a trick you've already mastered
-            </Text>
-          </TouchableOpacity>
+          />
 
-          <TouchableOpacity
-            className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3"
+          <Button
+            topText="I N  P R O G R E S S"
+            bottomText="Get a trick you've landed before"
             onPress={handleInProgressTrick}
-          >
-            <Text className="text-base text-center text-text font-montserrat-alt">
-              In Progress
-            </Text>
-            <Text className="text-sm text-grey text-center font-montserrat">
-              Get a trick you've landed once or twice
-            </Text>
-          </TouchableOpacity>
+          />
 
-          <TouchableOpacity
-            className="bg-buttonbg border border-accent-2 rounded-xl p-4 mb-3"
+          <Button
+            topText="N O T  S T A R T E D"
+            bottomText="Get a trick you've never landed"
             onPress={handleNotStartedTrick}
-          >
-            <Text className="text-base text-center text-text font-montserrat-alt">
-              Not Started
-            </Text>
-            <Text className="text-sm text-grey text-center font-montserrat">
-              Get a trick you've never landed
-            </Text>
-          </TouchableOpacity>
+          />
         </View>
       </Animated.View>
     </BlurView>

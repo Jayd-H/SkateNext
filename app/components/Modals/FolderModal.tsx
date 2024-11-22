@@ -10,6 +10,7 @@ import Animated, {
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import { TRICK_DATA, Trick } from "../Data/trickData";
 import { FOLDER_DATA } from "../Data/folderData";
+import ModalTrickButton from "../Generic/ModalTrickButton";
 
 interface FolderModalProps {
   isVisible: boolean;
@@ -61,7 +62,6 @@ const FolderModal: React.FC<FolderModalProps> = ({
     bottom: 0,
     left: 0,
     right: 0,
-    justifyContent: "flex-end",
   };
 
   const getModalHeight = () => {
@@ -85,54 +85,57 @@ const FolderModal: React.FC<FolderModalProps> = ({
             maxHeight: "90%",
           },
         ]}
-        className="bg-background -mb-6 rounded-t-3xl"
+        className="bg-bg-card rounded-t-3xl"
       >
         <View className="p-6 flex-1">
-          <View className="w-12 h-1 bg-accent-2 rounded-full mb-2 self-center" />
+          <View className="w-12 h-1 bg-accent-bright rounded-full mb-2 self-center opacity-50" />
           <View className="flex-row justify-between items-center mb-2">
-            <TouchableOpacity onPress={onClose} className="p-2">
+            <TouchableOpacity
+              onPress={onClose}
+              className="bg-bg-elevated p-3 rounded-2xl"
+            >
               <ChevronRight
                 width={24}
                 height={24}
                 style={{ transform: [{ rotate: "180deg" }] }}
-                fill="#EBEFEF"
+                fill="#4FEDE2"
               />
             </TouchableOpacity>
-            <Text className="text-xl text-text font-montserrat-alt flex-1 ml-4">
+            <Text className="text-xl text-text font-montserrat-alt-medium flex-1 ml-4">
               {folder.title}
             </Text>
           </View>
           {folder.description && (
-            <Text className="text-xs text-grey font-montserrat mb-6 px-2">
+            <Text className="text-text-dim font-montserrat text-sm mb-6">
               {folder.description}
             </Text>
           )}
 
           <View className="flex-1">
-            {tricks.map((trick) => (
-              <TouchableOpacity
-                key={trick.id}
-                onPress={() => {
-                  onTrickSelect(trick.id);
-                }}
-                className={`bg-buttonbg border ${
-                  trickCompletionStates[trick.id] === 2
-                    ? "border-green shadow-green"
-                    : trickCompletionStates[trick.id] === 1
-                    ? "border-yellow shadow-yellow"
-                    : "border-red shadow-red"
-                } rounded-xl p-4 mb-3`}
-              >
-                <Text className="text-base text-text font-montserrat-alt">
-                  {trick.name}
-                </Text>
-                {trick.alt_names && (
-                  <Text className="text-xs text-grey font-montserrat mt-1">
-                    {trick.alt_names}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            ))}
+            {/* Background glow effect */}
+            <View
+              className="absolute inset-0 rounded-3xl opacity-10"
+              style={{
+                backgroundColor: "#183C36",
+                shadowColor: "#34CDB3",
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.3,
+                shadowRadius: 20,
+              }}
+            />
+
+            <View className="space-y-4">
+              {tricks.map((trick) => (
+                <ModalTrickButton
+                  key={trick.id}
+                  name={trick.name}
+                  altNames={trick.alt_names}
+                  difficulty={trick.difficulty}
+                  completionState={trickCompletionStates[trick.id]}
+                  onPress={() => onTrickSelect(trick.id)}
+                />
+              ))}
+            </View>
           </View>
         </View>
       </Animated.View>

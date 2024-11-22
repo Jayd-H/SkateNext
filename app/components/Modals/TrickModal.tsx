@@ -10,36 +10,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { TRICK_DATA } from "../Data/trickData";
 import BurningSkull from "../../../assets/icons/burning-skull.svg";
+import KingSkull from "../../../assets/icons/crowned-skull.svg";
 import VHS from "../../../assets/icons/vhs.svg";
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
-
-interface SelectableButtonProps {
-  title: string;
-  subtitle: string;
-  isSelected: boolean;
-  onPress: () => void;
-}
-
-const SelectableButton: React.FC<SelectableButtonProps> = ({
-  title,
-  subtitle,
-  isSelected,
-  onPress,
-}) => (
-  <TouchableOpacity
-    className={`${
-      isSelected
-        ? "bg-accent-dark border-accent"
-        : "bg-buttonbg border-accent-2"
-    } border w-full p-3 rounded-2xl mb-4 items-center`}
-    onPress={onPress}
-  >
-    <Text className="text-text font-montserrat-alt text-xl">{title}</Text>
-    <Text className="text-text font-montserrat text-xs text-center">
-      {subtitle}
-    </Text>
-  </TouchableOpacity>
-);
+import Button from "../Generic/Button";
 
 interface ContentSectionProps {
   description: string;
@@ -59,38 +33,38 @@ const ContentSection: React.FC<ContentSectionProps> = ({
     if (showDesc !== showingDescription) {
       setShowingDescription(showDesc);
       progress.value = withTiming(showDesc ? 0 : 1, {
-        duration: 100,
-        easing: Easing.inOut(Easing.ease),
+        duration: 200,
+        easing: Easing.bezier(0.4, 0.0, 0.2, 1),
       });
     }
   };
 
   const headerStyle = {
     description: useAnimatedStyle(() => ({
-      color: interpolateColor(progress.value, [0, 1], ["#EBEFEF", "#7A7A7A"]),
+      color: interpolateColor(progress.value, [0, 1], ["#4FEDE2", "#7A9E9B"]),
     })),
     mistakes: useAnimatedStyle(() => ({
-      color: interpolateColor(progress.value, [0, 1], ["#7A7A7A", "#EBEFEF"]),
+      color: interpolateColor(progress.value, [0, 1], ["#7A9E9B", "#4FEDE2"]),
     })),
     descriptionBar: useAnimatedStyle(() => ({
       backgroundColor: interpolateColor(
         progress.value,
         [0, 1],
-        ["#EBEFEF", "#183C36"]
+        ["#4FEDE2", "#7A9E9B"]
       ),
     })),
     mistakesBar: useAnimatedStyle(() => ({
       backgroundColor: interpolateColor(
         progress.value,
         [0, 1],
-        ["#183C36", "#EBEFEF"]
+        ["#7A9E9B", "#4FEDE2"]
       ),
     })),
   };
 
   const descriptionStyle = useAnimatedStyle(() => ({
     opacity: withTiming(progress.value === 0 ? 1 : 0, {
-      duration: 250,
+      duration: 200,
       easing: Easing.inOut(Easing.ease),
     }),
     position: "absolute",
@@ -100,43 +74,43 @@ const ContentSection: React.FC<ContentSectionProps> = ({
 
   const mistakesStyle = useAnimatedStyle(() => ({
     opacity: withTiming(progress.value === 1 ? 1 : 0, {
-      duration: 250,
+      duration: 200,
       easing: Easing.inOut(Easing.ease),
     }),
     position: "absolute",
     width: "100%",
-    display: progress.value === 1 ? "flex" : "none", // i forgot what this was for but if i delete it it doesnt work and im too tired rn to figure it out
+    display: progress.value === 1 ? "flex" : "none",
   }));
 
   return (
-    <View className="px-4 w-full">
-      <View className="flex-row justify-between items-center mb-3">
-        <TouchableOpacity onPress={() => toggleSection(true)}>
+    <View className="px-4 mt-2">
+      <View className="flex-row justify-between items-center mb-6">
+        <TouchableOpacity onPress={() => toggleSection(true)} className="px-4">
           <View>
             <Animated.View
               style={[headerStyle.descriptionBar]}
-              className={`rounded-full h-[2px] w-[80px]`}
+              className="w-20 rounded-full h-[2px] mb-2"
             />
             <Animated.Text
               style={headerStyle.description}
-              className={`font-montserrat mt-2 ${
-                showingDescription ? "text-lg" : "text-base"
+              className={`font-montserrat-alt-medium ${
+                showingDescription ? "text-base" : "text-sm"
               }`}
             >
               Description
             </Animated.Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => toggleSection(false)}>
+        <TouchableOpacity onPress={() => toggleSection(false)} className="px-4">
           <View className="items-end">
             <Animated.View
               style={[headerStyle.mistakesBar]}
-              className={`rounded-full h-[2px] w-[80px]`}
+              className="w-20 rounded-full h-[2px] mb-2"
             />
             <Animated.Text
               style={headerStyle.mistakes}
-              className={`font-montserrat mt-2 ${
-                !showingDescription ? "text-lg" : "text-base"
+              className={`font-montserrat-alt-medium ${
+                !showingDescription ? "text-base" : "text-sm"
               }`}
             >
               Common Mistakes
@@ -144,19 +118,20 @@ const ContentSection: React.FC<ContentSectionProps> = ({
           </View>
         </TouchableOpacity>
       </View>
-      <View className="relative" style={{ minHeight: 150 }}>
+      <View className="">
         <Animated.View style={descriptionStyle}>
-          <Text className="text-sm text-grey font-montserrat">
+          <Text className="text-text-dim font-montserrat leading-6 text-sm px-4 -mt-4">
             {description}
           </Text>
         </Animated.View>
-        <Animated.View style={mistakesStyle}>
+        <Animated.View style={mistakesStyle} className="-mt-4">
           {renderCommonMistakes(commonMistakes)}
         </Animated.View>
       </View>
     </View>
   );
 };
+
 interface TrickModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -179,21 +154,19 @@ const TrickModal: React.FC<TrickModalProps> = ({
     if (isVisible) {
       translateY.value = withTiming(0, {
         duration: 300,
-        easing: Easing.out(Easing.exp),
+        easing: Easing.bezier(0.33, 1, 0.68, 1),
       });
     } else {
       translateY.value = withTiming(1000, {
-        duration: 300,
-        easing: Easing.in(Easing.exp),
+        duration: 150,
+        easing: Easing.bezier(0.32, 0, 0.67, 0),
       });
     }
   }, [isVisible]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: translateY.value }],
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   if (!isVisible || !trick) return null;
 
@@ -204,19 +177,26 @@ const TrickModal: React.FC<TrickModalProps> = ({
     left: 0,
     right: 0,
     justifyContent: "flex-end",
+    zIndex: 100,
   };
 
   const renderCommonMistakes = (mistakes: string) => {
     return mistakes.split(/\[([^\]]+)\]/).map((part, index) => {
       if (index % 2 === 0) {
         return part.trim() ? (
-          <Text key={index} className="text-grey font-montserrat mb-2">
+          <Text
+            key={index}
+            className="text-text-dim font-montserrat mb-2 px-4 leading-6 text-sm"
+          >
             {part.trim()}
           </Text>
         ) : null;
       } else {
         return (
-          <Text key={index} className="text-accent-2 font-montserrat-alt">
+          <Text
+            key={index}
+            className="text-accent-muted font-montserrat-alt-medium px-4 text-sm"
+          >
             {part}
           </Text>
         );
@@ -226,19 +206,55 @@ const TrickModal: React.FC<TrickModalProps> = ({
 
   const renderDifficulty = (difficulty: string) => {
     const difficultyNumber = parseInt(difficulty, 10);
+
+    if (difficultyNumber === 11) {
+      return (
+        <View className="absolute inset-x-0 flex-row items-center justify-center">
+          <View>
+            <KingSkull width={32} height={32} fill="#4FEDE2" />
+          </View>
+        </View>
+      );
+    }
+
     const fullSkulls = Math.floor(difficultyNumber / 2);
     const hasHalfSkull = difficultyNumber % 2 !== 0;
 
+    const skullElements = [];
+
+    for (let i = 0; i < fullSkulls; i++) {
+      skullElements.push(
+        <BurningSkull key={i} width={32} height={32} fill="#4FEDE2" />
+      );
+    }
+
+    if (hasHalfSkull) {
+      skullElements.push(
+        <View key="half" style={{ width: 16, overflow: "hidden" }}>
+          <BurningSkull width={32} height={32} fill="#4FEDE2" />
+        </View>
+      );
+    }
+
+    const totalSkulls = fullSkulls + (hasHalfSkull ? 1 : 0);
+    const spacing = (totalSkulls - 1) * 8;
+    const totalWidth = totalSkulls * 32 - (hasHalfSkull ? 16 : 0) + spacing;
+
     return (
-      <View className="flex-row items-center mb-2">
-        {[...Array(fullSkulls)].map((_, index) => (
-          <BurningSkull key={index} width={24} height={24} />
-        ))}
-        {hasHalfSkull && (
-          <View style={{ width: 12, overflow: "hidden" }}>
-            <BurningSkull width={32} height={32} />
-          </View>
-        )}
+      <View
+        className="absolute inset-x-0 flex-row items-center justify-center"
+        style={{ left: 0, right: 0 }}
+      >
+        <View
+          style={{
+            width: totalWidth,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          {skullElements}
+        </View>
       </View>
     );
   };
@@ -254,7 +270,7 @@ const TrickModal: React.FC<TrickModalProps> = ({
   };
 
   return (
-    <BlurView intensity={50} tint="dark" style={blurViewStyle}>
+    <BlurView intensity={20} tint="dark" style={blurViewStyle}>
       <TouchableOpacity
         activeOpacity={1}
         onPress={onClose}
@@ -262,56 +278,69 @@ const TrickModal: React.FC<TrickModalProps> = ({
       />
       <Animated.View
         style={[animatedStyle]}
-        className="bg-background h-full -mb-6 rounded-t-3xl p-6"
+        className="bg-bg-card h-full rounded-t-[32px] p-6"
       >
-        <View className="w-12 h-1 bg-accent-2 rounded-full mb-2 self-center" />
-        <View className="flex-row justify-between items-center mb-4">
-          <TouchableOpacity onPress={onClose} className="p-2">
+        <View className="w-12 h-1 bg-accent-bright rounded-full mb-4 self-center mt-4 opacity-50" />
+
+        <View className="flex-row justify-between items-center mb-6">
+          <TouchableOpacity
+            onPress={onClose}
+            className="bg-bg-elevated p-3 rounded-2xl"
+          >
             <ChevronRight
               width={24}
               height={24}
               style={{ transform: [{ rotate: "180deg" }] }}
-              fill={"#EBEFEF"}
+              fill="#4FEDE2"
             />
           </TouchableOpacity>
-          <TouchableOpacity className="bg-buttonbg border border-accent-2 rounded-full p-2">
-            <VHS width={24} height={24} />
+          <TouchableOpacity className="bg-bg-elevated border-2 border-accent-bright rounded-2xl p-3">
+            <VHS width={24} height={24} fill="#4FEDE2" />
           </TouchableOpacity>
         </View>
+
         <View className="w-full items-center">
-          <View className="flex-row items-center justify-center mb-2 -mt-12">
+          <View className="h-8 mb-6 -mt-16 w-full relative">
             {renderDifficulty(trick.difficulty)}
           </View>
-          <Text className="text-2xl text-text font-montserrat-alt-semibold text-center">
+
+          <Text
+            className={`${
+              trick.name.length > 15 ? "text-xl" : "text-2xl"
+            } text-accent-bright font-montserrat-alt-bold text-center tracking-wide uppercase mb-1 w-5/6`}
+          >
             {trick.name}
           </Text>
           {trick.alt_names && trick.alt_names.length > 0 && (
-            <Text className="text-sm text-grey font-montserrat text-center">
+            <Text className="text-text-dim font-montserrat-medium text-center">
               {trick.alt_names}
             </Text>
           )}
 
-          <View className="w-full px-4 mb-3">
-            <Text className="text-text text-base font-montserrat-alt-light mb-2 mt-4 text-center">
+          <View className="w-full px-4 mt-4">
+            <Text className="text-text font-montserrat-alt text-sm mb-2 text-center tracking-wide">
               Can you land a {trick.name}?
             </Text>
-            <SelectableButton
-              title="Yes"
-              subtitle="I can land one in every 4-5 tries"
+            <Button
+              topText="Y E S"
+              bottomText="I can land one in every 4-5 tries"
               isSelected={completionState === 2}
               onPress={() => handleButtonSelection("yes")}
+              variant="selectable"
             />
-            <SelectableButton
-              title="Sometimes"
-              subtitle="I can land one in every 1-3 tries"
+            <Button
+              topText="S O M E T I M E S"
+              bottomText="I can land one in every 1-3 tries"
               isSelected={completionState === 1}
               onPress={() => handleButtonSelection("sometimes")}
+              variant="selectable"
             />
-            <SelectableButton
-              title="No"
-              subtitle="I have never landed one"
+            <Button
+              topText="N O T  Y E T"
+              bottomText="I have never landed one"
               isSelected={completionState === 0}
               onPress={() => handleButtonSelection("no")}
+              variant="selectable"
             />
           </View>
 

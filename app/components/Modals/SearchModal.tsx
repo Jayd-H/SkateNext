@@ -18,6 +18,7 @@ import Animated, {
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import MagnifyingGlass from "../../../assets/icons/magnifying-glass.svg";
 import { TRICK_DATA, Trick } from "../Data/trickData";
+import ModalTrickButton from "../Generic/ModalTrickButton";
 
 interface SearchModalProps {
   isVisible: boolean;
@@ -89,10 +90,6 @@ const SearchModal: React.FC<SearchModalProps> = ({
     right: 0,
   };
 
-  const handleTrickPress = (trickId: string) => {
-    onTrickSelect(trickId);
-  };
-
   return (
     <BlurView intensity={30} tint="dark" style={blurViewStyle}>
       <KeyboardAvoidingView
@@ -101,29 +98,33 @@ const SearchModal: React.FC<SearchModalProps> = ({
       >
         <Animated.View
           style={[animatedStyle]}
-          className="bg-background h-full pt-12"
+          className="bg-bg-card h-full rounded-t-3xl pt-12"
         >
           <View className="px-6 flex-1">
+            <View className="w-12 h-1 bg-accent-bright rounded-full mb-2 self-center opacity-50" />
             <View className="flex-row justify-between items-center mb-6">
-              <TouchableOpacity onPress={onClose} className="p-2">
+              <TouchableOpacity
+                onPress={onClose}
+                className="bg-bg-elevated p-3 rounded-2xl"
+              >
                 <ChevronRight
                   width={24}
                   height={24}
                   style={{ transform: [{ rotate: "180deg" }] }}
-                  fill="#EBEFEF"
+                  fill="#4FEDE2"
                 />
               </TouchableOpacity>
-              <Text className="text-xl text-text font-montserrat-alt flex-1 ml-4">
+              <Text className="text-xl text-text font-montserrat-alt-medium flex-1 ml-4">
                 Search a Trick
               </Text>
             </View>
 
-            <View className="flex-row items-center border-b border-accent-2 rounded-xl mx-4 py-1 px-4 mb-6">
-              <MagnifyingGlass width={16} height={16} />
+            <View className="flex-row items-center bg-bg-elevated border border-accent-dark rounded-2xl py-3 px-4 mb-6">
+              <MagnifyingGlass width={16} height={16} fill="#4FEDE2" />
               <TextInput
-                className="flex-1 text-text font-montserrat px-3"
+                className="flex-1 text-text font-montserrat-medium px-3"
                 placeholder="Enter a trick name"
-                placeholderTextColor="#A5ABAB"
+                placeholderTextColor="#7A9E9B"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 autoFocus
@@ -131,27 +132,30 @@ const SearchModal: React.FC<SearchModalProps> = ({
             </View>
 
             <View className="flex-1">
-              {searchResults.map((trick) => (
-                <TouchableOpacity
-                  key={trick.id}
-                  onPress={() => handleTrickPress(trick.id)}
-                  className={`bg-buttonbg border h-[72px] justify-center ${
-                    trickCompletionStates[trick.id] === 2
-                      ? "border-green shadow-green"
-                      : trickCompletionStates[trick.id] === 1
-                      ? "border-yellow shadow-yellow"
-                      : "border-red shadow-red"
-                  } rounded-xl p-4 mb-3`}
-                >
-                  <Text className="text-base text-text font-montserrat-alt">
-                    {trick.name}
-                  </Text>
-                  <Text className="text-xs text-grey font-montserrat mt-1">
-                    {trick.alt_names || " "}
-                    {""}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              {/* Background glow effect */}
+              <View
+                className="absolute inset-0 rounded-3xl opacity-10"
+                style={{
+                  backgroundColor: "#183C36",
+                  shadowColor: "#34CDB3",
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 20,
+                }}
+              />
+
+              <View className="space-y-4">
+                {searchResults.map((trick) => (
+                  <ModalTrickButton
+                    key={trick.id}
+                    name={trick.name}
+                    altNames={trick.alt_names}
+                    difficulty={trick.difficulty}
+                    completionState={trickCompletionStates[trick.id]}
+                    onPress={() => onTrickSelect(trick.id)}
+                  />
+                ))}
+              </View>
             </View>
           </View>
         </Animated.View>
