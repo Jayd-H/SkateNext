@@ -24,7 +24,7 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({ onComplete }) => {
       </AnimatedFlyIn>
 
       <AnimatedFlyIn delay={100}>
-        <Text className="text-lg text-grey font-montserrat-alt-italic mt-24 text-center mb-8">
+        <Text className="text-lg text-text-muted font-montserrat-alt-italic mt-24 text-center mb-8">
           Select your age:
         </Text>
       </AnimatedFlyIn>

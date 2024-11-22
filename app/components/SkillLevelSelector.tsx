@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import BurningSkull from "../../assets/icons/burning-skull.svg";
 import SkateboardText from "../../assets/icons/skateboard-grey.svg";
 import { AnimatedFlyIn } from "./Generic/AnimatedFlyIn";
@@ -67,7 +67,7 @@ const SkillLevelSelector: React.FC<SkillLevelSelectorProps> = ({
         </View>
       </AnimatedFlyIn>
       <AnimatedFlyIn delay={200}>
-        <Text className="text-lg text-grey font-montserrat-alt-light-italic text-center mb-2">
+        <Text className="text-lg text-text-muted font-montserrat-alt-light-italic text-center mb-2">
           Please select one
         </Text>
       </AnimatedFlyIn>
@@ -78,36 +78,59 @@ const SkillLevelSelector: React.FC<SkillLevelSelectorProps> = ({
             delay={300 + index * 100}
             style={{ width: "100%" }}
           >
-            <TouchableOpacity
-              className="bg-buttonbg border border-accent-2 w-full p-3 rounded-3xl mb-4 items-center"
-              onPress={() => handleButtonPress(level)}
-              disabled={isLoading}
-              style={{ opacity: isLoading ? 0.7 : 1 }}
-            >
-              <View className="flex-row mb-1">
-                {[...Array(getSkullCount(level))].map((_, index) => (
-                  <BurningSkull
-                    key={index}
-                    width={24}
-                    height={24}
-                    style={{
-                      marginRight: index < getSkullCount(level) - 1 ? 4 : 0,
-                    }}
-                  />
-                ))}
+            <View className="w-full mb-4">
+              <View className="relative">
+                {/* Bottom shadow layer */}
+                <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-accent-dark" />
+
+                {/* Top interactive layer */}
+                <Pressable
+                  onPress={() => handleButtonPress(level)}
+                  disabled={isLoading}
+                  className={`
+                    relative
+                    rounded-3xl
+                    w-full
+                    border-2
+                    border-accent-muted
+                    bg-accent-surface
+                    active:translate-y-1
+                    px-6
+                    py-4
+                    items-center
+                    ${isLoading ? "opacity-70" : ""}
+                  `}
+                >
+                  <View className="flex-col items-center -my-1">
+                    <View className="flex-row mb-1">
+                      {[...Array(getSkullCount(level))].map((_, index) => (
+                        <BurningSkull
+                          key={index}
+                          width={24}
+                          height={24}
+                          style={{
+                            marginRight:
+                              index < getSkullCount(level) - 1 ? 4 : 0,
+                          }}
+                          fill="#2A9E8A"
+                        />
+                      ))}
+                    </View>
+                    <Text className="text-text font-montserrat-alt text-xl tracking-wide">
+                      {level}
+                    </Text>
+                    <Text className="text-text-muted font-montserrat-alt text-center text-sm">
+                      {getLevelDescription(level)}
+                    </Text>
+                    {isLoading && (
+                      <View className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <ActivityIndicator size="small" color="#EBEFEF" />
+                      </View>
+                    )}
+                  </View>
+                </Pressable>
               </View>
-              <Text className="text-text font-montserrat-alt text-xl">
-                {level}
-              </Text>
-              <Text className="text-grey font-montserrat-alt text-center">
-                {getLevelDescription(level)}
-              </Text>
-              {isLoading && (
-                <View className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <ActivityIndicator size="small" color="#EBEFEF" />
-                </View>
-              )}
-            </TouchableOpacity>
+            </View>
           </AnimatedFlyIn>
         ))}
       </View>
