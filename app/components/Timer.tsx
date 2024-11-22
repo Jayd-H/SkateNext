@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   ViewStyle,
   AppState,
   AppStateStatus,
@@ -51,8 +51,6 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
       .join(":");
   };
 
-  // maybe later on i want to change this to a persistent notification but this is harder to test in this early of development so this will have to do for now
-  // also the time elapsed does not seem to work for now but i dont care rn so come back to this
   const scheduleNotification = async () => {
     await Notifications.scheduleNotificationAsync({
       content: {
@@ -135,13 +133,11 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
             appState.current === "active" &&
             nextAppState.match(/inactive|background/)
           ) {
-            // app is going to the background
             await scheduleNotification();
           } else if (
             appState.current.match(/inactive|background/) &&
             nextAppState === "active"
           ) {
-            // app is coming to the foreground
             await cancelNotifications();
             if (startTimeRef.current) {
               const now = Date.now();
@@ -162,32 +158,55 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
     };
   }, [isTimerRunning, onTimeUpdate]);
 
-  const buttonStyle = isTimerRunning
-    ? "bg-accent-2 border-buttonbg"
-    : "bg-buttonbg border-accent-2";
-
   const formattedTime = formatTime(displayTime);
 
   return (
     <View style={style} className="relative">
-      <TouchableOpacity
-        className={`border w-full p-3 py-4 rounded-3xl mb-2 items-center ${buttonStyle}`}
-        onPress={handleButtonPress}
-      >
-        <Animated.View style={animatedStyle}>
-          {isTimerRunning ? (
-            <View className="flex-row items-center">
-              <Text className="text-2xl text-text font-montserrat-alt-bold">
-                {formattedTime}
-              </Text>
-            </View>
-          ) : (
-            <PlayButton width={32} height={32} />
-          )}
-        </Animated.View>
-      </TouchableOpacity>
+      <View className="w-full relative">
+        <View
+          className={`
+            absolute 
+            top-1
+            left-0
+            right-0
+            h-full
+            rounded-3xl
+            ${isTimerRunning ? "bg-accent-dark" : "bg-accent-dark"}
+          `}
+        />
+
+        <Pressable
+          onPress={handleButtonPress}
+          className={`
+            relative
+            rounded-3xl
+            w-full
+            border-2
+            ${
+              isTimerRunning
+                ? "border-accent-bright bg-accent-surface"
+                : "border-accent-muted bg-accent-surface"
+            }
+            active:translate-y-1
+            py-4
+            items-center
+          `}
+        >
+          <Animated.View style={animatedStyle}>
+            {isTimerRunning ? (
+              <View className="flex-row items-center">
+                <Text className="text-2xl text-text font-montserrat-alt-bold">
+                  {formattedTime}
+                </Text>
+              </View>
+            ) : (
+              <PlayButton width={32} height={32} />
+            )}
+          </Animated.View>
+        </Pressable>
+      </View>
       <Animated.Text
-        className="absolute -top-5 w-full text-center text-xs text-gray-500 font-montserrat"
+        className="absolute -top-5 w-full text-center text-xs text-text-dim font-montserrat"
         style={flyingTextStyle}
       >
         Tap the button again to stop the timer
