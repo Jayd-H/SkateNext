@@ -1,63 +1,70 @@
-import React from "react";
-import { View, Dimensions, ScaledSize } from "react-native";
-import { Svg, Path } from "react-native-svg";
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
-
+import React, { useState, useMemo } from "react";
+import { View, ScrollView, Dimensions, StyleSheet } from "react-native";
+import { FOLDER_DATA } from "../Data/folderData";
 import {
   TrickButton,
-  InfoButton,
   BossButton,
+  InfoButton,
   FolderButton,
-} from "../ButtonComponents";
-import { TRICK_DATA } from "../Data/trickData";
-import { INFO_DATA } from "../Data/infoData";
-import { FOLDER_DATA } from "../Data/folderData";
+} from "./NodeButtons";
+import {
+  ConnectionContainer,
+  type Point,
+  type ConnectionProps,
+} from "./Connection";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT }: ScaledSize =
-  Dimensions.get("window");
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-export type Node = {
+// Constants
+const CELL_SIZE = 45;
+const BUTTON_SIZE = {
+  width: 90,
+  height: 90,
+};
+const BOSS_MARGIN = {
+  top: 100,
+  bottom: 30,
+};
+const DEFAULT_CONNECTION_COLOR = "#7A9E9B";
+const DEFAULT_CONNECTION_THICKNESS = 2;
+
+// Types
+export type NodeType = "trick" | "info" | "boss" | "folder";
+
+export interface ActNodeData {
   id: string;
-  type: "trick" | "info" | "boss" | "folder";
   dataId: string;
+  type: NodeType;
   x?: number;
   y?: number;
-};
+  name: string;
+}
 
-export interface Connection {
+export interface ActConnectionData {
   fromNode: string;
   toNode: string;
   type: "lined" | "dotted";
+  color?: string;
+}
+
+interface BackgroundElement {
+  component: React.ReactNode;
+  position: {
+    left: number;
+    top: number;
+  };
 }
 
 interface ActGridProps {
-  nodes: Node[];
-  connections: Connection[];
+  nodes: ActNodeData[];
+  connections: ActConnectionData[];
   onTrickPress: (id: string) => void;
   onInfoPress: (id: string) => void;
   onBossPress: (id: string) => void;
   onFolderPress: (id: string) => void;
   trickCompletionStates: Record<string, number>;
   infoCompletionStates: Record<string, boolean>;
-  backgroundComponent?: React.ReactNode;
-  boundaryLimits: {
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
-    minScale: number;
-    maxScale: number;
-  };
-  gridConfig: {
-    cols: number;
-    rows: number;
-  };
-  initialScale?: number;
+  backgroundElements?: BackgroundElement[];
 }
 
 const ActGrid: React.FC<ActGridProps> = ({
@@ -69,207 +76,201 @@ const ActGrid: React.FC<ActGridProps> = ({
   onFolderPress,
   trickCompletionStates,
   infoCompletionStates,
-  backgroundComponent,
-  boundaryLimits,
-  gridConfig,
-  initialScale = 0.9,
+  backgroundElements = [],
 }) => {
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(boundaryLimits.maxY / 3.5);
-  const scale = useSharedValue(initialScale);
-  const baseScale = useSharedValue(initialScale);
-  const CELL_WIDTH = SCREEN_WIDTH / gridConfig.cols;
-  const CELL_HEIGHT = SCREEN_HEIGHT / gridConfig.rows;
+  // State
+  const [contentHeight, setContentHeight] = useState(0);
 
-  const panGesture = Gesture.Pan().onChange((event) => {
-    const newX = translateX.value + event.changeX;
-    const newY = translateY.value + event.changeY;
+  // Memoized Values
+  const regularNodes = useMemo(
+    () => nodes.filter((node) => node.type !== "boss"),
+    [nodes]
+  );
 
-    if (newX >= boundaryLimits.minX && newX <= boundaryLimits.maxX) {
-      translateX.value = newX;
-    }
-    if (newY >= boundaryLimits.minY && newY <= boundaryLimits.maxY) {
-      translateY.value = newY;
-    }
-  });
+  const bossNode = useMemo(
+    () => nodes.find((node) => node.type === "boss"),
+    [nodes]
+  );
 
-  const pinchGesture = Gesture.Pinch()
-    .onChange((event) => {
-      const newScale = baseScale.value * event.scale;
-      if (
-        newScale >= boundaryLimits.minScale &&
-        newScale <= boundaryLimits.maxScale
-      ) {
-        scale.value = newScale;
-      }
-    })
-    .onBegin(() => {
-      baseScale.value = scale.value;
-    })
-    .onFinalize(() => {
-      baseScale.value = scale.value;
-    });
+  const maxY = useMemo(
+    () => Math.max(...regularNodes.map((n) => n.y || 0)),
+    [regularNodes]
+  );
 
-  const gesture = Gesture.Simultaneous(panGesture, pinchGesture);
+  const minHeight = useMemo(
+    () =>
+      Math.max(
+        SCREEN_HEIGHT,
+        (maxY + 1) * CELL_SIZE + BOSS_MARGIN.top + BUTTON_SIZE.height
+      ),
+    [maxY]
+  );
 
-  const rStyle = useAnimatedStyle(() => {
+  // Helper Functions
+  const getScreenPosition = (node: ActNodeData): Point | null => {
+    if (node.x === undefined || node.y === undefined) return null;
+
     return {
-      transform: [
-        { translateX: translateX.value },
-        { translateY: translateY.value },
-        { scale: scale.value },
-      ],
-    };
-  });
-
-  const getPosition = (node: Node): { x: number; y: number } => {
-    if (node.type === "boss") {
-      return { x: SCREEN_WIDTH / 2, y: CELL_HEIGHT };
-    }
-    return {
-      x: (node.x ?? 0) * CELL_WIDTH,
-      y: (node.y ?? 0) * CELL_HEIGHT,
+      x: SCREEN_WIDTH / 2 + node.x * CELL_SIZE,
+      y: node.y * CELL_SIZE,
     };
   };
 
-  const renderConnections = () => {
-    return connections.map((connection, index) => {
+  const processConnections = useMemo(() => {
+    const processedConnections: ConnectionProps[] = [];
+
+    connections.forEach((connection) => {
       const fromNode = nodes.find((n) => n.id === connection.fromNode);
       const toNode = nodes.find((n) => n.id === connection.toNode);
 
-      if (!fromNode || !toNode) return null;
+      if (!fromNode || !toNode) return;
 
-      const { x: x1, y: y1 } = getPosition(fromNode);
-      const { x: x2, y: y2 } = getPosition(toNode);
+      const fromPos = getScreenPosition(fromNode);
+      const toPos = getScreenPosition(toNode);
 
-      let d: string;
+      if (!fromPos || !toPos) return;
 
-      if (toNode.type === "boss") {
-        d = `M${x1},${y1} L${x1},${y2}`;
-      } else {
-        const midY = (y1 + y2) / 2;
-        d = `M${x1},${y1} L${x1},${midY} L${x2},${midY} L${x2},${y2}`;
-      }
-
-      return (
-        <Path
-          key={index}
-          d={d}
-          stroke="#EBEFEF"
-          strokeWidth="2"
-          fill="none"
-          strokeDasharray={connection.type === "dotted" ? "5,5" : ""}
-        />
-      );
+      processedConnections.push({
+        startPoint: fromPos,
+        endPoint: toPos,
+        type: connection.type,
+        color: connection.color || DEFAULT_CONNECTION_COLOR,
+        thickness: DEFAULT_CONNECTION_THICKNESS,
+      });
     });
-  };
 
-  const getNodeData = (node: Node) => {
-    if (node.type === "info") {
-      const infoData = INFO_DATA.find((i) => i.id === node.dataId);
-      return infoData ? { name: infoData.name } : null;
-    }
-    if (node.type === "folder") {
-      const folderData = FOLDER_DATA.find((f) => f.id === node.dataId);
-      return folderData ? { name: folderData.nodeTitle } : null;
-    }
-    const trickData = TRICK_DATA.find((t) => t.id === node.dataId);
-    return trickData ? { name: trickData.name } : null;
-  };
+    return processedConnections;
+  }, [connections, nodes]);
 
-  const bossNodes = nodes.filter((node) => node.type === "boss");
-  const regularNodes = nodes.filter((node) => node.type !== "boss");
+  // Render Functions
+  const renderNode = (node: ActNodeData) => {
+    const position = getScreenPosition(node);
+    if (!position) return null;
 
-  return (
-    <View className="flex-1 bg-transparent">
-      {backgroundComponent}
+    const commonStyle = {
+      position: "absolute" as const,
+      left: position.x - BUTTON_SIZE.width / 2,
+      top: position.y - BUTTON_SIZE.height / 2,
+    };
 
-      <GestureDetector gesture={gesture}>
-        <Animated.View className="flex-1" style={rStyle}>
-          <Svg
-            className="absolute inset-0 -z-20"
-            width={SCREEN_WIDTH * 2}
-            height={SCREEN_HEIGHT * 2}
-          >
-            {renderConnections()}
-          </Svg>
-
-          {regularNodes.map((node) => {
-            const nodeData = getNodeData(node);
-            if (!nodeData) return null;
-
-            const { x, y } = getPosition(node);
-            const buttonWidth = node.type === "info" ? 70 : 70;
-
-            return (
-              <View
-                key={node.id}
-                className="absolute"
-                style={{
-                  left: x - buttonWidth / 2,
-                  top: y - 50,
-                }}
-              >
-                {node.type === "trick" && (
-                  <TrickButton
-                    id={node.dataId}
-                    name={nodeData.name}
-                    onPress={onTrickPress}
-                    isCompleted={trickCompletionStates[node.dataId] || 0}
-                  />
-                )}
-                {node.type === "info" && (
-                  <InfoButton
-                    id={node.dataId}
-                    name={nodeData.name}
-                    onPress={onInfoPress}
-                    isCompletedInfo={infoCompletionStates[node.dataId] || false}
-                  />
-                )}
-                {node.type === "folder" && (
-                  <FolderButton
-                    id={node.id}
-                    title={
-                      FOLDER_DATA.find((f) => f.id === node.dataId)?.title || ""
-                    }
-                    nodeTitle={
-                      FOLDER_DATA.find((f) => f.id === node.dataId)
-                        ?.nodeTitle || ""
-                    }
-                    containedTricks={
-                      FOLDER_DATA.find((f) => f.id === node.dataId)
-                        ?.containedTricks || []
-                    }
-                    onPress={onFolderPress}
-                    trickCompletionStates={trickCompletionStates}
-                  />
-                )}
-              </View>
-            );
-          })}
-        </Animated.View>
-      </GestureDetector>
-
-      {bossNodes.map((node) => {
-        const nodeData = getNodeData(node);
-        if (!nodeData) return null;
-
+    switch (node.type) {
+      case "trick":
         return (
-          <View
-            key={node.id}
-            className="absolute top-0 left-0 right-0 items-center"
-          >
-            <BossButton
+          <View key={node.id} style={commonStyle}>
+            <TrickButton
               id={node.dataId}
-              name={nodeData.name}
-              onPress={onBossPress}
+              name={node.name}
+              onPress={onTrickPress}
               isCompleted={trickCompletionStates[node.dataId] || 0}
             />
           </View>
         );
-      })}
-    </View>
+
+      case "info":
+        return (
+          <View key={node.id} style={commonStyle}>
+            <InfoButton
+              id={node.dataId}
+              name={node.name}
+              onPress={onInfoPress}
+              isCompletedInfo={infoCompletionStates[node.dataId] || false}
+            />
+          </View>
+        );
+
+      case "folder": {
+        const folderData = FOLDER_DATA.find((f) => f.id === node.dataId);
+        if (!folderData) return null;
+
+        return (
+          <View key={node.id} style={commonStyle}>
+            <FolderButton
+              id={node.id}
+              title={folderData.title}
+              nodeTitle={folderData.nodeTitle}
+              containedTricks={folderData.containedTricks}
+              onPress={onFolderPress}
+              trickCompletionStates={trickCompletionStates}
+            />
+          </View>
+        );
+      }
+
+      default:
+        return null;
+    }
+  };
+
+  const renderBossNode = () => {
+    if (!bossNode) return null;
+
+    return (
+      <View style={styles.bossContainer}>
+        <BossButton
+          id={bossNode.dataId}
+          name={bossNode.name}
+          onPress={onBossPress}
+          isCompleted={trickCompletionStates[bossNode.dataId] || 0}
+        />
+      </View>
+    );
+  };
+
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[styles.scrollContent, { minHeight }]}
+    >
+      {/* Background Elements */}
+      {backgroundElements.map((bg, index) => (
+        <View key={index} style={[styles.backgroundElement, bg.position]}>
+          {bg.component}
+        </View>
+      ))}
+
+      {/* Connections Layer */}
+      <ConnectionContainer
+        connections={processConnections}
+        width={SCREEN_WIDTH}
+        height={minHeight}
+      />
+
+      {/* Regular Nodes Layer */}
+      <View
+        style={styles.nodesContainer}
+        onLayout={(e) => setContentHeight(e.nativeEvent.layout.height)}
+      >
+        {regularNodes.map(renderNode)}
+      </View>
+
+      {/* Boss Node Layer */}
+      {renderBossNode()}
+    </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  backgroundElement: {
+    position: "absolute",
+  },
+  nodesContainer: {
+    flex: 1,
+    minHeight: SCREEN_HEIGHT,
+  },
+  bossContainer: {
+    position: "absolute",
+    bottom: BOSS_MARGIN.bottom,
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    width: "100%",
+  },
+});
 
 export default ActGrid;

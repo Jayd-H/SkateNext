@@ -1,73 +1,138 @@
 import React from "react";
-import { View, Dimensions } from "react-native";
-import ActGrid, { Node, Connection } from "./ActGrid";
+import ActGrid, { ActNodeData, ActConnectionData } from "./ActGrid";
 import Gyroscope from "../../../assets/icons/gyroscope.svg";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
-
-const GRID_COLS = 16;
-const GRID_ROWS = 30;
-
-const boundaryX: number = 6;
-const boundaryY: number = 6;
-const BOUNDARY_LIMITS = {
-  minX: -SCREEN_WIDTH / boundaryX,
-  maxX: SCREEN_WIDTH / boundaryX,
-  minY: -SCREEN_HEIGHT / boundaryY,
-  maxY: SCREEN_HEIGHT / boundaryY,
-  minScale: 0.8,
-  maxScale: 1.25,
-};
-
-const nodes: Node[] = [
-  { id: "stance", dataId: "stance", x: 8, y: 22, type: "info" },
-  { id: "pushing", dataId: "pushing", x: 8, y: 18, type: "info" },
+const nodes: ActNodeData[] = [
+  {
+    id: "stance",
+    dataId: "stance",
+    type: "info",
+    x: -2,
+    y: 2,
+    name: "Stance",
+  },
+  {
+    id: "pushing",
+    dataId: "pushing",
+    type: "info",
+    x: 0,
+    y: 5,
+    name: "Pushing",
+  },
   {
     id: "basicshuvs",
     type: "folder",
     dataId: "basicshuvs",
-    x: 12,
-    y: 18,
+    x: 1,
+    y: 12,
+    name: "Basic Shuvs",
   },
   {
     id: "fakieshuvs",
     type: "folder",
     dataId: "fakieshuvs",
-    x: 12,
-    y: 14,
+    x: 2,
+    y: 8,
+    name: "Fakie Shuvs",
   },
   {
     id: "nollieshuvs",
     type: "folder",
     dataId: "nollieshuvs",
-    x: 12,
-    y: 10,
+    x: 2,
+    y: 15,
+    name: "Nollie Shuvs",
   },
   {
     id: "ncs",
     type: "folder",
     dataId: "ncs",
-    x: 3,
-    y: 6,
+    x: -2,
+    y: 20,
+    name: "NCs+",
   },
-  { id: "manual", dataId: "manual", x: 8, y: 14, type: "trick" },
-  { id: "nosemanual", dataId: "nosemanual", x: 8, y: 10, type: "trick" },
-  { id: "nc", dataId: "nc", x: 3, y: 10, type: "trick" },
-  { id: "kickturn", dataId: "kickturn", x: 4, y: 18, type: "trick" },
-  { id: "ollie", dataId: "ollie", type: "boss" },
-  { id: "powerslide", dataId: "powerslide", x: 4, y: 14, type: "trick" },
-  { id: "boneless", dataId: "boneless", x: 10, y: 6, type: "trick" },
+  {
+    id: "manual",
+    dataId: "manual",
+    type: "trick",
+    x: 2,
+    y: 18,
+    name: "Manual",
+  },
+  {
+    id: "nosemanual",
+    dataId: "nosemanual",
+    type: "trick",
+    x: 1,
+    y: 21,
+    name: "Nose Manual",
+  },
+  {
+    id: "nc",
+    dataId: "nc",
+    type: "trick",
+    x: -1,
+    y: 17,
+    name: "No Comply",
+  },
+  {
+    id: "kickturn",
+    dataId: "kickturn",
+    type: "trick",
+    x: -2,
+    y: 10,
+    name: "Kick Turn",
+  },
+  {
+    id: "powerslide",
+    dataId: "powerslide",
+    type: "trick",
+    x: -2,
+    y: 14,
+    name: "Powerslide",
+  },
+  {
+    id: "boneless",
+    dataId: "boneless",
+    type: "trick",
+    x: -1,
+    y: 24,
+    name: "Boneless",
+  },
+  {
+    id: "ollie",
+    dataId: "ollie",
+    type: "boss",
+    name: "Ollie",
+  },
 ];
 
-const connections: Connection[] = [
-  { fromNode: "stance", toNode: "pushing", type: "lined" },
-  { fromNode: "pushing", toNode: "basicshuvs", type: "lined" },
-  { fromNode: "basicshuvs", toNode: "ollie", type: "dotted" },
-  { fromNode: "pushing", toNode: "ollie", type: "dotted" },
-  { fromNode: "pushing", toNode: "nosemanual", type: "lined" },
-  { fromNode: "pushing", toNode: "kickturn", type: "lined" },
-  { fromNode: "pushing", toNode: "ollie", type: "dotted" },
-  { fromNode: "nc", toNode: "ncs", type: "lined" },
+const createConnections = (): ActConnectionData[] => {
+  return [
+    { fromNode: "stance", toNode: "pushing", type: "lined" },
+    { fromNode: "pushing", toNode: "kickturn", type: "lined" },
+    { fromNode: "pushing", toNode: "fakieshuvs", type: "lined" },
+    { fromNode: "kickturn", toNode: "powerslide", type: "lined" },
+    { fromNode: "basicshuvs", toNode: "fakieshuvs", type: "dotted" },
+    { fromNode: "basicshuvs", toNode: "nollieshuvs", type: "dotted" },
+    { fromNode: "powerslide", toNode: "nc", type: "dotted" },
+    { fromNode: "nc", toNode: "ncs", type: "lined" },
+    { fromNode: "manual", toNode: "nosemanual", type: "lined" },
+    { fromNode: "ncs", toNode: "boneless", type: "dotted" },
+  ];
+};
+
+const backgroundElements = [
+  {
+    component: (
+      <Gyroscope
+        width={400}
+        height={400}
+        style={{ transform: [{ scaleX: -1 }] }}
+      />
+    ),
+    position: { left: -200, top: 20 },
+  },
 ];
 
 interface Act1Props {
@@ -80,24 +145,12 @@ interface Act1Props {
 }
 
 const Act1: React.FC<Act1Props> = (props) => {
-  const backgroundComponent = (
-    <View className="absolute -z-10 -left-[200px] top-[20px]">
-      <Gyroscope
-        width={400}
-        height={400}
-        style={{ transform: [{ scaleX: -1 }] }}
-      />
-    </View>
-  );
-
   return (
     <ActGrid
       {...props}
       nodes={nodes}
-      connections={connections}
-      backgroundComponent={backgroundComponent}
-      boundaryLimits={BOUNDARY_LIMITS}
-      gridConfig={{ cols: GRID_COLS, rows: GRID_ROWS }}
+      connections={createConnections()}
+      backgroundElements={backgroundElements}
     />
   );
 };
