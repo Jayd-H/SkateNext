@@ -257,7 +257,7 @@ const Fitness: React.FC = () => {
       <Text className="text-xl text-text font-montserrat-light mt-10">
         F I T N E S S
       </Text>
-      <Text className="text-[10px] text-center w-5/6 text-grey font-montserrat-light mt-2">
+      <Text className="text-[10px] text-center w-5/6 text-text-dim font-montserrat-light mt-2">
         Please note that calorie estimation is for informational purposes only
         and not a substitute for professional medical advice
       </Text>
@@ -267,7 +267,7 @@ const Fitness: React.FC = () => {
             isLoading={isInitialLoading}
             value={formatNumber(stats.todayCalories)}
           />
-          <DailyCalories width={iconsize} height={iconsize} />
+          <DailyCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
         </View>
         <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
           Calories burnt today.
@@ -277,7 +277,7 @@ const Fitness: React.FC = () => {
             isLoading={isInitialLoading}
             value={formatNumber(stats.weeklyCalories)}
           />
-          <WeeklyCalories width={iconsize} height={iconsize} />
+          <WeeklyCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
         </View>
         <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
           Calories burnt this week.
@@ -287,7 +287,7 @@ const Fitness: React.FC = () => {
             isLoading={isInitialLoading}
             value={formatNumber(stats.allTimeCalories)}
           />
-          <AllTimeCalories width={iconsize} height={iconsize} />
+          <AllTimeCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
         </View>
         <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
           All-time calories burnt.
@@ -298,7 +298,7 @@ const Fitness: React.FC = () => {
             value={`${formatMastery(masteryPercentage)} %`}
             showPercentage={true}
           />
-          <Skull width={iconsize} height={iconsize} />
+          <Skull width={iconsize} height={iconsize} fill="#4FEDE2" />
         </View>
         <Text className="pl-8 mt-1 text-xl text-text font-montserrat-alt">
           To skateboard mastery.
@@ -307,9 +307,9 @@ const Fitness: React.FC = () => {
       <Timer
         onTimeUpdate={handleTimeUpdate}
         onTimerStop={handleTimerStop}
-        style={{ width: "85%", marginTop: 45 }}
+        style={{ width: "85%", marginTop: 35 }}
       />
-      <Text className="text-[12px] text-grey text-center font-montserrat-light mb-12">
+      <Text className="text-[12px] text-text-dim font-montserrat-light mb-12 w-5/6 pt-4 text-center">
         Tap the button to begin a skate sesh, calories will be estimated based
         on your skill level and duration of the session.
       </Text>
