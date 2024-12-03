@@ -189,7 +189,23 @@ const nodes: ActNodeData[] = [
   },
 ];
 
-const connections: ActConnectionData[] = [];
+const connections: ActConnectionData[] = [
+  { fromNode: "heelflip", toNode: "heelflipvariations", type: "lined" },
+  { fromNode: "kickflipvariations", toNode: "varialkickflip", type: "lined" },
+  { fromNode: "heelflipvariations", toNode: "varialheelflip", type: "lined" },
+  { fromNode: "varialkickflip", toNode: "hardflip", type: "dotted" },
+  { fromNode: "varialheelflip", toNode: "inwardheelflip", type: "dotted" },
+  { fromNode: "hardflip", toNode: "hardflipvariations", type: "lined" },
+  {
+    fromNode: "inwardheelflip",
+    toNode: "inwardheelflipvariations",
+    type: "lined",
+  },
+  { fromNode: "hardflipvariations", toNode: "biggerspin", type: "dotted" },
+  { fromNode: "biggerspin", toNode: "fsbiggerspin", type: "dotted" },
+  { fromNode: "fsbiggerspin", toNode: "impossible", type: "dotted" },
+  { fromNode: "impossible", toNode: "treflip", type: "lined" },
+];
 
 const backgroundElements = [
   {
