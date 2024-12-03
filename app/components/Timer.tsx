@@ -17,6 +17,7 @@ import Animated, {
 } from "react-native-reanimated";
 import * as Notifications from "expo-notifications";
 import PlayButton from "../../assets/icons/play-button-blue.svg";
+import * as Haptics from "expo-haptics";
 
 interface TimerProps {
   onTimeUpdate: (time: number) => void;
@@ -67,7 +68,9 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
     await Notifications.cancelAllScheduledNotificationsAsync();
   };
 
+  //! ideally the haptics would be on fitness page, but life is too short
   const handleButtonPress = useCallback(async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setIsTimerRunning((prev) => !prev);
 
     opacity.value = withSequence(

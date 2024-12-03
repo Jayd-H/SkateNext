@@ -1,10 +1,11 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
 import Modal from "../components/Modals/Modal";
 import DeleteConfirmModal from "../components/Modals/DeleteConfirmModal";
 import { StorageService } from "../components/Utils/StorageService";
 import Button from "../components/Generic/Button";
+import * as Haptics from "expo-haptics";
 
 export default function Settings() {
   const router = useRouter();
@@ -48,6 +49,11 @@ export default function Settings() {
     );
   };
 
+  const handleModalClose = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setModalVisible(false);
+  };
+
   return (
     <View className="flex-1 items-center bg-background">
       <Text className="text-xl text-text font-montserrat-light mt-10">
@@ -75,7 +81,7 @@ export default function Settings() {
 
       <Modal
         isVisible={modalVisible}
-        onClose={() => setModalVisible(false)}
+        onClose={handleModalClose}
         title={modalContent.title}
         content={modalContent.content}
       />

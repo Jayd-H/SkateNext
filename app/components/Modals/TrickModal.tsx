@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ViewStyle } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  ViewStyle,
+} from "react-native";
 import { BlurView } from "expo-blur";
 import Animated, {
   useSharedValue,
@@ -8,6 +14,7 @@ import Animated, {
   Easing,
   interpolateColor,
 } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 import { TRICK_DATA } from "../Data/trickData";
 import BurningSkull from "../../../assets/icons/burning-skull.svg";
 import KingSkull from "../../../assets/icons/crowned-skull.svg";
@@ -29,8 +36,9 @@ const ContentSection: React.FC<ContentSectionProps> = ({
   const [showingDescription, setShowingDescription] = React.useState(true);
   const progress = useSharedValue(0);
 
-  const toggleSection = (showDesc: boolean) => {
+  const toggleSection = async (showDesc: boolean) => {
     if (showDesc !== showingDescription) {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       setShowingDescription(showDesc);
       progress.value = withTiming(showDesc ? 0 : 1, {
         duration: 200,
@@ -85,7 +93,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
   return (
     <View className="px-4 mt-2">
       <View className="flex-row justify-between items-center mb-6">
-        <TouchableOpacity onPress={() => toggleSection(true)} className="px-4">
+        <Pressable onPress={() => toggleSection(true)} className="px-4">
           <View>
             <Animated.View
               style={[headerStyle.descriptionBar]}
@@ -100,8 +108,8 @@ const ContentSection: React.FC<ContentSectionProps> = ({
               Description
             </Animated.Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => toggleSection(false)} className="px-4">
+        </Pressable>
+        <Pressable onPress={() => toggleSection(false)} className="px-4">
           <View className="items-end">
             <Animated.View
               style={[headerStyle.mistakesBar]}
@@ -116,7 +124,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
               Common Mistakes
             </Animated.Text>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </View>
       <View className="">
         <Animated.View style={descriptionStyle}>
@@ -259,7 +267,7 @@ const TrickModal: React.FC<TrickModalProps> = ({
     );
   };
 
-  const handleButtonSelection = (value: "yes" | "sometimes" | "no") => {
+  const handleButtonSelection = async (value: "yes" | "sometimes" | "no") => {
     const stateMap = {
       yes: 2,
       sometimes: 1,
@@ -269,13 +277,18 @@ const TrickModal: React.FC<TrickModalProps> = ({
     onCompletionChange(trickId, newState);
   };
 
+  const handleModalClose = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onClose();
+  };
+
+  const handleVHSPress = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
   return (
     <BlurView intensity={20} tint="dark" style={blurViewStyle}>
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={onClose}
-        className="flex-1"
-      />
+      <Pressable onPress={onClose} className="flex-1" />
       <Animated.View
         style={[animatedStyle]}
         className="bg-bg-card h-full rounded-t-[32px] p-6"
@@ -294,7 +307,10 @@ const TrickModal: React.FC<TrickModalProps> = ({
               fill="#4FEDE2"
             />
           </TouchableOpacity>
-          <TouchableOpacity className="bg-bg-elevated border-2 border-accent-bright rounded-2xl p-3">
+          <TouchableOpacity
+            onPress={handleVHSPress}
+            className="bg-bg-elevated border-2 border-accent-bright rounded-2xl p-3"
+          >
             <VHS width={24} height={24} fill="#4FEDE2" />
           </TouchableOpacity>
         </View>

@@ -23,6 +23,7 @@ import {
 } from "../components/Utils/calorieEstimation";
 import { calculateSkateboardMastery } from "../components/Utils/masteryCalculation";
 import { TRICK_COMPONENTS } from "../components/Data/trickComponents";
+import * as Haptics from "expo-haptics";
 
 const MIN_LOADING_TIME = 500;
 
@@ -33,6 +34,7 @@ interface AnimatedLoadingProps {
   className?: string;
 }
 
+// !this is a really ugly way to do this, but it works for now
 const AnimatedLoading: React.FC<AnimatedLoadingProps> = ({
   isLoading,
   value,
@@ -178,12 +180,13 @@ const Fitness: React.FC = () => {
     appState.current = nextAppState;
   };
 
-  const handleTimeUpdate = (time: number) => {
+  const handleTimeUpdate = async (time: number) => {
     currentTime.current = time;
   };
 
   const handleTimerStop = async (duration: number) => {
     try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       const userStats = await StorageService.getUserStats();
       const trickStates = await StorageService.getTrickStates();
 

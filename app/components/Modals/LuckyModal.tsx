@@ -23,6 +23,7 @@ import LoadingSpinner from "../Generic/LoadingSpinner";
 import { TRICK_DATA } from "../Data/trickData";
 import Alert from "../Generic/Alert";
 import Button from "../Generic/Button";
+import * as Haptics from "expo-haptics";
 
 interface LuckyModalProps {
   isVisible: boolean;
@@ -59,6 +60,7 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
 
   const handleRecommendation = async () => {
     try {
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setIsCalculating(true);
       const age = await AsyncStorage.getItem(STORAGE_KEYS.USER_AGE);
       const userAge = age ? parseInt(age) : 25;

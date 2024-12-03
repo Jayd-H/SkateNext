@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 
 interface DeleteConfirmModalProps {
   isVisible: boolean;
@@ -47,6 +48,16 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
     }
   }, [isVisible]);
 
+  const handleConfirm = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onConfirm();
+  };
+
+  const handleClose = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onClose();
+  };
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
@@ -58,7 +69,7 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
 
   return (
     <View className="flex-1 h-full w-full absolute top-0 left-0 right-0 bottom-0">
-      <Pressable className="flex-1" onPress={onClose}>
+      <Pressable className="flex-1" onPress={handleClose}>
         <View className="flex-1 flex justify-center items-center">
           <Animated.View
             style={[animatedStyle]}
@@ -75,11 +86,14 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
               {/* Cancel Button */}
               <View className="flex-1">
                 <View className="relative">
-                  {/* bottom layer (shadow) */}
                   <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-accent-dark" />
-                  {/* top layer */}
                   <Pressable
-                    onPress={onClose}
+                    onPress={handleClose}
+                    onPressIn={async () =>
+                      await Haptics.impactAsync(
+                        Haptics.ImpactFeedbackStyle.Medium
+                      )
+                    }
                     className="relative rounded-3xl w-full border-2 border-accent-muted bg-accent-surface active:translate-y-1 px-6 py-3"
                   >
                     <Text className="text-text font-montserrat-alt-semibold text-center text-base">
@@ -88,15 +102,17 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                   </Pressable>
                 </View>
               </View>
-
               {/* Delete Button */}
               <View className="flex-1">
                 <View className="relative">
-                  {/* bottom layer (shadow) */}
                   <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-warning-dark" />
-                  {/* top layer */}
                   <Pressable
-                    onPress={onConfirm}
+                    onPress={handleConfirm}
+                    onPressIn={async () =>
+                      await Haptics.impactAsync(
+                        Haptics.ImpactFeedbackStyle.Medium
+                      )
+                    }
                     className="relative rounded-3xl w-full border-2 border-warning bg-bg-elevated active:translate-y-1 px-6 py-3"
                   >
                     <Text className="text-text font-montserrat-alt-semibold text-center text-base">
