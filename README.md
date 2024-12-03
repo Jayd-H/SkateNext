@@ -8,7 +8,7 @@ I will mark these off as I go.
 
 - [x] Trick logging map
 - [x] Personalised trick recommendations
-- [ ] Calories burnt estimation and tracking
+- [x] Calories burnt estimation and tracking
 
 
 ## Prerequisites
