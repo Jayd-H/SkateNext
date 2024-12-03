@@ -323,14 +323,14 @@ const TrickModal: React.FC<TrickModalProps> = ({
             </Text>
             <Button
               topText="Y E S"
-              bottomText="I can land one in every 4-5 tries"
+              bottomText="I can land 4-5 in every 5 tries"
               isSelected={completionState === 2}
               onPress={() => handleButtonSelection("yes")}
               variant="selectable"
             />
             <Button
               topText="S O M E T I M E S"
-              bottomText="I can land one in every 1-3 tries"
+              bottomText="I can land 1-3 in every 5 tries"
               isSelected={completionState === 1}
               onPress={() => handleButtonSelection("sometimes")}
               variant="selectable"
