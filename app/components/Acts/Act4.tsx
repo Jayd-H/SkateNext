@@ -197,7 +197,22 @@ const nodes: ActNodeData[] = [
   },
 ];
 
-const connections: ActConnectionData[] = [];
+const connections: ActConnectionData[] = [
+  { fromNode: "bsmysticspins", toNode: "fsmysticspins", type: "dotted" },
+  { fromNode: "doubleflips", toNode: "doubleheels", type: "dotted" },
+  { fromNode: "treflips", toNode: "laserflips", type: "dotted" },
+  { fromNode: "treflips", toNode: "doubletres", type: "lined" },
+  { fromNode: "laserflips", toNode: "doublelasers", type: "lined" },
+  { fromNode: "impossibles", toNode: "nightmareflips", type: "lined" },
+  { fromNode: "dolphinflips", toNode: "daydreamflips", type: "lined" },
+  { fromNode: "bigflips", toNode: "gazellespins", type: "dotted" },
+  { fromNode: "gazellespins", toNode: "gazelleflips", type: "lined" },
+  { fromNode: "lateflip", toNode: "lateheel", type: "dotted" },
+  { fromNode: "latebsshuv", toNode: "latefsshuv", type: "dotted" },
+  { fromNode: "bs360ollie", toNode: "fs360ollie", type: "dotted" },
+  { fromNode: "bs360ollie", toNode: "blizzardflip", type: "lined" },
+  { fromNode: "blizzardflip", toNode: "ghettobirds", type: "lined" },
+];
 
 const backgroundElements = [
   {
