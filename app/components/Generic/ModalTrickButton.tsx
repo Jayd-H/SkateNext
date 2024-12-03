@@ -1,5 +1,6 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
+import * as Haptics from "expo-haptics";
 import BurningSkull from "../../../assets/icons/burning-skull.svg";
 import CrownedSkull from "../../../assets/icons/crowned-skull.svg";
 
@@ -45,6 +46,11 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
   };
 
   const styles = getStyleClasses();
+
+  const handlePress = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onPress();
+  };
 
   const renderDifficulty = () => {
     const difficultyNumber = parseInt(difficulty, 10);
@@ -98,7 +104,7 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
 
         {/* top */}
         <Pressable
-          onPress={onPress}
+          onPress={handlePress}
           className={`
             relative
             rounded-3xl

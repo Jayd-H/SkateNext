@@ -1,5 +1,6 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
+import * as Haptics from "expo-haptics";
 
 interface ButtonProps {
   topText: string;
@@ -26,7 +27,6 @@ export const Button: React.FC<ButtonProps> = ({
         background: isSelected ? "bg-accent-surface" : "bg-bg-surface",
       };
     }
-
     return {
       shadow: warning ? "bg-warning-dark" : "bg-accent-dark",
       border: warning ? "border-warning" : "border-accent-muted",
@@ -35,6 +35,10 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const styles = getStyleClasses();
+
+  const handlePressIn = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
 
   return (
     <View className="w-full mb-4">
@@ -51,10 +55,10 @@ export const Button: React.FC<ButtonProps> = ({
             ${styles.shadow}
           `}
         />
-
         {/* top */}
         <Pressable
           onPress={onPress}
+          onPressIn={handlePressIn}
           className={`
             relative
             rounded-3xl

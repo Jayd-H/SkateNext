@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import * as Haptics from "expo-haptics";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
 import Sparkles from "../../assets/icons/sparkles.svg";
 import Telescope from "../../assets/icons/telescope.svg";
@@ -43,23 +44,43 @@ export default function Map() {
     useState(false);
   const [recommendations, setRecommendations] = useState<string[]>([]);
 
-  const handleTrickPress = (id: string) => {
-    setSelectedTrickId(id);
+  // Navigation haptics - Light impact
+  const handleNavigationPress = async (action: () => void) => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    action();
   };
 
-  const handleInfoPress = (id: string) => {
-    setSelectedInfoId(id);
-    updateInfoState(id, true);
-  };
+  const handleTrickPress = (id: string) =>
+    handleNavigationPress(() => setSelectedTrickId(id));
+  const handleInfoPress = (id: string) =>
+    handleNavigationPress(() => {
+      setSelectedInfoId(id);
+      updateInfoState(id, true);
+    });
+  const handleBossPress = (id: string) =>
+    handleNavigationPress(() => setSelectedTrickId(id));
+  const handleFolderPress = (id: string) =>
+    handleNavigationPress(() => setSelectedFolderId(id));
+  const handleSearchOpen = () =>
+    handleNavigationPress(() => setIsSearchModalVisible(true));
+  const handleLuckyOpen = () =>
+    handleNavigationPress(() => setIsLuckyModalVisible(true));
 
-  const handleBossPress = (id: string) => {
-    setSelectedTrickId(id);
-  };
+  // Modal close handlers
+  const handleTrickModalClose = () =>
+    handleNavigationPress(() => setSelectedTrickId(null));
+  const handleInfoModalClose = () =>
+    handleNavigationPress(() => setSelectedInfoId(null));
+  const handleFolderModalClose = () =>
+    handleNavigationPress(() => setSelectedFolderId(null));
+  const handleSearchModalClose = () =>
+    handleNavigationPress(() => setIsSearchModalVisible(false));
+  const handleLuckyModalClose = () =>
+    handleNavigationPress(() => setIsLuckyModalVisible(false));
+  const handleRecommendationsClose = () =>
+    handleNavigationPress(() => setIsRecommendationsVisible(false));
 
-  const handleFolderPress = (id: string) => {
-    setSelectedFolderId(id);
-  };
-
+  // Non-haptic handlers
   const handleTrickCompletion = (trickId: string, state: number) => {
     updateTrickState(trickId, state);
   };
@@ -67,10 +88,6 @@ export default function Map() {
   const handleRecommendations = (recommendedTricks: string[]) => {
     setRecommendations(recommendedTricks);
     setIsRecommendationsVisible(true);
-  };
-
-  const handleRecommendationsClose = () => {
-    setIsRecommendationsVisible(false);
   };
 
   const getActInfo = (page: number) => {
@@ -103,10 +120,13 @@ export default function Map() {
     }
   };
 
+  // Page navigation
   const changePage = (direction: number) => {
-    setCurrentPage((prevPage) =>
-      Math.max(0, Math.min(prevPage + direction, PAGES.length - 1))
-    );
+    handleNavigationPress(() => {
+      setCurrentPage((prevPage) =>
+        Math.max(0, Math.min(prevPage + direction, PAGES.length - 1))
+      );
+    });
   };
 
   const renderCurrentAct = () => {
@@ -151,7 +171,7 @@ export default function Map() {
           {/* Left Side */}
           <View className="w-20 flex-row items-center">
             <TouchableOpacity
-              onPress={() => setIsLuckyModalVisible(true)}
+              onPress={handleLuckyOpen}
               className="w-10 h-10 items-center justify-center"
             >
               <Sparkles width={iconSize} height={iconSize} fill="#34CDB3" />
@@ -203,7 +223,7 @@ export default function Map() {
           <View className="w-20 flex-row items-center justify-end">
             <View className="flex-1 h-[1px] bg-accent-dark mr-2" />
             <TouchableOpacity
-              onPress={() => setIsSearchModalVisible(true)}
+              onPress={handleSearchOpen}
               className="w-10 h-10 items-center justify-center"
             >
               <Telescope width={iconSize} height={iconSize} fill="#34CDB3" />
@@ -226,47 +246,49 @@ export default function Map() {
         {renderCurrentAct()}
       </View>
 
-      {/* Modals */}
       <TrickModal
         isVisible={selectedTrickId !== null}
-        onClose={() => setSelectedTrickId(null)}
+        onClose={handleTrickModalClose}
         trickId={selectedTrickId || ""}
         completionState={
           selectedTrickId ? trickStates[selectedTrickId] || 0 : 0
         }
         onCompletionChange={handleTrickCompletion}
       />
+
       <InfoModal
         isVisible={selectedInfoId !== null}
-        onClose={() => setSelectedInfoId(null)}
+        onClose={handleInfoModalClose}
         infoId={selectedInfoId || ""}
       />
+
       <FolderModal
         isVisible={selectedFolderId !== null}
-        onClose={() => setSelectedFolderId(null)}
+        onClose={handleFolderModalClose}
         folderId={selectedFolderId || ""}
         trickCompletionStates={trickStates}
         onTrickSelect={handleTrickPress}
       />
+
       <SearchModal
         isVisible={isSearchModalVisible}
-        onClose={() => setIsSearchModalVisible(false)}
+        onClose={handleSearchModalClose}
         onTrickSelect={handleTrickPress}
         trickCompletionStates={trickStates}
       />
+
       <LuckyModal
         isVisible={isLuckyModalVisible}
-        onClose={() => setIsLuckyModalVisible(false)}
+        onClose={handleLuckyModalClose}
         onTrickSelect={handleTrickPress}
         trickStates={trickStates}
         onShowRecommendations={handleRecommendations}
       />
+
       <RecommendationsModal
         isVisible={isRecommendationsVisible}
         onClose={handleRecommendationsClose}
-        onTrickSelect={(trickId) => {
-          handleTrickPress(trickId);
-        }}
+        onTrickSelect={handleTrickPress}
         recommendations={recommendations}
         trickCompletionStates={trickStates}
       />

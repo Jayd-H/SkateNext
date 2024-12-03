@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import { TRICK_DATA, Trick } from "../Data/trickData";
 import { FOLDER_DATA } from "../Data/folderData";
@@ -44,6 +45,16 @@ const FolderModal: React.FC<FolderModalProps> = ({
     }
   }, [isVisible]);
 
+  const handleClose = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onClose();
+  };
+
+  const handleTrickSelect = async (trickId: string) => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onTrickSelect(trickId);
+  };
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
@@ -74,7 +85,7 @@ const FolderModal: React.FC<FolderModalProps> = ({
     <BlurView intensity={30} tint="dark" style={blurViewStyle}>
       <TouchableOpacity
         activeOpacity={1}
-        onPress={onClose}
+        onPress={handleClose}
         className="flex-1"
       />
       <Animated.View
@@ -91,7 +102,7 @@ const FolderModal: React.FC<FolderModalProps> = ({
           <View className="w-12 h-1 bg-accent-bright rounded-full mb-2 self-center opacity-50" />
           <View className="flex-row justify-between items-center mb-2">
             <TouchableOpacity
-              onPress={onClose}
+              onPress={handleClose}
               className="bg-bg-elevated p-3 rounded-2xl"
             >
               <ChevronRight
@@ -110,20 +121,7 @@ const FolderModal: React.FC<FolderModalProps> = ({
               {folder.description}
             </Text>
           )}
-
           <View className="flex-1">
-            {/* Background glow effect */}
-            <View
-              className="absolute inset-0 rounded-3xl opacity-10"
-              style={{
-                backgroundColor: "#183C36",
-                shadowColor: "#34CDB3",
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.3,
-                shadowRadius: 20,
-              }}
-            />
-
             <View className="space-y-4">
               {tricks.map((trick) => (
                 <ModalTrickButton
@@ -132,7 +130,7 @@ const FolderModal: React.FC<FolderModalProps> = ({
                   altNames={trick.alt_names}
                   difficulty={trick.difficulty}
                   completionState={trickCompletionStates[trick.id]}
-                  onPress={() => onTrickSelect(trick.id)}
+                  onPress={() => handleTrickSelect(trick.id)}
                 />
               ))}
             </View>
