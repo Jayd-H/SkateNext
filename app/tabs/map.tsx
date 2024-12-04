@@ -1,5 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  useSharedValue,
+} from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
 import Sparkles from "../../assets/icons/sparkles.svg";
@@ -18,9 +25,40 @@ import { ActHeaderButton } from "../components/Acts/NodeButtons/ActHeaderButton"
 import {
   useTrickStates,
   useInfoStates,
+  useModalVisitStates,
 } from "../components/Utils/StorageService";
 
 const PAGES = ["1", "2", "3", "4"];
+
+const NotificationDot = ({ isVisible }: { isVisible: boolean }) => {
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    if (isVisible) {
+      scale.value = withRepeat(
+        withSequence(
+          withTiming(1.2, { duration: 1000 }),
+          withTiming(1, { duration: 1000 })
+        ),
+        -1,
+        true
+      );
+    }
+  }, [isVisible]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  if (!isVisible) return null;
+
+  return (
+    <Animated.View
+      style={[animatedStyle]}
+      className="absolute top-0 right-0 w-2 h-2 rounded-full border-[1px] border-accent-dark bg-accent"
+    />
+  );
+};
 
 export default function Map() {
   const {
@@ -33,6 +71,7 @@ export default function Map() {
     isLoading: infoLoading,
     updateInfoState,
   } = useInfoStates();
+  const { modalVisitStates, updateModalVisitState } = useModalVisitStates();
 
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTrickId, setSelectedTrickId] = useState<string | null>(null);
@@ -44,7 +83,6 @@ export default function Map() {
     useState(false);
   const [recommendations, setRecommendations] = useState<string[]>([]);
 
-  // Navigation haptics - Light impact
   const handleNavigationPress = async (action: () => void) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     action();
@@ -62,11 +100,16 @@ export default function Map() {
   const handleFolderPress = (id: string) =>
     handleNavigationPress(() => setSelectedFolderId(id));
   const handleSearchOpen = () =>
-    handleNavigationPress(() => setIsSearchModalVisible(true));
+    handleNavigationPress(() => {
+      setIsSearchModalVisible(true);
+      updateModalVisitState("search", true);
+    });
   const handleLuckyOpen = () =>
-    handleNavigationPress(() => setIsLuckyModalVisible(true));
+    handleNavigationPress(() => {
+      setIsLuckyModalVisible(true);
+      updateModalVisitState("lucky", true);
+    });
 
-  // Modal close handlers
   const handleTrickModalClose = () =>
     handleNavigationPress(() => setSelectedTrickId(null));
   const handleInfoModalClose = () =>
@@ -80,7 +123,6 @@ export default function Map() {
   const handleRecommendationsClose = () =>
     handleNavigationPress(() => setIsRecommendationsVisible(false));
 
-  // Non-haptic handlers
   const handleTrickCompletion = (trickId: string, state: number) => {
     updateTrickState(trickId, state);
   };
@@ -120,7 +162,6 @@ export default function Map() {
     }
   };
 
-  // Page navigation
   const changePage = (direction: number) => {
     handleNavigationPress(() => {
       setCurrentPage((prevPage) =>
@@ -161,25 +202,27 @@ export default function Map() {
     );
   }
 
-  const iconSize = 28;
+  const iconsize: number = 28;
 
   return (
     <View className="flex-1 bg-background">
-      {/* Header */}
       <View className="w-full py-2 mt-8">
+        {/* Header */}
+
         <View className="px-4 flex-row items-center justify-between">
-          {/* Left Side */}
           <View className="w-20 flex-row items-center">
             <TouchableOpacity
               onPress={handleLuckyOpen}
               className="w-10 h-10 items-center justify-center"
             >
-              <Sparkles width={iconSize} height={iconSize} fill="#34CDB3" />
+              <View className="relative">
+                <Sparkles width={iconsize} height={iconsize} fill="#34CDB3" />
+                <NotificationDot isVisible={!modalVisitStates.lucky} />
+              </View>
             </TouchableOpacity>
             <View className="flex-1 h-[1px] bg-accent-dark ml-2" />
           </View>
 
-          {/* Center Navigation */}
           <View className="w-44 flex-row items-center justify-center">
             <TouchableOpacity
               onPress={() => changePage(-1)}
@@ -219,20 +262,23 @@ export default function Map() {
             </TouchableOpacity>
           </View>
 
-          {/* Right Side */}
           <View className="w-20 flex-row items-center justify-end">
             <View className="flex-1 h-[1px] bg-accent-dark mr-2" />
             <TouchableOpacity
               onPress={handleSearchOpen}
               className="w-10 h-10 items-center justify-center"
             >
-              <Telescope width={iconSize} height={iconSize} fill="#34CDB3" />
+              <View className="relative">
+                <Telescope width={iconsize} height={iconsize} fill="#34CDB3" />
+                <NotificationDot isVisible={!modalVisitStates.search} />
+              </View>
             </TouchableOpacity>
           </View>
         </View>
       </View>
 
-      {/* Act Header */}
+      {/* Header Button */}
+
       <View className="px-4 mb-12">
         <ActHeaderButton
           topText={getActInfo(currentPage).topText}
@@ -241,10 +287,13 @@ export default function Map() {
         />
       </View>
 
-      {/* Current Act */}
+      {/* Acts */}
+
       <View className="flex-1 w-full bg-background mt-4">
         {renderCurrentAct()}
       </View>
+
+      {/* Modals */}
 
       <TrickModal
         isVisible={selectedTrickId !== null}
