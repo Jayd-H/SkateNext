@@ -12,6 +12,11 @@ interface InfoState {
   [infoId: string]: boolean;
 }
 
+interface ModalVisitState {
+  lucky: boolean;
+  search: boolean;
+}
+
 interface CalorieSession {
   timestamp: number;
   duration: number;
@@ -31,6 +36,7 @@ export const STORAGE_KEYS = {
   USER_WEIGHT: "user_weight",
   SETUP_COMPLETE: "setup_complete",
   CALORIE_LOGS: "calorie_logs",
+  MODAL_VISITS: "modal_visits",
 } as const;
 
 const BOSS_TRICKS = {
@@ -60,6 +66,10 @@ class StorageService {
     try {
       const initialTrickStates: TrickState = {};
       const initialInfoStates: InfoState = {};
+      const initialModalVisits: ModalVisitState = {
+        lucky: false,
+        search: false,
+      };
 
       TRICK_DATA.forEach((trick) => {
         initialTrickStates[trick.id] = 0;
@@ -103,12 +113,46 @@ class StorageService {
           STORAGE_KEYS.INFO_STATES,
           JSON.stringify(initialInfoStates)
         ),
+        AsyncStorage.setItem(
+          STORAGE_KEYS.MODAL_VISITS,
+          JSON.stringify(initialModalVisits)
+        ),
         AsyncStorage.setItem(STORAGE_KEYS.USER_AGE, JSON.stringify(age)),
         AsyncStorage.setItem(STORAGE_KEYS.USER_WEIGHT, JSON.stringify(weight)),
         AsyncStorage.setItem(STORAGE_KEYS.SETUP_COMPLETE, "true"),
       ]);
     } catch (error) {
       console.error("Error initializing storage:", error);
+      throw error;
+    }
+  }
+
+  static async getModalVisitStates(): Promise<ModalVisitState> {
+    try {
+      const states = await AsyncStorage.getItem(STORAGE_KEYS.MODAL_VISITS);
+      return states ? JSON.parse(states) : { lucky: false, search: false };
+    } catch (error) {
+      console.error("Error getting modal visit states:", error);
+      return { lucky: false, search: false };
+    }
+  }
+
+  static async updateModalVisitState(
+    modalId: keyof ModalVisitState,
+    visited: boolean
+  ): Promise<void> {
+    try {
+      const currentStates = await this.getModalVisitStates();
+      const updatedStates = {
+        ...currentStates,
+        [modalId]: visited,
+      };
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.MODAL_VISITS,
+        JSON.stringify(updatedStates)
+      );
+    } catch (error) {
+      console.error("Error updating modal visit state:", error);
       throw error;
     }
   }
@@ -176,6 +220,7 @@ class StorageService {
         STORAGE_KEYS.USER_WEIGHT,
         STORAGE_KEYS.SETUP_COMPLETE,
         STORAGE_KEYS.CALORIE_LOGS,
+        STORAGE_KEYS.MODAL_VISITS,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);
@@ -274,6 +319,38 @@ export function useTrickStates() {
   };
 
   return { trickStates, isLoading, updateTrickState };
+}
+
+export function useModalVisitStates() {
+  const [modalVisitStates, setModalVisitStates] = useState<ModalVisitState>({
+    lucky: false,
+    search: false,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadModalVisitStates();
+  }, []);
+
+  const loadModalVisitStates = async () => {
+    setIsLoading(true);
+    const states = await StorageService.getModalVisitStates();
+    setModalVisitStates(states);
+    setIsLoading(false);
+  };
+
+  const updateModalVisitState = async (
+    modalId: keyof ModalVisitState,
+    visited: boolean
+  ) => {
+    await StorageService.updateModalVisitState(modalId, visited);
+    setModalVisitStates((prev) => ({
+      ...prev,
+      [modalId]: visited,
+    }));
+  };
+
+  return { modalVisitStates, isLoading, updateModalVisitState };
 }
 
 export function useInfoStates() {
