@@ -12,10 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#0F1413"
     },
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    "platforms": ["ios", "android"],
     "androidStatusBar": {
       "backgroundColor": "#0F1413",
       "translucent": false
