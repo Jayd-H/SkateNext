@@ -41,7 +41,6 @@ export default function TabLayout(): React.ReactElement {
               fill={focused ? "#2A9E8A" : "#7A9E9B"}
             />
           ),
-          unmountOnBlur: true,
         }}
         listeners={{
           tabPress: handleTabPress,
