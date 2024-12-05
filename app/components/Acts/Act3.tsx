@@ -236,6 +236,7 @@ const Act3: React.FC<Act3Props> = (props) => {
       nodes={nodes}
       connections={connections}
       backgroundElements={backgroundElements}
+      actNumber={3}
     />
   );
 };

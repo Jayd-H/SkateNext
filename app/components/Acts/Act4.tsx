@@ -1,6 +1,7 @@
 import React from "react";
 import ActGrid, { ActNodeData, ActConnectionData } from "./ActGrid";
 import Gyroscope from "../../../assets/icons/gyroscope.svg";
+import { View } from "react-native";
 
 const nodes: ActNodeData[] = [
   {
@@ -238,12 +239,15 @@ interface Act4Props {
 
 const Act4: React.FC<Act4Props> = (props) => {
   return (
-    <ActGrid
-      {...props}
-      nodes={nodes}
-      connections={connections}
-      backgroundElements={backgroundElements}
-    />
+    <View className="flex-1">
+      <ActGrid
+        {...props}
+        nodes={nodes}
+        connections={connections}
+        backgroundElements={backgroundElements}
+        actNumber={4}
+      />
+    </View>
   );
 };
 
