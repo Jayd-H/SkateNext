@@ -32,6 +32,7 @@ interface TrickModalProps {
   onCompletionChange: (trickId: string, state: number) => void;
 }
 
+//! this file is a bit of a mess and could use some refactoring
 const TrickModal: React.FC<TrickModalProps> = ({
   isVisible,
   onClose,
@@ -45,9 +46,20 @@ const TrickModal: React.FC<TrickModalProps> = ({
   const [isConnected, setIsConnected] = useState(true);
 
   const getTrickNameSize = (name: string) => {
-    if (name.length > 25) return "text-lg";
-    if (name.length > 15) return "text-xl";
+    if (name.length > 23) return "text-base";
+    if (name.length > 15) return "text-lg";
+    if (name.length > 10) return "text-xl";
     return "text-2xl";
+  };
+
+  const getQuestionTextSize = (name: string) => {
+    return name.length > 15 ? "text-xs" : "text-sm";
+  };
+
+  const getContentPadding = (name: string) => {
+    if (name.length > 20) return "pb-44";
+    if (name.length > 30) return "pb-40";
+    return "pb-36";
   };
 
   React.useEffect(() => {
@@ -193,9 +205,10 @@ const TrickModal: React.FC<TrickModalProps> = ({
       <Pressable onPress={onClose} className="flex-1" />
       <Animated.View
         style={[animatedStyle]}
-        className="bg-bg-card rounded-t-[32px]"
+        className="bg-bg-card rounded-t-[32px] h-full"
       >
-        <View className="h-full relative">
+        <View className="flex-1">
+          {/* Header Section */}
           <View className="p-6">
             <View className="w-12 h-1 bg-accent-bright rounded-full mb-4 self-center mt-4 opacity-50" />
 
@@ -226,6 +239,7 @@ const TrickModal: React.FC<TrickModalProps> = ({
               </TouchableOpacity>
             </View>
 
+            {/* Trick Info Section */}
             <View>
               <View className="h-8 mb-6 -mt-16 w-full relative">
                 {renderDifficulty(trick.difficulty)}
@@ -252,8 +266,13 @@ const TrickModal: React.FC<TrickModalProps> = ({
                 </View>
               </View>
 
+              {/* Buttons Section */}
               <View className="w-full px-4 mt-3">
-                <Text className="text-text font-montserrat-alt text-sm mb-2 text-center tracking-wide">
+                <Text
+                  className={`text-text font-montserrat-alt ${getQuestionTextSize(
+                    trick.name
+                  )} mb-2 text-center tracking-wide`}
+                >
                   Can you land a {trick.name}?
                 </Text>
                 <Button
@@ -281,7 +300,7 @@ const TrickModal: React.FC<TrickModalProps> = ({
             </View>
           </View>
 
-          <View className="absolute bottom-0 left-0 right-0 pb-40">
+          <View className="flex-1 -mt-5">
             <ContentSection
               description={trick.description}
               commonMistakes={trick.common_mistakes}

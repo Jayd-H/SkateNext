@@ -153,6 +153,7 @@ const Act2: React.FC<Act2Props> = (props) => {
       nodes={nodes}
       connections={createConnections()}
       backgroundElements={backgroundElements}
+      actNumber={2}
     />
   );
 };

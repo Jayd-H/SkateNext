@@ -151,6 +151,7 @@ const Act1: React.FC<Act1Props> = (props) => {
       nodes={nodes}
       connections={createConnections()}
       backgroundElements={backgroundElements}
+      actNumber={1}
     />
   );
 };

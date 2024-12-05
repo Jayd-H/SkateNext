@@ -12,6 +12,7 @@ import {
   type Point,
   type ConnectionProps,
 } from "./Connection";
+import { getProgressiveTrick, StatsButton } from "./NodeButtons/StatsButton";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -65,6 +66,7 @@ interface ActGridProps {
   trickCompletionStates: Record<string, number>;
   infoCompletionStates: Record<string, boolean>;
   backgroundElements?: BackgroundElement[];
+  actNumber: number;
 }
 
 const ActGrid: React.FC<ActGridProps> = ({
@@ -77,6 +79,7 @@ const ActGrid: React.FC<ActGridProps> = ({
   trickCompletionStates,
   infoCompletionStates,
   backgroundElements = [],
+  actNumber,
 }) => {
   // State
   const [contentHeight, setContentHeight] = useState(0);
@@ -201,7 +204,21 @@ const ActGrid: React.FC<ActGridProps> = ({
     }
   };
 
-  const renderBossNode = () => {
+  const renderBottomButton = () => {
+    if (actNumber === 4) {
+      return (
+        <View style={styles.bossContainer}>
+          <StatsButton
+            onPress={() => {
+              const trickId = getProgressiveTrick(trickCompletionStates);
+              onTrickPress(trickId);
+            }}
+            trickStates={trickCompletionStates}
+          />
+        </View>
+      );
+    }
+
     if (!bossNode) return null;
 
     return (
@@ -221,21 +238,18 @@ const ActGrid: React.FC<ActGridProps> = ({
       style={styles.container}
       contentContainerStyle={[styles.scrollContent, { minHeight }]}
     >
-      {/* Background Elements */}
       {backgroundElements.map((bg, index) => (
         <View key={index} style={[styles.backgroundElement, bg.position]}>
           {bg.component}
         </View>
       ))}
 
-      {/* Connections Layer */}
       <ConnectionContainer
         connections={processConnections}
         width={SCREEN_WIDTH}
         height={minHeight}
       />
 
-      {/* Regular Nodes Layer */}
       <View
         style={styles.nodesContainer}
         onLayout={(e) => setContentHeight(e.nativeEvent.layout.height)}
@@ -243,8 +257,7 @@ const ActGrid: React.FC<ActGridProps> = ({
         {regularNodes.map(renderNode)}
       </View>
 
-      {/* Boss Node Layer */}
-      {renderBossNode()}
+      {renderBottomButton()}
     </ScrollView>
   );
 };
