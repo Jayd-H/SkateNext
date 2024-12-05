@@ -23,6 +23,7 @@ import SearchModal from "../components/Modals/SearchModal";
 import RecommendationsModal from "../components/Modals/RecommendationsModal";
 import { ActHeaderButton } from "../components/Acts/NodeButtons/ActHeaderButton";
 import LoadingSpinner from "../components/Generic/LoadingSpinner";
+import ActListModal from "../components/Modals/ActListModal";
 import {
   useTrickStates,
   useInfoStates,
@@ -30,6 +31,91 @@ import {
 } from "../components/Utils/StorageService";
 
 const PAGES = ["1", "2", "3", "4"];
+
+//! for now this works but ideally we would do this dynamically by looking at the acts
+const ACT_TRICKS: Record<number, string[]> = {
+  1: [
+    "stance",
+    "pushing",
+    "fakieshuvs",
+    "kickturn",
+    "basicshuvs",
+    "powerslide",
+    "nollieshuvs",
+    "nc",
+    "manual",
+    "ncs",
+    "nosemanual",
+    "boneless",
+    "ollie",
+  ],
+  2: [
+    "fakieollie",
+    "nollie",
+    "switchollie",
+    "ollievariations",
+    "nollievariations",
+    "fakieollievariations",
+    "switchshuvs",
+    "bigspin",
+    "fsbigspin",
+    "bsbigspins",
+    "fsbigspins",
+    "kickflipinfo",
+    "kickflip",
+  ],
+  3: [
+    "heelflip",
+    "kickflipvariations",
+    "heelflipvariations",
+    "bsflipvariations",
+    "fsflipvariations",
+    "fsheelflipvariations",
+    "bsheelflipvariations",
+    "varialkickflip",
+    "varialheelflip",
+    "hardflip",
+    "inwardheelflip",
+    "varialflipvariations",
+    "varialheelflipvariations",
+    "hardflipvariations",
+    "inwardheelflipvariations",
+    "biggerspin",
+    "biggerspins",
+    "fsbiggerspin",
+    "fsbiggerspins",
+    "hospitalflip",
+    "impossible",
+    "dolphinflip",
+    "treflip",
+  ],
+  4: [
+    "bsmysticspins",
+    "fsmysticspins",
+    "doubleflips",
+    "doubleheels",
+    "treflips",
+    "laserflips",
+    "doubletres",
+    "doublelasers",
+    "impossibles",
+    "dolphinflips",
+    "nightmareflips",
+    "daydreamflips",
+    "bigflips",
+    "bigheels",
+    "gazellespins",
+    "gazelleflips",
+    "lateflip",
+    "lateheel",
+    "latebsshuv",
+    "latefsshuv",
+    "bs360ollie",
+    "fs360ollie",
+    "blizzardflip",
+    "ghettobirds",
+  ],
+};
 
 const NotificationDot = ({ isVisible }: { isVisible: boolean }) => {
   const scale = useSharedValue(1);
@@ -84,6 +170,7 @@ export default function Map() {
     useState(false);
   const [recommendations, setRecommendations] = useState<string[]>([]);
   const [isReadyToShow, setIsReadyToShow] = useState(false);
+  const [isActListModalVisible, setIsActListModalVisible] = useState(false);
 
   const handleNavigationPress = async (action: () => void) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -111,6 +198,11 @@ export default function Map() {
       setIsLuckyModalVisible(true);
       updateModalVisitState("lucky", true);
     });
+
+  const handleActListOpen = () =>
+    handleNavigationPress(() => setIsActListModalVisible(true));
+  const handleActListClose = () =>
+    handleNavigationPress(() => setIsActListModalVisible(false));
 
   const handleTrickModalClose = () =>
     handleNavigationPress(() => setSelectedTrickId(null));
@@ -296,7 +388,7 @@ export default function Map() {
         <ActHeaderButton
           topText={getActInfo(currentPage).topText}
           bottomText={getActInfo(currentPage).bottomText}
-          onPress={() => {}}
+          onPress={handleActListOpen}
         />
       </View>
 
@@ -353,6 +445,15 @@ export default function Map() {
         onTrickSelect={handleTrickPress}
         recommendations={recommendations}
         trickCompletionStates={trickStates}
+      />
+
+      <ActListModal
+        isVisible={isActListModalVisible}
+        onClose={handleActListClose}
+        onTrickSelect={handleTrickPress}
+        trickIds={ACT_TRICKS[currentPage + 1] || []}
+        trickCompletionStates={trickStates}
+        actTitle={getActInfo(currentPage).topText}
       />
     </View>
   );
