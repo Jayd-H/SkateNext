@@ -15,13 +15,17 @@
     "platforms": ["ios", "android"],
     "androidStatusBar": {
       "backgroundColor": "#0F1413",
+      "barStyle": "light-content",
       "translucent": false
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "backgroundColor": "#0F1413",
+      "userInterfaceStyle": "dark"
     },
     "androidNavigationBar": {
-      "backgroundColor": "#131918"
+      "backgroundColor": "#131918",
+      "barStyle": "light-content"
     },
     "android": {
       "adaptiveIcon": {
@@ -30,8 +34,15 @@
       },
       "softwareKeyboardLayoutMode": "pan",
       "backgroundColor": "#0F1413",
-      "package": "com.jaydchw.SkateNext"
+      "package": "com.jaydchw.SkateNext",
+      "navigationBar": {
+        "backgroundColor": "#0F1413"
+      }
     },
+    "theme": {
+      "backgroundColor": "#0F1413"
+    },
+    "assetBundlePatterns": ["**/*"],
     "fonts": [
       {
         "asset": "assets/fonts/Montserrat/Montserrat-Regular.ttf",

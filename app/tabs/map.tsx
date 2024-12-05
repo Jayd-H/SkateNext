@@ -22,6 +22,7 @@ import LuckyModal from "../components/Modals/LuckyModal";
 import SearchModal from "../components/Modals/SearchModal";
 import RecommendationsModal from "../components/Modals/RecommendationsModal";
 import { ActHeaderButton } from "../components/Acts/NodeButtons/ActHeaderButton";
+import LoadingSpinner from "../components/Generic/LoadingSpinner";
 import {
   useTrickStates,
   useInfoStates,
@@ -82,6 +83,7 @@ export default function Map() {
   const [isRecommendationsVisible, setIsRecommendationsVisible] =
     useState(false);
   const [recommendations, setRecommendations] = useState<string[]>([]);
+  const [isReadyToShow, setIsReadyToShow] = useState(false);
 
   const handleNavigationPress = async (action: () => void) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -194,10 +196,21 @@ export default function Map() {
     }
   };
 
-  if (tricksLoading || infoLoading) {
+  useEffect(() => {
+    if (!tricksLoading && !infoLoading) {
+      setTimeout(() => {
+        setIsReadyToShow(true);
+      }, 1000);
+    }
+  }, [tricksLoading, infoLoading]);
+
+  if (tricksLoading || infoLoading || !isReadyToShow) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
+      <View className="flex-1 items-center justify-center bg-background">
+        <Text className="text-center text-accent-dark font-montserrat-alt text-lg tracking-widest">
+          getting your map ready...
+        </Text>
+        <LoadingSpinner />
       </View>
     );
   }
