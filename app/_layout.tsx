@@ -1,12 +1,15 @@
 import React, { useCallback, useEffect } from "react";
-import { View, SafeAreaView, StatusBar } from "react-native";
+import { View, SafeAreaView, StatusBar, StyleSheet } from "react-native";
 import { Slot } from "expo-router";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as Notifications from "expo-notifications";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-// Keep the splash screen visible while we fetch resources
+const BackgroundView: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => <View style={{ flex: 1, backgroundColor: "#0F1413" }}>{children}</View>;
+
 SplashScreen.preventAutoHideAsync();
 
 Notifications.setNotificationHandler({
@@ -72,20 +75,30 @@ export default function Layout(): React.ReactElement | null {
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {
-    return null;
+    return (
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#0F1413" />
+      </View>
+    );
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View
-        style={{ flex: 1, backgroundColor: "#0F1413" }}
-        onLayout={onLayoutRootView}
-      >
-        <StatusBar barStyle="light-content" backgroundColor="#0F1413" />
-        <SafeAreaView style={{ flex: 1 }}>
-          <Slot />
-        </SafeAreaView>
-      </View>
+    <GestureHandlerRootView style={styles.container}>
+      <BackgroundView>
+        <View style={styles.container} onLayout={onLayoutRootView}>
+          <StatusBar barStyle="light-content" backgroundColor="#0F1413" />
+          <SafeAreaView style={styles.container}>
+            <Slot />
+          </SafeAreaView>
+        </View>
+      </BackgroundView>
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#0F1413",
+  },
+});

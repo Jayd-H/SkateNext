@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { StorageService } from "./components/Utils/StorageService";
-import AgeSelector from "./components/AgeSelector";
-import WeightSelector from "./components/WeightSelector";
-import SkillLevelSelector from "./components/SkillLevelSelector";
+import AgeSelector from "./components/Onboarding/AgeSelector";
+import WeightSelector from "./components/Onboarding/WeightSelector";
+import SkillLevelSelector from "./components/Onboarding/SkillLevelSelector";
 
 type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Master";
-
-const DEFAULT_WEIGHT = 70; // Average adult weight in kg
+const DEFAULT_WEIGHT = 70;
 
 export default function Home() {
   const [age, setAge] = useState<number | null>(null);
@@ -44,7 +43,6 @@ export default function Home() {
 
   const handleSkillLevelComplete = async (selectedLevel: SkillLevel) => {
     if (!age || !weight) return;
-
     setIsInitializing(true);
     try {
       await StorageService.initializeWithSkillLevel(selectedLevel, age, weight);
@@ -52,6 +50,14 @@ export default function Home() {
     } catch (error) {
       console.error("Error initializing app:", error);
       setIsInitializing(false);
+    }
+  };
+
+  const handleBack = () => {
+    if (weight !== null) {
+      setWeight(null);
+    } else if (age !== null) {
+      setAge(null);
     }
   };
 
@@ -63,17 +69,20 @@ export default function Home() {
     );
   }
 
-  if (age === null) {
+  if (!age) {
     return <AgeSelector onComplete={handleAgeComplete} />;
   }
 
-  if (weight === null) {
-    return <WeightSelector onComplete={handleWeightComplete} />;
+  if (!weight) {
+    return (
+      <WeightSelector onComplete={handleWeightComplete} onBack={handleBack} />
+    );
   }
 
   return (
     <SkillLevelSelector
       onComplete={handleSkillLevelComplete}
+      onBack={handleBack}
       isLoading={isInitializing}
     />
   );

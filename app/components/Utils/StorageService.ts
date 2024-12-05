@@ -304,10 +304,14 @@ export function useTrickStates() {
   }, []);
 
   const loadTrickStates = async () => {
-    setIsLoading(true);
-    const states = await StorageService.getTrickStates();
-    setTrickStates(states);
-    setIsLoading(false);
+    try {
+      const states = await StorageService.getTrickStates();
+      setTrickStates(states);
+    } catch (error) {
+      console.error("Error loading trick states:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const updateTrickState = async (trickId: string, state: number) => {
@@ -362,10 +366,14 @@ export function useInfoStates() {
   }, []);
 
   const loadInfoStates = async () => {
-    setIsLoading(true);
-    const states = await StorageService.getInfoStates();
-    setInfoStates(states);
-    setIsLoading(false);
+    try {
+      const states = await StorageService.getInfoStates();
+      setInfoStates(states);
+    } catch (error) {
+      console.error("Error loading info states:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const updateInfoState = async (infoId: string, state: boolean) => {
