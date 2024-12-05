@@ -23,6 +23,41 @@ const ContentSection: React.FC<ContentSectionProps> = ({
   const [showingDescription, setShowingDescription] = React.useState(true);
   const progress = useSharedValue(0);
 
+  const getDescriptionTextSize = (text: string) => {
+    return text.length > 300 ? "text-xs" : "text-sm";
+  };
+
+  const getMistakesTextSize = (text: string) => {
+    return text.length > 200 ? "text-xs" : "text-sm";
+  };
+
+  const renderCustomMistakes = (mistakes: string) => {
+    const textSize = getMistakesTextSize(mistakes);
+    const subheadingSize = textSize === "text-xs" ? "text-sm" : "text-base";
+
+    return mistakes.split(/\[([^\]]+)\]/).map((part, index) => {
+      if (index % 2 === 0) {
+        return part.trim() ? (
+          <Text
+            key={index}
+            className={`text-text-dim font-montserrat mb-2 px-4 leading-6 ${textSize}`}
+          >
+            {part.trim()}
+          </Text>
+        ) : null;
+      } else {
+        return (
+          <Text
+            key={index}
+            className={`text-accent-muted font-montserrat-alt-medium px-4 ${subheadingSize}`}
+          >
+            {part}
+          </Text>
+        );
+      }
+    });
+  };
+
   const toggleSection = async (showDesc: boolean) => {
     if (showDesc !== showingDescription) {
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -78,7 +113,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
   }));
 
   return (
-    <View className="px-4 mt-2">
+    <View className="w-5/6 self-center">
       <View className="flex-row justify-between items-center mb-6">
         <Pressable onPress={() => toggleSection(true)} className="px-4">
           <View>
@@ -115,12 +150,16 @@ const ContentSection: React.FC<ContentSectionProps> = ({
       </View>
       <View className="">
         <Animated.View style={descriptionStyle}>
-          <Text className="text-text-dim font-montserrat leading-6 text-sm px-4 -mt-4">
+          <Text
+            className={`text-text-dim font-montserrat leading-6 px-4 -mt-4 ${getDescriptionTextSize(
+              description
+            )}`}
+          >
             {description}
           </Text>
         </Animated.View>
         <Animated.View style={mistakesStyle} className="-mt-4">
-          {renderCommonMistakes(commonMistakes)}
+          {renderCustomMistakes(commonMistakes)}
         </Animated.View>
       </View>
     </View>
