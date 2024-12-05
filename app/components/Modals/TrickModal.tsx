@@ -44,6 +44,12 @@ const TrickModal: React.FC<TrickModalProps> = ({
   const [isVideoModalVisible, setIsVideoModalVisible] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
 
+  const getTrickNameSize = (name: string) => {
+    if (name.length > 25) return "text-lg";
+    if (name.length > 15) return "text-xl";
+    return "text-2xl";
+  };
+
   React.useEffect(() => {
     const checkConnection = async () => {
       const networkState = await Network.getNetworkStateAsync();
@@ -187,87 +193,101 @@ const TrickModal: React.FC<TrickModalProps> = ({
       <Pressable onPress={onClose} className="flex-1" />
       <Animated.View
         style={[animatedStyle]}
-        className="bg-bg-card h-full rounded-t-[32px] p-6"
+        className="bg-bg-card rounded-t-[32px]"
       >
-        <View className="w-12 h-1 bg-accent-bright rounded-full mb-4 self-center mt-4 opacity-50" />
+        <View className="h-full relative">
+          <View className="p-6">
+            <View className="w-12 h-1 bg-accent-bright rounded-full mb-4 self-center mt-4 opacity-50" />
 
-        <View className="flex-row justify-between items-center mb-6">
-          <TouchableOpacity
-            onPress={onClose}
-            className="bg-bg-elevated p-3 rounded-2xl"
-          >
-            <ChevronRight
-              width={24}
-              height={24}
-              style={{ transform: [{ rotate: "180deg" }] }}
-              fill="#4FEDE2"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleVHSPress}
-            disabled={!isConnected}
-            className={`bg-bg-elevated border-2 ${
-              isConnected ? "border-accent-bright" : "border-text-dim"
-            } rounded-2xl p-3`}
-          >
-            <VHS
-              width={24}
-              height={24}
-              fill={isConnected ? "#4FEDE2" : "#7A9E9B"}
-            />
-          </TouchableOpacity>
-        </View>
+            <View className="flex-row justify-between items-center mb-6">
+              <TouchableOpacity
+                onPress={onClose}
+                className="bg-bg-elevated p-3 rounded-2xl"
+              >
+                <ChevronRight
+                  width={24}
+                  height={24}
+                  style={{ transform: [{ rotate: "180deg" }] }}
+                  fill="#4FEDE2"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleVHSPress}
+                disabled={!isConnected}
+                className={`bg-bg-elevated border-2 ${
+                  isConnected ? "border-accent-bright" : "border-text-dim"
+                } rounded-2xl p-3`}
+              >
+                <VHS
+                  width={24}
+                  height={24}
+                  fill={isConnected ? "#4FEDE2" : "#7A9E9B"}
+                />
+              </TouchableOpacity>
+            </View>
 
-        <View className="w-full items-center">
-          <View className="h-8 mb-6 -mt-16 w-full relative">
-            {renderDifficulty(trick.difficulty)}
+            <View>
+              <View className="h-8 mb-6 -mt-16 w-full relative">
+                {renderDifficulty(trick.difficulty)}
+              </View>
+
+              <View className="w-5/6 self-center justify-center">
+                <Text
+                  className={`${getTrickNameSize(
+                    trick.name
+                  )} text-accent-bright font-montserrat-alt-bold text-center tracking-wide uppercase mb-1`}
+                >
+                  {trick.name}
+                </Text>
+                <View className="justify-center -mt-1">
+                  {trick.alt_names ? (
+                    <Text className="text-text-dim font-montserrat-medium text-center">
+                      {trick.alt_names}
+                    </Text>
+                  ) : (
+                    <Text className="text-text-dim font-montserrat-medium text-center opacity-0">
+                      placeholder
+                    </Text>
+                  )}
+                </View>
+              </View>
+
+              <View className="w-full px-4 mt-3">
+                <Text className="text-text font-montserrat-alt text-sm mb-2 text-center tracking-wide">
+                  Can you land a {trick.name}?
+                </Text>
+                <Button
+                  topText="Y E S"
+                  bottomText="I can land 4-5 in every 5 tries"
+                  isSelected={completionState === 2}
+                  onPress={() => handleButtonSelection("yes")}
+                  variant="selectable"
+                />
+                <Button
+                  topText="S O M E T I M E S"
+                  bottomText="I can land 1-3 in every 5 tries"
+                  isSelected={completionState === 1}
+                  onPress={() => handleButtonSelection("sometimes")}
+                  variant="selectable"
+                />
+                <Button
+                  topText="N O T  Y E T"
+                  bottomText="I have never landed one"
+                  isSelected={completionState === 0}
+                  onPress={() => handleButtonSelection("no")}
+                  variant="selectable"
+                />
+              </View>
+            </View>
           </View>
 
-          <Text
-            className={`${
-              trick.name.length > 15 ? "text-xl" : "text-2xl"
-            } text-accent-bright font-montserrat-alt-bold text-center tracking-wide uppercase mb-1 w-5/6`}
-          >
-            {trick.name}
-          </Text>
-          {trick.alt_names && trick.alt_names.length > 0 && (
-            <Text className="text-text-dim font-montserrat-medium text-center">
-              {trick.alt_names}
-            </Text>
-          )}
-
-          <View className="w-full px-4 mt-4">
-            <Text className="text-text font-montserrat-alt text-sm mb-2 text-center tracking-wide">
-              Can you land a {trick.name}?
-            </Text>
-            <Button
-              topText="Y E S"
-              bottomText="I can land 4-5 in every 5 tries"
-              isSelected={completionState === 2}
-              onPress={() => handleButtonSelection("yes")}
-              variant="selectable"
-            />
-            <Button
-              topText="S O M E T I M E S"
-              bottomText="I can land 1-3 in every 5 tries"
-              isSelected={completionState === 1}
-              onPress={() => handleButtonSelection("sometimes")}
-              variant="selectable"
-            />
-            <Button
-              topText="N O T  Y E T"
-              bottomText="I have never landed one"
-              isSelected={completionState === 0}
-              onPress={() => handleButtonSelection("no")}
-              variant="selectable"
+          <View className="absolute bottom-0 left-0 right-0 pb-40">
+            <ContentSection
+              description={trick.description}
+              commonMistakes={trick.common_mistakes}
+              renderCommonMistakes={renderCommonMistakes}
             />
           </View>
-
-          <ContentSection
-            description={trick.description}
-            commonMistakes={trick.common_mistakes}
-            renderCommonMistakes={renderCommonMistakes}
-          />
         </View>
       </Animated.View>
 
