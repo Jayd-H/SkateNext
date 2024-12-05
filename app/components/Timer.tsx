@@ -18,6 +18,7 @@ import Animated, {
 import * as Notifications from "expo-notifications";
 import PlayButton from "../../assets/icons/play-button-blue.svg";
 import * as Haptics from "expo-haptics";
+import { StorageService } from "./Utils/StorageService";
 
 interface TimerProps {
   onTimeUpdate: (time: number) => void;
@@ -42,6 +43,20 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
   const scale = useSharedValue<number>(1);
   const flyingTextOpacity = useSharedValue<number>(0);
   const flyingTextTranslateY = useSharedValue<number>(20);
+
+  useEffect(() => {
+    const loadTimerState = async () => {
+      const savedState = await StorageService.getTimerState();
+      if (savedState && savedState.isRunning) {
+        setIsTimerRunning(true);
+        startTimeRef.current = savedState.startTime;
+        const now = Date.now();
+        const elapsedSeconds = Math.floor((now - savedState.startTime!) / 1000);
+        setDisplayTime(elapsedSeconds);
+      }
+    };
+    loadTimerState();
+  }, []);
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -68,10 +83,8 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
     await Notifications.cancelAllScheduledNotificationsAsync();
   };
 
-  //! ideally the haptics would be on fitness page, but life is too short
   const handleButtonPress = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setIsTimerRunning((prev) => !prev);
 
     opacity.value = withSequence(
       withTiming(0, { duration: 150, easing: Easing.inOut(Easing.ease) }),
@@ -84,8 +97,17 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
 
     flyingTextOpacity.value = 0;
     flyingTextTranslateY.value = 20;
+
     if (!isTimerRunning) {
-      startTimeRef.current = Date.now() - displayTime * 1000;
+      const now = Date.now();
+      startTimeRef.current = now - displayTime * 1000;
+      setIsTimerRunning(true);
+      await StorageService.saveTimerState({
+        isRunning: true,
+        startTime: startTimeRef.current,
+        elapsedTime: displayTime,
+      });
+
       flyingTextOpacity.value = withDelay(
         2000,
         withTiming(1, { duration: 300, easing: Easing.inOut(Easing.ease) })
@@ -95,9 +117,11 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
         withTiming(0, { duration: 300, easing: Easing.inOut(Easing.ease) })
       );
     } else {
+      setIsTimerRunning(false);
       onTimerStop(displayTime);
       setDisplayTime(0);
       startTimeRef.current = null;
+      await StorageService.clearTimerState();
       await cancelNotifications();
     }
   }, [isTimerRunning, displayTime, onTimerStop]);
@@ -114,12 +138,19 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
+    //* to save the timer state periodically
     if (isTimerRunning && startTimeRef.current) {
       intervalId = setInterval(() => {
         const now = Date.now();
         const elapsedSeconds = Math.floor((now - startTimeRef.current!) / 1000);
         setDisplayTime(elapsedSeconds);
         onTimeUpdate(elapsedSeconds);
+
+        StorageService.saveTimerState({
+          isRunning: true,
+          startTime: startTimeRef.current!,
+          elapsedTime: elapsedSeconds,
+        });
       }, 1000);
     }
     return () => {
@@ -137,15 +168,21 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
             nextAppState.match(/inactive|background/)
           ) {
             await scheduleNotification();
+            await StorageService.saveTimerState({
+              isRunning: true,
+              startTime: startTimeRef.current!,
+              elapsedTime: displayTime,
+            });
           } else if (
             appState.current.match(/inactive|background/) &&
             nextAppState === "active"
           ) {
             await cancelNotifications();
-            if (startTimeRef.current) {
+            const savedState = await StorageService.getTimerState();
+            if (savedState && savedState.isRunning && savedState.startTime) {
               const now = Date.now();
               const elapsedSeconds = Math.floor(
-                (now - startTimeRef.current) / 1000
+                (now - savedState.startTime) / 1000
               );
               setDisplayTime(elapsedSeconds);
               onTimeUpdate(elapsedSeconds);
