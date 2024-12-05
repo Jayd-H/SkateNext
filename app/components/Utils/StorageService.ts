@@ -37,6 +37,7 @@ export const STORAGE_KEYS = {
   SETUP_COMPLETE: "setup_complete",
   CALORIE_LOGS: "calorie_logs",
   MODAL_VISITS: "modal_visits",
+  TIMER_STATE: "timer_state",
 } as const;
 
 const BOSS_TRICKS = {
@@ -44,6 +45,12 @@ const BOSS_TRICKS = {
   kickflip: { id: "kickflip", difficulty: 6 },
   treflip: { id: "treflip", difficulty: 10 },
 } as const;
+
+interface TimerState {
+  isRunning: boolean;
+  startTime: number | null;
+  elapsedTime: number;
+}
 
 class StorageService {
   static async isSetupComplete(): Promise<boolean> {
@@ -194,6 +201,37 @@ class StorageService {
     }
   }
 
+  static async saveTimerState(state: TimerState): Promise<void> {
+    try {
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.TIMER_STATE,
+        JSON.stringify(state)
+      );
+    } catch (error) {
+      console.error("Error saving timer state:", error);
+      throw error;
+    }
+  }
+
+  static async getTimerState(): Promise<TimerState | null> {
+    try {
+      const state = await AsyncStorage.getItem(STORAGE_KEYS.TIMER_STATE);
+      return state ? JSON.parse(state) : null;
+    } catch (error) {
+      console.error("Error getting timer state:", error);
+      return null;
+    }
+  }
+
+  static async clearTimerState(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEYS.TIMER_STATE);
+    } catch (error) {
+      console.error("Error clearing timer state:", error);
+      throw error;
+    }
+  }
+
   static async updateInfoState(infoId: string, state: boolean): Promise<void> {
     try {
       const currentStates = await this.getInfoStates();
@@ -221,6 +259,7 @@ class StorageService {
         STORAGE_KEYS.SETUP_COMPLETE,
         STORAGE_KEYS.CALORIE_LOGS,
         STORAGE_KEYS.MODAL_VISITS,
+        STORAGE_KEYS.TIMER_STATE,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);
