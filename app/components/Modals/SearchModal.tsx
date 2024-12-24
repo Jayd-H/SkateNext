@@ -27,6 +27,43 @@ interface SearchModalProps {
   trickCompletionStates: Record<string, number>;
 }
 
+const calculateSimilarity = (str1: string, str2: string): number => {
+  const s1 = str1.toLowerCase();
+  const s2 = str2.toLowerCase();
+
+  if (s1 === s2) return 1;
+  if (s1.includes(s2) || s2.includes(s1)) return 0.8;
+
+  const words1 = s1.split(/\s+/);
+  const words2 = s2.split(/\s+/);
+
+  let matches = 0;
+  let totalWords = Math.max(words1.length, words2.length);
+
+  words1.forEach((word1) => {
+    words2.forEach((word2) => {
+      if (
+        word1.slice(0, 3) === word2.slice(0, 3) ||
+        word1.includes(word2) ||
+        word2.includes(word1)
+      ) {
+        matches++;
+      }
+    });
+  });
+
+  return matches / totalWords;
+};
+
+const scoreTrick = (trick: Trick, query: string): number => {
+  const nameScore = calculateSimilarity(trick.name, query);
+  const altScore = trick.alt_names
+    ? calculateSimilarity(trick.alt_names, query)
+    : 0;
+
+  return Math.max(nameScore, altScore);
+};
+
 const SearchModal: React.FC<SearchModalProps> = ({
   isVisible,
   onClose,
@@ -61,14 +98,18 @@ const SearchModal: React.FC<SearchModalProps> = ({
         return;
       }
 
-      const query = searchQuery.toLowerCase();
-      const filtered = TRICK_DATA.filter(
-        (trick) =>
-          trick.name.toLowerCase().includes(query) ||
-          (trick.alt_names && trick.alt_names.toLowerCase().includes(query))
-      ).slice(0, 5);
+      const scoredTricks = TRICK_DATA.map((trick) => ({
+        trick,
+        score: scoreTrick(trick, searchQuery.trim()),
+      }));
 
-      setSearchResults(filtered);
+      const filteredTricks = scoredTricks
+        .filter(({ score }) => score > 0.3)
+        .sort((a, b) => b.score - a.score)
+        .map(({ trick }) => trick)
+        .slice(0, 5);
+
+      setSearchResults(filteredTricks);
     };
 
     filterTricks();
@@ -132,7 +173,6 @@ const SearchModal: React.FC<SearchModalProps> = ({
             </View>
 
             <View className="flex-1">
-              {/* Background glow effect */}
               <View
                 className="absolute inset-0 rounded-3xl opacity-10"
                 style={{
@@ -145,16 +185,27 @@ const SearchModal: React.FC<SearchModalProps> = ({
               />
 
               <View className="space-y-4">
-                {searchResults.map((trick) => (
-                  <ModalTrickButton
-                    key={trick.id}
-                    name={trick.name}
-                    altNames={trick.alt_names}
-                    difficulty={trick.difficulty}
-                    completionState={trickCompletionStates[trick.id]}
-                    onPress={() => onTrickSelect(trick.id)}
-                  />
-                ))}
+                {searchResults.length > 0 ? (
+                  searchResults.map((trick) => (
+                    <ModalTrickButton
+                      key={trick.id}
+                      name={trick.name}
+                      altNames={trick.alt_names}
+                      difficulty={trick.difficulty}
+                      completionState={trickCompletionStates[trick.id]}
+                      onPress={() => onTrickSelect(trick.id)}
+                    />
+                  ))
+                ) : (
+                  <View>
+                    <Text className="text-text-muted font-montserrat text-2xl text-center mt-4">
+                      :/
+                    </Text>
+                    <Text className="text-text-dim font-montserrat-medium text-center mt-4">
+                      No tricks found, try another search
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
           </View>
