@@ -284,7 +284,7 @@ export default function Map() {
     updateTrickState(trickId, state);
   };
 
-  const handleRecommendations = (recommendedTricks: string[]) => {
+  const handleRecommendations = async (recommendedTricks: string[]) => {
     setRecommendations(recommendedTricks);
     setIsRecommendationsVisible(true);
   };
