@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, BackHandler } from "react-native";
 import Animated, {
   useAnimatedStyle,
   withRepeat,
@@ -176,6 +176,66 @@ export default function Map() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     action();
   };
+
+  const getActiveModal = () => {
+    if (selectedTrickId !== null) return "trick";
+    if (selectedInfoId !== null) return "info";
+    if (selectedFolderId !== null) return "folder";
+    if (isSearchModalVisible) return "search";
+    if (isRecommendationsVisible) return "recommendations";
+    if (isActListModalVisible) return "actList";
+    if (isLuckyModalVisible) return "lucky";
+    return null;
+  };
+
+  const closeActiveModal = () => {
+    const activeModal = getActiveModal();
+    if (!activeModal) return false;
+
+    switch (activeModal) {
+      case "trick":
+        handleTrickModalClose();
+        break;
+      case "info":
+        handleInfoModalClose();
+        break;
+      case "folder":
+        handleFolderModalClose();
+        break;
+      case "lucky":
+        handleLuckyModalClose();
+        break;
+      case "search":
+        handleSearchModalClose();
+        break;
+      case "recommendations":
+        handleRecommendationsClose();
+        break;
+      case "actList":
+        handleActListClose();
+        break;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        return closeActiveModal();
+      }
+    );
+
+    return () => backHandler.remove();
+  }, [
+    selectedTrickId,
+    selectedInfoId,
+    selectedFolderId,
+    isLuckyModalVisible,
+    isSearchModalVisible,
+    isRecommendationsVisible,
+    isActListModalVisible,
+  ]);
 
   const handleTrickPress = (id: string) =>
     handleNavigationPress(() => setSelectedTrickId(id));
