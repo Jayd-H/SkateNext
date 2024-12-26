@@ -38,6 +38,7 @@ export const STORAGE_KEYS = {
   CALORIE_LOGS: "calorie_logs",
   MODAL_VISITS: "modal_visits",
   TIMER_STATE: "timer_state",
+  HAPTICS_ENABLED: "haptics_enabled",
 } as const;
 
 const BOSS_TRICKS = {
@@ -65,6 +66,28 @@ class StorageService {
     }
   }
 
+  static async getHapticsEnabled(): Promise<boolean> {
+    try {
+      const enabled = await AsyncStorage.getItem(STORAGE_KEYS.HAPTICS_ENABLED);
+      return enabled === "true";
+    } catch (error) {
+      console.error("Error getting haptics state:", error);
+      return true;
+    }
+  }
+
+  static async setHapticsEnabled(enabled: boolean): Promise<void> {
+    try {
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.HAPTICS_ENABLED,
+        enabled.toString()
+      );
+    } catch (error) {
+      console.error("Error setting haptics state:", error);
+      throw error;
+    }
+  }
+
   static async initializeWithSkillLevel(
     skillLevel: SkillLevel,
     age: number,
@@ -77,6 +100,12 @@ class StorageService {
         lucky: false,
         search: false,
       };
+
+      const initialHaptics = true;
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.HAPTICS_ENABLED,
+        initialHaptics.toString()
+      );
 
       TRICK_DATA.forEach((trick) => {
         initialTrickStates[trick.id] = 0;
@@ -260,6 +289,7 @@ class StorageService {
         STORAGE_KEYS.CALORIE_LOGS,
         STORAGE_KEYS.MODAL_VISITS,
         STORAGE_KEYS.TIMER_STATE,
+        STORAGE_KEYS.HAPTICS_ENABLED,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);
