@@ -7,11 +7,11 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import { TRICK_DATA, Trick } from "../Data/trickData";
 import { FOLDER_DATA } from "../Data/folderData";
 import ModalTrickButton from "../Generic/ModalTrickButton";
+import { useHaptics } from "../Utils/useHaptics";
 
 interface FolderModalProps {
   isVisible: boolean;
@@ -45,13 +45,16 @@ const FolderModal: React.FC<FolderModalProps> = ({
     }
   }, [isVisible]);
 
+  const { triggerHaptic } = useHaptics();
+
+  //* these two could be one but idc lol
   const handleClose = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await triggerHaptic("light");
     onClose();
   };
 
   const handleTrickSelect = async (trickId: string) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await triggerHaptic("light");
     onTrickSelect(trickId);
   };
 

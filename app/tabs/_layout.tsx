@@ -1,17 +1,18 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { ViewStyle } from "react-native";
-import * as Haptics from "expo-haptics";
 import FireIcon from "../../assets/icons/fire.svg";
 import MapIcon from "../../assets/icons/map.svg";
 import SettingsIcon from "../../assets/icons/settings.svg";
 import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
+import { useHaptics } from "../components/Utils/useHaptics";
 
 export default function TabLayout(): React.ReactElement {
   const iconSize: number = 28;
 
+  const { triggerHaptic } = useHaptics();
+
   const handleTabPress = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await triggerHaptic("light");
   };
 
   const screenOptions: BottomTabNavigationOptions = {

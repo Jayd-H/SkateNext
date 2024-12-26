@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
-import * as Haptics from "expo-haptics";
+import { useHaptics } from "../Utils/useHaptics";
 
 interface ButtonProps {
   topText: string;
@@ -36,8 +36,10 @@ export const Button: React.FC<ButtonProps> = ({
 
   const styles = getStyleClasses();
 
+  const { triggerHaptic } = useHaptics();
+
   const handlePressIn = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await triggerHaptic("light");
   };
 
   return (

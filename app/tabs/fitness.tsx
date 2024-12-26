@@ -23,7 +23,7 @@ import {
 } from "../components/Utils/calorieEstimation";
 import { calculateSkateboardMastery } from "../components/Utils/masteryCalculation";
 import { TRICK_COMPONENTS } from "../components/Data/trickComponents";
-import * as Haptics from "expo-haptics";
+import { useHaptics } from "../components/Utils/useHaptics";
 
 const MIN_LOADING_TIME = 500;
 
@@ -184,9 +184,11 @@ const Fitness: React.FC = () => {
     currentTime.current = time;
   };
 
+  const { triggerHaptic } = useHaptics();
+
   const handleTimerStop = async (duration: number) => {
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      await triggerHaptic("medium");
       const userStats = await StorageService.getUserStats();
       const trickStates = await StorageService.getTrickStates();
 
@@ -257,7 +259,7 @@ const Fitness: React.FC = () => {
       {showAlert && (
         <Alert message={alertMessage} onHide={() => setShowAlert(false)} />
       )}
-      <Text className="text-xl text-text font-montserrat-light mt-10">
+      <Text className="text-lg text-accent-muted font-montserrat-alt-semibold tracking-wide mt-10">
         F I T N E S S
       </Text>
       <Text className="text-[10px] text-center w-5/6 text-text-dim font-montserrat-light mt-2">
