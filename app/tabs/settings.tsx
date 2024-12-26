@@ -5,10 +5,16 @@ import Modal from "../components/Modals/Modal";
 import DeleteConfirmModal from "../components/Modals/DeleteConfirmModal";
 import { StorageService } from "../components/Utils/StorageService";
 import Button from "../components/Generic/Button";
-import * as Haptics from "expo-haptics";
+import ToggleSwitch from "../components/Generic/ToggleSwitch";
+import { useHaptics } from "../components/Utils/useHaptics";
 
 export default function Settings() {
   const router = useRouter();
+  const {
+    isEnabled: hapticsEnabled,
+    toggleHaptics,
+    triggerHaptic,
+  } = useHaptics();
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", content: "" });
@@ -43,7 +49,6 @@ export default function Settings() {
       router.replace("/");
     } catch (error) {
       console.error("Error deleting data:", error);
-      // TODO: need an error modal perhaps styled like the little popup on the fitness page
     }
   };
 
@@ -69,33 +74,54 @@ export default function Settings() {
   };
 
   const handleModalClose = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await triggerHaptic("light");
     setModalVisible(false);
   };
 
   return (
     <View className="flex-1 items-center bg-background">
-      <Text className="text-xl text-text font-montserrat-light mt-10">
-        S E T T I N G S
-      </Text>
-      <Text className="text-sm text-text-muted font-montserrat-light mb-12">
-        Made by Jaydchw (Jayden Holdsworth){" "}
-      </Text>
+      {/* Header */}
+      <View className="w-5/6 mt-10 mb-4">
+        <Text className="text-lg text-accent-muted font-montserrat-alt-semibold tracking-widest text-center">
+          S E T T I N G S
+        </Text>
+      </View>
+
+      {/* Content Container */}
       <View className="w-5/6">
-        <Button topText="Terms Of Service" onPress={handleTOSButtonPress} />
-        <Button
-          topText="Liability Disclaimer"
-          onPress={handleLiabilityButtonPress}
-        />
-        <Button
-          topText="Attributions"
-          onPress={handleAttributionsButtonPress}
-        />
-        <Button
-          topText="Delete All Data"
-          warning={true}
-          onPress={() => setDeleteModalVisible(true)}
-        />
+        {/* Preferences Section */}
+        <View className="mb-8">
+          <Text className="text-text-dim font-montserrat-alt-medium text-sm tracking-wider mb-4">
+            P R E F E R E N C E S
+          </Text>
+          <ToggleSwitch
+            isEnabled={hapticsEnabled}
+            onToggle={toggleHaptics}
+            topText="H A P T I C S"
+            bottomText="Toggle haptic feedback throughout the app"
+          />
+        </View>
+
+        {/* Info Section */}
+        <View>
+          <Text className="text-text-dim font-montserrat-alt-medium text-sm tracking-wider mb-4">
+            I N F O R M A T I O N
+          </Text>
+          <Button topText="Terms Of Service" onPress={handleTOSButtonPress} />
+          <Button
+            topText="Liability Disclaimer"
+            onPress={handleLiabilityButtonPress}
+          />
+          <Button
+            topText="Attributions"
+            onPress={handleAttributionsButtonPress}
+          />
+          <Button
+            topText="Delete All Data"
+            warning={true}
+            onPress={() => setDeleteModalVisible(true)}
+          />
+        </View>
       </View>
 
       <Modal

@@ -29,6 +29,7 @@ import {
   useInfoStates,
   useModalVisitStates,
 } from "../components/Utils/StorageService";
+import { useHaptics } from "../components/Utils/useHaptics";
 
 const PAGES = ["1", "2", "3", "4"];
 
@@ -172,8 +173,10 @@ export default function Map() {
   const [isReadyToShow, setIsReadyToShow] = useState(false);
   const [isActListModalVisible, setIsActListModalVisible] = useState(false);
 
+  const { triggerHaptic } = useHaptics();
+
   const handleNavigationPress = async (action: () => void) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await triggerHaptic("light");
     action();
   };
 

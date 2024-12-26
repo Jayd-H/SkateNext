@@ -17,7 +17,7 @@ import Animated, {
 } from "react-native-reanimated";
 import * as Notifications from "expo-notifications";
 import PlayButton from "../../assets/icons/play-button-blue.svg";
-import * as Haptics from "expo-haptics";
+import { useHaptics } from "./Utils/useHaptics";
 import { StorageService } from "./Utils/StorageService";
 
 interface TimerProps {
@@ -83,8 +83,10 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
     await Notifications.cancelAllScheduledNotificationsAsync();
   };
 
+  const { triggerHaptic } = useHaptics();
+
   const handleButtonPress = useCallback(async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await triggerHaptic("medium");
 
     opacity.value = withSequence(
       withTiming(0, { duration: 150, easing: Easing.inOut(Easing.ease) }),

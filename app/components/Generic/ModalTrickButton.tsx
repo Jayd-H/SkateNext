@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
-import * as Haptics from "expo-haptics";
+import { useHaptics } from "../Utils/useHaptics";
 import BurningSkull from "../../../assets/icons/burning-skull.svg";
 import CrownedSkull from "../../../assets/icons/crowned-skull.svg";
 
@@ -47,8 +47,10 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
 
   const styles = getStyleClasses();
 
+  const { triggerHaptic } = useHaptics();
+
   const handlePress = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await triggerHaptic("light");
     onPress();
   };
 

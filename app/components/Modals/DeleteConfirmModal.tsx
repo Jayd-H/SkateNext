@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
+import { useHaptics } from "../Utils/useHaptics";
 
 interface DeleteConfirmModalProps {
   isVisible: boolean;
@@ -48,13 +48,15 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
     }
   }, [isVisible]);
 
+  const { triggerHaptic } = useHaptics();
+
   const handleConfirm = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await triggerHaptic("medium");
     onConfirm();
   };
 
   const handleClose = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await triggerHaptic("light");
     onClose();
   };
 
@@ -89,11 +91,6 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                   <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-accent-dark" />
                   <Pressable
                     onPress={handleClose}
-                    onPressIn={async () =>
-                      await Haptics.impactAsync(
-                        Haptics.ImpactFeedbackStyle.Medium
-                      )
-                    }
                     className="relative rounded-3xl w-full border-2 border-accent-muted bg-accent-surface active:translate-y-1 px-6 py-3"
                   >
                     <Text className="text-text font-montserrat-alt-semibold text-center text-base">
@@ -108,11 +105,6 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                   <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-warning-dark" />
                   <Pressable
                     onPress={handleConfirm}
-                    onPressIn={async () =>
-                      await Haptics.impactAsync(
-                        Haptics.ImpactFeedbackStyle.Medium
-                      )
-                    }
                     className="relative rounded-3xl w-full border-2 border-warning bg-bg-elevated active:translate-y-1 px-6 py-3"
                   >
                     <Text className="text-text font-montserrat-alt-semibold text-center text-base">
