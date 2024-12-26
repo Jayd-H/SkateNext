@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { View, Text } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, BackHandler } from "react-native";
 import Modal from "../components/Modals/Modal";
 import DeleteConfirmModal from "../components/Modals/DeleteConfirmModal";
 import { StorageService } from "../components/Utils/StorageService";
@@ -12,6 +12,25 @@ export default function Settings() {
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", content: "" });
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        if (modalVisible) {
+          handleModalClose();
+          return true;
+        }
+        if (deleteModalVisible) {
+          setDeleteModalVisible(false);
+          return true;
+        }
+        return false;
+      }
+    );
+
+    return () => backHandler.remove();
+  }, [modalVisible, deleteModalVisible]);
 
   const openModal = (title: string, content: string) => {
     setModalContent({ title, content });
