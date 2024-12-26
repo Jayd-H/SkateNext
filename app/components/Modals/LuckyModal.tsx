@@ -67,7 +67,10 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
       const age = await AsyncStorage.getItem(STORAGE_KEYS.USER_AGE);
       const userAge = age ? parseInt(age) : 25;
       await new Promise((resolve) => setTimeout(resolve, 800));
-      const newRecommendations = getRecommendedTricks(trickStates, userAge);
+      const newRecommendations = await getRecommendedTricks(
+        trickStates,
+        userAge
+      );
       onShowRecommendations(newRecommendations);
     } catch (error) {
       console.error("Error getting recommendations:", error);
