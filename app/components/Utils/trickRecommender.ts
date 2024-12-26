@@ -1,270 +1,312 @@
 import { TRICK_COMPONENTS, TrickComponents } from "../Data/trickComponents";
-import { TrickState } from "./StorageService";
+import { StorageService } from "./StorageService";
+
+// Trick Recommendation Scoring System
+
+// Base Difficulty Score (30% of final)
+// +complexity (major)
+// +balance required (major)
+// +impact level (major)
+// -vertical rotation penalty (minor)
+// -footplant complexity (minor)
+// +flip count bonus (minor)
+
+// Progression Score (40% of final)
+// +prerequisite mastery (major)
+// +trick family experience (major)
+// +stance familiarity (minor)
+// +currently in progress bonus (major +50%)
+// -penalty for too many in-progress tricks (moderate)
+
+// Familiarity Score (30% of final)
+// +similar trick experience (major)
+// +stance mastery (major)
+// +trick family mastery (major)
+// +recent practice bonus (minor +10%)
+
+// Risk Modifiers (reduces final score)
+// -high impact with age factor (major)
+// -high complexity without prerequisites (major)
+// -vertical rotation without experience (major)
+// -unfamiliar stance (minor)
+// +prerequisite strength bonus (reduces penalties)
+
+// Progression Gates
+// - Requires ollie >= 1 for tricks above complexity 3
+// - Requires kickflip >= 1 for tricks above complexity 7
 
 interface ScoredTrick {
   id: string;
-  compositeScore: number;
-  safetyScore: number;
-  progressionScore: number;
-  challengeScore: number;
-  riskScore: number;
-  familiarityScore: number;
+  finalScore: number;
+  baseDifficulty: number;
+  progression: number;
+  familiarity: number;
+  riskMultiplier: number;
 }
 
-// this algorithm is a bit hard to keep track of so there will be more comments than usual lol
-// TODO: add functionality to weight recently completed tricks higher
+interface SlotPriority {
+  safety: number;
+  progression: number;
+  challenge: number;
+  familiarity: number;
+}
 
-// each trick gets a scored on 5 metrics: safety, progression, challenge, risk, familiarity
-// each of these factors has its own score and is weighted differently to create the final composite score
+interface RecentTrickUpdate {
+  trickId: string;
+  timestamp: number;
+}
 
-// composite score factors weighting, ive not specified the exact weights as they may change as i tinker with it
+const SLOT_PRIORITIES: SlotPriority[] = [
+  { safety: 0.1, progression: 0.1, challenge: 0.6, familiarity: 0.2 },
+  { safety: 0.1, progression: 0.2, challenge: 0.5, familiarity: 0.2 },
+  { safety: 0.2, progression: 0.3, challenge: 0.3, familiarity: 0.2 },
+  { safety: 0.3, progression: 0.4, challenge: 0.2, familiarity: 0.1 },
+  { safety: 0.4, progression: 0.4, challenge: 0.1, familiarity: 0.1 },
+];
 
-// safety:
-// +prerequisite strength (major)
-// +similar trick experience (major)
-// +trick family mastery (major)
-// +lower complexity bonus (minor)
-// +lower balance required bonus (minor)
-// -vertical rotations (major penalty)
-// -new footplant tricks (major penalty)
+const memoizedScores = new Map<string, any>();
 
-// progression:
-// +prerequisite strength (major)
-// +skill gap appropriateness (major)
-// +trick family mastery (major)
-// +stance progression (minor)
-// +similar trick experience (major)
-// +bonus if trick in progress (major)
-
-// challenge:
-// +trick complexity (major)
-// +balance requirements (major)
-// +stance progression (minor)
-// +vertical rotation bonus (minor)
-// +board rotation >180° bonus (minor)
-// +flip count bonus (minor per flip)
-// *all modified by prerequisite strength
-
-// risk:
-// +complexity (major)
-// +impact level * age factor (major)
-// +balance requirements (major)
-// +non-regular stance (minor)
-// +vertical rotation (minor)
-// -reduced by prerequisite mastery (major)
-
-// familiarity:
-// +trick family mastery (major)
-// +similar trick experience (major)
-// +stance familiarity (major)
-
-// final composite:
-// +safety (major)
-// +progression (major)
-// +challenge (major)
-// +inverted risk (minor)
-// +familiarity (minor)
-// *significant boost if trick is in progress
-
-// there is an age impact factor that affects risk scores. 15 < age < 50 is the sweet spot. by default, it filters out tricks with risk scores > 0.7
-
-// TODO: caching, batch processing, pre-filtering
-
-export function getRecommendedTricks(
-  trickStates: TrickState,
+export async function getRecommendedTricks(
+  trickStates: Record<string, number>,
   userAge: number
-): string[] {
-  const calculateTrickScores = (trickId: string): ScoredTrick => {
-    const trick = TRICK_COMPONENTS.find((t) => t.id === trickId);
-    if (!trick) return createEmptyScore(trickId);
+): Promise<string[]> {
+  memoizedScores.clear();
 
-    const completionState = trickStates[trickId] || 0;
-    if (completionState === 2) return createEmptyScore(trickId);
+  const ollieLevel = trickStates["ollie"] || 0;
+  const kickflipLevel = trickStates["kickflip"] || 0;
 
-    const baseMetrics = calculateBaseMetrics(trick, trickStates, userAge);
+  const inProgressTricks = TRICK_COMPONENTS.filter(
+    (trick) => trickStates[trick.id] === 1
+  );
 
-    const safetyScore = calculateEnhancedSafetyScore(
-      trick,
-      trickStates,
-      baseMetrics
-    );
-    const progressionScore = calculateProgressionScore(
-      trick,
-      trickStates,
-      baseMetrics
-    );
-    const challengeScore = calculateEnhancedChallengeScore(
-      trick,
-      trickStates,
-      baseMetrics
-    );
-    const riskScore = calculateRiskScore(trick, trickStates, userAge);
-    const familiarityScore = calculateFamiliarityScore(trick, trickStates);
+  let availableTricks = TRICK_COMPONENTS.filter((trick) => {
+    if (!trickStates[trick.id] || trickStates[trick.id] < 2) {
+      if (ollieLevel < 1 && trick.complexity > 3) return false;
+      if (kickflipLevel < 1 && trick.complexity > 7) return false;
+      return true;
+    }
+    return false;
+  });
 
-    const compositeScore = calculateCompositeScore({
-      safetyScore,
-      progressionScore,
-      challengeScore,
-      riskScore,
-      familiarityScore,
-      completionState,
+  const recommendations: string[] = [];
+  const recentTricks = await StorageService.getRecentTrickUpdates();
+
+  for (
+    let i = 0;
+    i < SLOT_PRIORITIES.length && availableTricks.length > 0;
+    i++
+  ) {
+    const weights = SLOT_PRIORITIES[i];
+    const scoredTricks = availableTricks.map((trick) => {
+      const baseScore = calculateTrickScore(
+        trick,
+        trickStates,
+        userAge,
+        weights
+      );
+      const recentBonus = getRecentTrickBonus(trick.id, recentTricks);
+      const finalScore = baseScore.finalScore + recentBonus;
+
+      return {
+        ...baseScore,
+        finalScore,
+      };
     });
 
-    return {
-      id: trickId,
-      compositeScore,
-      safetyScore,
-      progressionScore,
-      challengeScore,
-      riskScore,
-      familiarityScore,
-    };
-  };
-
-  // calculate scores for all tricks
-  const scoredTricks = TRICK_COMPONENTS.map((trick) =>
-    calculateTrickScores(trick.id)
-  ).filter((trick) => trick.compositeScore > 0);
-
-  // track selected tricks to ensure uniqueness
-  const selectedTricks: string[] = [];
-  const recommendations: string[] = [];
-
-  // define selection criteria for each recommendation slot
-  const selectionCriteria = [
-    {
-      metrics: ["safetyScore", "familiarityScore"],
-      allowHigherRisk: false,
-    },
-    {
-      metrics: ["progressionScore", "safetyScore"],
-      allowHigherRisk: false,
-    },
-    {
-      metrics: ["compositeScore"],
-      allowHigherRisk: false,
-    },
-    {
-      metrics: ["challengeScore", "familiarityScore"],
-      allowHigherRisk: false,
-    },
-    {
-      metrics: ["challengeScore"],
-      allowHigherRisk: true,
-    },
-  ];
-
-  // select tricks based on each criteria
-  for (const criteria of selectionCriteria) {
-    const remaining = scoredTricks.filter(
-      (trick) => !selectedTricks.includes(trick.id)
+    const topScores = scoredTricks
+      .sort((a, b) => b.finalScore - a.finalScore)
+      .slice(0, 3);
+    console.log(
+      `Top 3 scores for slot ${i}:`,
+      topScores.map((t) => ({
+        id: t.id,
+        score: t.finalScore,
+        status: trickStates[t.id] || 0,
+      }))
     );
 
-    const selected = selectByPriority(
-      remaining,
-      criteria.metrics,
-      1,
-      criteria.allowHigherRisk
-    );
-
-    if (selected.length > 0) {
-      selectedTricks.push(selected[0].id);
-      recommendations.push(selected[0].id);
-    }
-  }
-
-  // fill any remaining slots with next best available tricks
-  while (
-    recommendations.length < 5 &&
-    scoredTricks.length > selectedTricks.length
-  ) {
-    const remaining = scoredTricks.filter(
-      (trick) => !selectedTricks.includes(trick.id)
-    );
-
-    const nextBest = remaining.sort(
-      (a, b) => b.compositeScore - a.compositeScore
-    )[0];
-
-    if (nextBest) {
-      selectedTricks.push(nextBest.id);
-      recommendations.push(nextBest.id);
-    } else {
-      break;
+    const selected = selectBestTrick(scoredTricks, recommendations);
+    if (selected) {
+      recommendations.push(selected);
+      availableTricks = availableTricks.filter((t) => t.id !== selected);
     }
   }
 
   return recommendations;
 }
 
-function calculateBaseMetrics(
+function getRecentTrickBonus(
+  trickId: string,
+  recentTricks: RecentTrickUpdate[]
+): number {
+  const recentTrick = recentTricks.find((t) => t.trickId === trickId);
+  if (!recentTrick) return 0;
+
+  const daysSinceUpdate =
+    (Date.now() - recentTrick.timestamp) / (1000 * 60 * 60 * 24);
+  if (daysSinceUpdate < 7) return 0.05;
+  return 0;
+}
+
+function calculateTrickScore(
   trick: TrickComponents,
-  trickStates: TrickState,
-  userAge: number
-) {
+  trickStates: Record<string, number>,
+  userAge: number,
+  weights: SlotPriority
+): ScoredTrick {
+  const baseDifficulty = calculateBaseDifficulty(trick);
+  const progression = calculateProgression(trick, trickStates);
+  const familiarity = calculateFamiliarity(trick, trickStates);
+  const riskMultiplier = calculateRiskMultiplier(trick, trickStates, userAge);
+
+  const finalScore = normalizeScore(
+    baseDifficulty * weights.safety +
+      progression * weights.progression +
+      familiarity * weights.familiarity +
+      riskMultiplier * 0.2
+  );
+
   return {
-    stanceProgression: calculateStanceProgression(trick.stance, trickStates),
-    trickFamilyMastery: calculateTrickFamilyMastery(
-      trick.trickFamily,
-      trickStates
-    ),
-    prerequisiteStrength: calculatePrerequisiteStrength(
-      trick.prerequisiteIds,
-      trickStates
-    ),
-    similarTrickExperience: calculateSimilarTrickExperience(
-      trick.similarTricks,
-      trickStates
-    ),
-    ageImpactFactor: calculateAgeImpactFactor(userAge, trick.impactLevel),
-    skillGap: calculateSkillGap(trick, trickStates),
+    id: trick.id,
+    finalScore,
+    baseDifficulty,
+    progression,
+    familiarity,
+    riskMultiplier,
   };
 }
 
-function calculateStanceProgression(
-  stance: string,
-  trickStates: TrickState
-): number {
-  const stanceCounts = TRICK_COMPONENTS.reduce((counts, trick) => {
-    if (trickStates[trick.id] === 2) {
-      counts[trick.stance] = (counts[trick.stance] || 0) + 1;
-    }
-    return counts;
-  }, {} as Record<string, number>);
+function selectBestTrick(
+  scoredTricks: ScoredTrick[],
+  existing: string[]
+): string | null {
+  const available = scoredTricks
+    .filter((trick) => !existing.includes(trick.id))
+    .sort((a, b) => b.finalScore - a.finalScore);
 
-  const currentStanceCount = stanceCounts[stance] || 0;
-  const maxStanceCount = Math.max(...Object.values(stanceCounts));
-
-  if (currentStanceCount < maxStanceCount * 0.3) return 1;
-  if (currentStanceCount < maxStanceCount * 0.6) return 0.7;
-  return 0.4;
+  return available.length > 0 ? available[0].id : null;
 }
 
-function calculateTrickFamilyMastery(
-  families: string[],
-  trickStates: TrickState
-): number {
-  const familyScores = families.map((family) => {
-    const familyTricks = TRICK_COMPONENTS.filter((t) =>
-      t.trickFamily.includes(family)
-    );
+function getMemoized(key: string, calculator: () => number): number {
+  if (!memoizedScores.has(key)) {
+    memoizedScores.set(key, calculator());
+  }
+  return memoizedScores.get(key);
+}
 
-    const masteredCount = familyTricks.filter(
-      (t) => trickStates[t.id] === 2
-    ).length;
+function calculateBaseDifficulty(trick: TrickComponents): number {
+  const memoKey = `base_${trick.id}`;
+  return getMemoized(memoKey, () => {
+    let score = 0;
+    const complexityPenalty = Math.pow(trick.complexity / 10, 1.5);
+    score += (1 - complexityPenalty) * 0.4;
 
-    return masteredCount / familyTricks.length;
+    score += (trick.balanceRequired / 10) * 0.3;
+    score += (trick.impactLevel / 10) * 0.3;
+
+    if (trick.isVerticalRotation) score *= 0.8;
+    if (trick.isFootplantTrick) score *= 0.9;
+    if (trick.flipCount > 0) score *= 0.9;
+
+    return normalizeScore(score);
   });
+}
 
-  return Math.max(...familyScores);
+function calculateProgression(
+  trick: TrickComponents,
+  trickStates: Record<string, number>
+): number {
+  const memoKey = `prog_${trick.id}`;
+  return getMemoized(memoKey, () => {
+    let score = 0;
+    const inProgressCount = Object.values(trickStates).filter(
+      (state) => state === 1
+    ).length;
+    const currentStatus = trickStates[trick.id] || 0;
+
+    const prereqStrength = calculatePrerequisiteStrength(
+      trick.prerequisiteIds,
+      trickStates
+    );
+    const familyExp = calculateFamilyExperience(trick.trickFamily, trickStates);
+    const stanceFam = calculateStanceFamiliarity(trick.stance, trickStates);
+
+    score += prereqStrength * 0.4;
+    score += familyExp * 0.3;
+    score += stanceFam * 0.2;
+
+    if (currentStatus === 1) {
+      if (trick.complexity <= 5) {
+        score *= 1.1;
+      } else {
+        score *= 0.9;
+      }
+    }
+
+    if (currentStatus === 0 && prereqStrength > 0.7) {
+      const difficultyFactor = 1 - trick.complexity / 10;
+      score *= 1 + difficultyFactor;
+    }
+
+    if (inProgressCount > 3) {
+      score *= Math.max(0.5, 1 - (inProgressCount - 4) * 0.2);
+    }
+
+    return normalizeScore(score);
+  });
+}
+
+function calculateFamiliarity(
+  trick: TrickComponents,
+  trickStates: Record<string, number>
+): number {
+  const memoKey = `fam_${trick.id}`;
+  return getMemoized(memoKey, () => {
+    let score = 0;
+    const similarExp = calculateSimilarTrickExperience(
+      trick.similarTricks,
+      trickStates
+    );
+    score += similarExp * 0.5;
+
+    const stanceMastery =
+      1 - calculateStanceProgression(trick.stance, trickStates);
+    score += stanceMastery * 0.5;
+
+    return normalizeScore(score);
+  });
+}
+
+function calculateRiskMultiplier(
+  trick: TrickComponents,
+  trickStates: Record<string, number>,
+  userAge: number
+): number {
+  const memoKey = `risk_${trick.id}_${userAge}`;
+  return getMemoized(memoKey, () => {
+    let riskFactor = 1;
+    const ageRisk = calculateAgeRiskFactor(userAge);
+    riskFactor *= ageRisk;
+
+    if (trick.impactLevel > 7) riskFactor *= 0.8;
+    if (trick.complexity > 8) riskFactor *= 0.9;
+    if (trick.isVerticalRotation) riskFactor *= 0.85;
+
+    const prereqStrength = calculatePrerequisiteStrength(
+      trick.prerequisiteIds,
+      trickStates
+    );
+    riskFactor *= 0.7 + prereqStrength * 0.3;
+
+    return normalizeScore(riskFactor);
+  });
 }
 
 function calculatePrerequisiteStrength(
   prerequisites: string[],
-  trickStates: TrickState
+  trickStates: Record<string, number>
 ): number {
   if (prerequisites.length === 0) return 1;
-
   return (
     prerequisites.reduce((score, preReqId) => {
       const state = trickStates[preReqId] || 0;
@@ -273,206 +315,69 @@ function calculatePrerequisiteStrength(
   );
 }
 
+function calculateFamilyExperience(
+  families: string[],
+  trickStates: Record<string, number>
+): number {
+  const familyScores = families.map((family) => {
+    const familyTricks = TRICK_COMPONENTS.filter((t) =>
+      t.trickFamily.includes(family)
+    );
+    const masteredCount = familyTricks.filter(
+      (t) => trickStates[t.id] === 2
+    ).length;
+    return masteredCount / familyTricks.length;
+  });
+  return Math.max(...familyScores);
+}
+
+function calculateStanceFamiliarity(
+  stance: string,
+  trickStates: Record<string, number>
+): number {
+  const stanceTricks = TRICK_COMPONENTS.filter((t) => t.stance === stance);
+  const masteredCount = stanceTricks.filter(
+    (t) => trickStates[t.id] === 2
+  ).length;
+  return masteredCount / stanceTricks.length;
+}
+
 function calculateSimilarTrickExperience(
   similarTricks: string[],
-  trickStates: TrickState
+  trickStates: Record<string, number>
 ): number {
   if (similarTricks.length === 0) return 1;
-
   return (
     similarTricks.reduce((score, trickId) => {
       const state = trickStates[trickId] || 0;
-      return score + (state === 2 ? 1 : state === 1 ? 0.4 : 0);
+      return score + (state === 2 ? 1 : state === 1 ? 0.25 : 0.4);
     }, 0) / similarTricks.length
   );
 }
 
-function calculateAgeImpactFactor(age: number, impactLevel: number): number {
-  if (age < 15) {
-    return 1.2 - impactLevel * 0.08;
-  }
-  if (age > 50) {
-    return 1.2 - impactLevel * 0.12;
-  }
+function calculateStanceProgression(
+  stance: string,
+  trickStates: Record<string, number>
+): number {
+  const stanceCounts = TRICK_COMPONENTS.reduce((counts, trick) => {
+    if (trickStates[trick.id] === 2) {
+      counts[trick.stance] = (counts[trick.stance] || 0) + 1;
+    }
+    return counts;
+  }, {} as Record<string, number>);
+
+  const currentCount = stanceCounts[stance] || 0;
+  const maxCount = Math.max(...Object.values(stanceCounts), 0);
+
+  if (currentCount < maxCount * 0.3) return 1;
+  if (currentCount < maxCount * 0.6) return 0.7;
+  return 0.4;
+}
+
+function calculateAgeRiskFactor(age: number): number {
+  if (age < 15) return 0.8;
+  if (age > 50) return 0.7;
   return 1;
-}
-
-function calculateSkillGap(
-  trick: TrickComponents,
-  trickStates: TrickState
-): number {
-  const userHighestComplexity = TRICK_COMPONENTS.filter(
-    (t) => trickStates[t.id] === 2
-  ).reduce((max, t) => Math.max(max, t.complexity), 0);
-
-  return normalizeScore((trick.complexity - userHighestComplexity) / 5);
-}
-
-function calculateEnhancedSafetyScore(
-  trick: TrickComponents,
-  trickStates: TrickState,
-  baseMetrics: any
-): number {
-  let score = 0;
-
-  score += baseMetrics.prerequisiteStrength * 0.3;
-  score += baseMetrics.similarTrickExperience * 0.2;
-  score += baseMetrics.trickFamilyMastery * 0.2;
-  score += (10 - trick.complexity) * 0.02;
-  score += (10 - trick.balanceRequired) * 0.01;
-
-  if (trick.isVerticalRotation) score *= 0.8;
-
-  if (trick.isFootplantTrick) {
-    const hasFootplantExperience = TRICK_COMPONENTS.some(
-      (t) => t.isFootplantTrick && (trickStates[t.id] || 0) > 0
-    );
-    if (!hasFootplantExperience) score *= 0.7;
-  }
-
-  return normalizeScore(score);
-}
-
-function calculateProgressionScore(
-  trick: TrickComponents,
-  trickStates: TrickState,
-  baseMetrics: any
-): number {
-  let score = 0;
-
-  score += baseMetrics.prerequisiteStrength * 0.25;
-  score += (1 - baseMetrics.skillGap) * 0.2;
-  score += baseMetrics.trickFamilyMastery * 0.2;
-  score += baseMetrics.stanceProgression * 0.15;
-  score += baseMetrics.similarTrickExperience * 0.2;
-
-  if (trickStates[trick.id] === 1) score *= 1.3;
-
-  return normalizeScore(score);
-}
-
-function calculateEnhancedChallengeScore(
-  trick: TrickComponents,
-  trickStates: TrickState,
-  baseMetrics: any
-): number {
-  let score = 0;
-
-  score += (trick.complexity / 10) * 0.3;
-  score += (trick.balanceRequired / 10) * 0.2;
-  score += baseMetrics.stanceProgression * 0.15;
-
-  if (trick.isVerticalRotation) score += 0.1;
-  if (trick.boardRotation > 180) score += 0.1;
-  if (trick.flipCount > 0) score += trick.flipCount * 0.1;
-
-  score *= Math.max(0.5, baseMetrics.prerequisiteStrength);
-
-  return normalizeScore(score);
-}
-
-function calculateRiskScore(
-  trick: TrickComponents,
-  trickStates: TrickState,
-  userAge: number
-): number {
-  let risk = 0;
-
-  risk += (trick.complexity / 10) * 0.25;
-  risk +=
-    (trick.impactLevel / 10) *
-    calculateAgeImpactFactor(userAge, trick.impactLevel) *
-    0.25;
-  risk += (trick.balanceRequired / 10) * 0.2;
-  risk += (trick.stance === "regular" ? 0 : 0.15) * 0.15;
-
-  if (trick.isVerticalRotation) risk += 0.15;
-
-  risk *=
-    1 - calculatePrerequisiteStrength(trick.prerequisiteIds, trickStates) * 0.3;
-
-  return normalizeScore(risk);
-}
-
-function calculateFamiliarityScore(
-  trick: TrickComponents,
-  trickStates: TrickState
-): number {
-  let score = 0;
-
-  const familyMastery = calculateTrickFamilyMastery(
-    trick.trickFamily,
-    trickStates
-  );
-  score += familyMastery * 0.35;
-
-  const similarExperience = calculateSimilarTrickExperience(
-    trick.similarTricks,
-    trickStates
-  );
-  score += similarExperience * 0.35;
-
-  const stanceFamiliarity =
-    1 - calculateStanceProgression(trick.stance, trickStates);
-  score += stanceFamiliarity * 0.3;
-
-  return normalizeScore(score);
-}
-
-function calculateCompositeScore(scores: {
-  safetyScore: number;
-  progressionScore: number;
-  challengeScore: number;
-  riskScore: number;
-  familiarityScore: number;
-  completionState: number;
-}): number {
-  let composite = 0;
-
-  composite += scores.safetyScore * 0.25;
-  composite += scores.progressionScore * 0.3;
-  composite += scores.challengeScore * 0.2;
-  composite += (1 - scores.riskScore) * 0.15;
-  composite += scores.familiarityScore * 0.1;
-
-  if (scores.completionState === 1) {
-    composite *= 1.2;
-  }
-
-  return normalizeScore(composite);
-}
-
-function createEmptyScore(trickId: string): ScoredTrick {
-  return {
-    id: trickId,
-    compositeScore: 0,
-    safetyScore: 0,
-    progressionScore: 0,
-    challengeScore: 0,
-    riskScore: 0,
-    familiarityScore: 0,
-  };
-}
-
-function selectByPriority(
-  tricks: ScoredTrick[],
-  priorityMetrics: string[],
-  count: number,
-  allowHigherRisk: boolean = false
-): ScoredTrick[] {
-  const availableTricks = tricks.filter((t) =>
-    !allowHigherRisk ? t.riskScore < 0.7 : true
-  );
-
-  return availableTricks
-    .sort((a, b) => {
-      for (const metric of priorityMetrics) {
-        const diff = (b as any)[metric] - (a as any)[metric];
-        if (diff !== 0) return diff;
-      }
-      return 0;
-    })
-    .slice(0, count);
 }
 
 function normalizeScore(score: number): number {
