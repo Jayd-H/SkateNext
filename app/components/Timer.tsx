@@ -26,14 +26,6 @@ interface TimerProps {
   style?: ViewStyle;
 }
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
-
 const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [displayTime, setDisplayTime] = useState<number>(0);
@@ -67,16 +59,57 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
       .join(":");
   };
 
-  const scheduleNotification = async () => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Skate Timer Running",
-        body: `Your skate session is still going! Time elapsed: ${formatTime(
-          displayTime
-        )}`,
-      },
-      trigger: { seconds: 10 },
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+
+  const setupNotificationChannel = async () => {
+    await Notifications.setNotificationChannelAsync("skate-timer", {
+      name: "Skate Timer",
+      importance: Notifications.AndroidImportance.HIGH,
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+      showBadge: false,
+      enableVibrate: false,
+      enableLights: false,
+      bypassDnd: true,
     });
+  };
+
+  useEffect(() => {
+    setupNotificationChannel();
+  }, []);
+
+  const scheduleNotification = async () => {
+    if (!startTimeRef.current) return;
+
+    const intervals = [30, 3600, 7200]; // 30 seconds, 1 hour, 2 hours
+
+    for (const seconds of intervals) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Skate Timer Running",
+          body: `Your skate session has been running in the background for ${formatDuration(
+            seconds
+          )}`,
+        },
+        trigger: {
+          seconds,
+          channelId: "skate-timer",
+        },
+      });
+    }
+  };
+
+  const formatDuration = (seconds: number): string => {
+    if (seconds < 60) return `${seconds} seconds`;
+    const hours = Math.floor(seconds / 3600);
+    if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""}`;
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes} minute${minutes > 1 ? "s" : ""}`;
   };
 
   const cancelNotifications = async () => {
