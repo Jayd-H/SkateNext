@@ -29,6 +29,11 @@ interface DailyCalorieLog {
   totalCalories: number;
 }
 
+interface RecentTrickUpdate {
+  trickId: string;
+  timestamp: number;
+}
+
 export const STORAGE_KEYS = {
   TRICK_STATES: "trick_states",
   INFO_STATES: "info_states",
@@ -39,6 +44,7 @@ export const STORAGE_KEYS = {
   MODAL_VISITS: "modal_visits",
   TIMER_STATE: "timer_state",
   HAPTICS_ENABLED: "haptics_enabled",
+  RECENT_TRICKS: "recent_tricks",
 } as const;
 
 const BOSS_TRICKS = {
@@ -173,6 +179,47 @@ class StorageService {
     }
   }
 
+  static async getRecentTrickUpdates(): Promise<RecentTrickUpdate[]> {
+    try {
+      const recentTricks = await AsyncStorage.getItem(
+        STORAGE_KEYS.RECENT_TRICKS
+      );
+      return recentTricks ? JSON.parse(recentTricks) : [];
+    } catch (error) {
+      console.error("Error getting recent trick updates:", error);
+      return [];
+    }
+  }
+
+  static async addRecentTrickUpdate(
+    trickId: string,
+    oldState: number,
+    newState: number
+  ): Promise<void> {
+    try {
+      // Only add to recent if the state increased
+      if (newState <= oldState) return;
+
+      const recentTricks = await this.getRecentTrickUpdates();
+
+      // Add new trick to front of array
+      recentTricks.unshift({
+        trickId,
+        timestamp: Date.now(),
+      });
+
+      // Keep only the 5 most recent
+      const updatedTricks = recentTricks.slice(0, 5);
+
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.RECENT_TRICKS,
+        JSON.stringify(updatedTricks)
+      );
+    } catch (error) {
+      console.error("Error updating recent tricks:", error);
+    }
+  }
+
   static async updateModalVisitState(
     modalId: keyof ModalVisitState,
     visited: boolean
@@ -216,14 +263,20 @@ class StorageService {
   static async updateTrickState(trickId: string, state: number): Promise<void> {
     try {
       const currentStates = await this.getTrickStates();
+      const oldState = currentStates[trickId] || 0;
+
       const updatedStates = {
         ...currentStates,
         [trickId]: state,
       };
-      await AsyncStorage.setItem(
-        STORAGE_KEYS.TRICK_STATES,
-        JSON.stringify(updatedStates)
-      );
+
+      await Promise.all([
+        AsyncStorage.setItem(
+          STORAGE_KEYS.TRICK_STATES,
+          JSON.stringify(updatedStates)
+        ),
+        this.addRecentTrickUpdate(trickId, oldState, state),
+      ]);
     } catch (error) {
       console.error("Error updating trick state:", error);
       throw error;
@@ -290,6 +343,7 @@ class StorageService {
         STORAGE_KEYS.MODAL_VISITS,
         STORAGE_KEYS.TIMER_STATE,
         STORAGE_KEYS.HAPTICS_ENABLED,
+        STORAGE_KEYS.RECENT_TRICKS,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);
