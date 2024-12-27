@@ -22,7 +22,6 @@ import LuckyModal from "../components/Modals/LuckyModal";
 import SearchModal from "../components/Modals/SearchModal";
 import RecommendationsModal from "../components/Modals/RecommendationsModal";
 import { ActHeaderButton } from "../components/Acts/NodeButtons/ActHeaderButton";
-import LoadingSpinner from "../components/Generic/LoadingSpinner";
 import ActListModal from "../components/Modals/ActListModal";
 import {
   useTrickStates,
@@ -30,6 +29,7 @@ import {
   useModalVisitStates,
 } from "../components/Utils/StorageService";
 import { useHaptics } from "../components/Utils/useHaptics";
+import { useAnimatedMount } from "../components/Utils/useAnimatedMount";
 
 const PAGES = ["1", "2", "3", "4"];
 
@@ -355,28 +355,30 @@ export default function Map() {
     if (!tricksLoading && !infoLoading) {
       setTimeout(() => {
         setIsReadyToShow(true);
-      }, 1000);
+      }, 100);
     }
   }, [tricksLoading, infoLoading]);
 
+  const STAGGER_DELAY = 100;
+
+  const headerAnim = useAnimatedMount({ delay: 0 });
+  const navigationAnim = useAnimatedMount({ delay: STAGGER_DELAY });
+  const actHeaderAnim = useAnimatedMount({ delay: STAGGER_DELAY * 2 });
+  const contentAnim = useAnimatedMount({ delay: STAGGER_DELAY * 3 });
+
   if (tricksLoading || infoLoading || !isReadyToShow) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <Text className="text-center text-accent-dark font-montserrat-alt text-lg tracking-widest">
-          getting your map ready...
-        </Text>
-        <LoadingSpinner />
-      </View>
-    );
+    return <View className="flex-1 bg-background" />;
   }
 
   const iconsize: number = 28;
 
   return (
     <View className="flex-1 bg-background">
-      <View className="w-full py-2 mt-8">
-        {/* Header */}
-
+      {/* Header Section */}
+      <Animated.View
+        style={[headerAnim.animatedStyle]}
+        className="w-full py-2 mt-8"
+      >
         <View className="px-4 flex-row items-center justify-between">
           <View className="w-20 flex-row items-center">
             <TouchableOpacity
@@ -391,7 +393,11 @@ export default function Map() {
             <View className="flex-1 h-[1px] bg-accent-dark ml-2" />
           </View>
 
-          <View className="w-44 flex-row items-center justify-center">
+          {/* Navigation Section */}
+          <Animated.View
+            style={[navigationAnim.animatedStyle]}
+            className="w-44 flex-row items-center justify-center"
+          >
             <TouchableOpacity
               onPress={() => changePage(-1)}
               disabled={currentPage === 0}
@@ -428,7 +434,7 @@ export default function Map() {
                 fill={currentPage === PAGES.length - 1 ? "#183C36" : "#34CDB3"}
               />
             </TouchableOpacity>
-          </View>
+          </Animated.View>
 
           <View className="w-20 flex-row items-center justify-end">
             <View className="flex-1 h-[1px] bg-accent-dark mr-2" />
@@ -443,26 +449,29 @@ export default function Map() {
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </Animated.View>
 
-      {/* Header Button */}
-
-      <View className="px-4 mb-12">
+      {/* Act Header Button */}
+      <Animated.View
+        style={[actHeaderAnim.animatedStyle]}
+        className="px-4 mb-12"
+      >
         <ActHeaderButton
           topText={getActInfo(currentPage).topText}
           bottomText={getActInfo(currentPage).bottomText}
           onPress={handleActListOpen}
         />
-      </View>
+      </Animated.View>
 
       {/* Acts */}
-
-      <View className="flex-1 w-full bg-background mt-4">
+      <Animated.View
+        style={[contentAnim.animatedStyle]}
+        className="flex-1 w-full bg-background mt-4"
+      >
         {renderCurrentAct()}
-      </View>
+      </Animated.View>
 
       {/* Modals */}
-
       <TrickModal
         isVisible={selectedTrickId !== null}
         onClose={handleTrickModalClose}
