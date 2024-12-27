@@ -24,57 +24,9 @@ import {
 import { calculateSkateboardMastery } from "../components/Utils/masteryCalculation";
 import { TRICK_COMPONENTS } from "../components/Data/trickComponents";
 import { useHaptics } from "../components/Utils/useHaptics";
+import { useAnimatedMount } from "../components/Utils/useAnimatedMount";
 
 const MIN_LOADING_TIME = 500;
-
-interface AnimatedLoadingProps {
-  isLoading: boolean;
-  value: string | number;
-  showPercentage?: boolean;
-  className?: string;
-}
-
-// !this is a really ugly way to do this, but it works for now
-const AnimatedLoading: React.FC<AnimatedLoadingProps> = ({
-  isLoading,
-  value,
-  showPercentage = false,
-  className = "text-3xl text-text font-montserrat-alt mr-4",
-}) => {
-  const rotate = useSharedValue(0);
-
-  React.useEffect(() => {
-    if (isLoading) {
-      rotate.value = withRepeat(
-        withSequence(
-          withTiming(0.1, { duration: 400, easing: Easing.inOut(Easing.sin) }),
-          withTiming(-0.1, { duration: 400, easing: Easing.inOut(Easing.sin) })
-        ),
-        -1,
-        true
-      );
-    } else {
-      rotate.value = 0;
-    }
-  }, [isLoading]);
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotate.value}rad` }],
-  }));
-
-  return (
-    <View style={{ flexDirection: "row" }}>
-      <Animated.Text
-        style={isLoading ? animatedStyles : undefined}
-        className={className}
-      >
-        {isLoading ? "?" : value}
-      </Animated.Text>
-      {isLoading && showPercentage && <Text className={className}>%</Text>}
-      {!isLoading && showPercentage && null}
-    </View>
-  );
-};
 
 const Fitness: React.FC = () => {
   const appState = useRef(AppState.currentState);
@@ -92,6 +44,35 @@ const Fitness: React.FC = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isMasteryLoading, setIsMasteryLoading] = useState(true);
 
+  const STAGGER_DELAY = 100;
+
+  const animations = {
+    todayStatsAnim: useAnimatedMount({ delay: 0, playOnFocus: true }),
+    weeklyStatsAnim: useAnimatedMount({
+      delay: STAGGER_DELAY,
+      playOnFocus: true,
+    }),
+    allTimeStatsAnim: useAnimatedMount({
+      delay: STAGGER_DELAY * 2,
+      playOnFocus: true,
+    }),
+    masteryStatsAnim: useAnimatedMount({
+      delay: STAGGER_DELAY * 3,
+      playOnFocus: true,
+    }),
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      Object.values(animations).forEach((anim) => {
+        anim.resetAnimation();
+      });
+
+      loadCalorieStats();
+      loadMasteryPercentage();
+    }, [])
+  );
+
   useEffect(() => {
     const initialLoad = async () => {
       await loadCalorieStats();
@@ -106,12 +87,6 @@ const Fitness: React.FC = () => {
     };
     initialLoad();
   }, []);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      loadMasteryPercentage();
-    }, [])
-  );
 
   useEffect(() => {
     const subscription = AppState.addEventListener(
@@ -132,6 +107,7 @@ const Fitness: React.FC = () => {
         weeklyCalories: calorieStats.weekly,
         allTimeCalories: calorieStats.allTime,
       });
+      setIsInitialLoading(false);
     } catch (error) {
       console.error("Error loading calorie stats:", error);
     }
@@ -139,19 +115,9 @@ const Fitness: React.FC = () => {
 
   const loadMasteryPercentage = async () => {
     setIsMasteryLoading(true);
-    const startTime = Date.now();
-
     try {
       const trickStates = await StorageService.getTrickStates();
       const mastery = calculateSkateboardMastery(trickStates);
-
-      const elapsedTime = Date.now() - startTime;
-      if (elapsedTime < MIN_LOADING_TIME) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, MIN_LOADING_TIME - elapsedTime)
-        );
-      }
-
       setMasteryPercentage(mastery);
     } catch (error) {
       console.error("Error loading mastery percentage:", error);
@@ -267,47 +233,61 @@ const Fitness: React.FC = () => {
         and not a substitute for professional medical advice
       </Text>
       <View className="mt-6">
-        <View className="flex-row">
-          <AnimatedLoading
-            isLoading={isInitialLoading}
-            value={formatNumber(stats.todayCalories)}
-          />
-          <DailyCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
-        </View>
-        <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
-          Calories burnt today.
-        </Text>
-        <View className="flex-row">
-          <AnimatedLoading
-            isLoading={isInitialLoading}
-            value={formatNumber(stats.weeklyCalories)}
-          />
-          <WeeklyCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
-        </View>
-        <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
-          Calories burnt this week.
-        </Text>
-        <View className="flex-row">
-          <AnimatedLoading
-            isLoading={isInitialLoading}
-            value={formatNumber(stats.allTimeCalories)}
-          />
-          <AllTimeCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
-        </View>
-        <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
-          All-time calories burnt.
-        </Text>
-        <View className="flex-row items-center h-[48px]">
-          <AnimatedLoading
-            isLoading={isMasteryLoading}
-            value={`${formatMastery(masteryPercentage)} %`}
-            showPercentage={true}
-          />
-          <Skull width={iconsize} height={iconsize} fill="#4FEDE2" />
-        </View>
-        <Text className="pl-8 mt-1 text-xl text-text font-montserrat-alt">
-          To skateboard mastery.
-        </Text>
+        {/* Today's Calories */}
+        <Animated.View style={[animations.todayStatsAnim.animatedStyle]}>
+          <View className="flex-row">
+            <Text className="text-3xl text-text font-montserrat-alt mr-4">
+              {isInitialLoading ? "?" : formatNumber(stats.todayCalories)}
+            </Text>
+            <DailyCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
+          </View>
+          <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
+            Calories burnt today.
+          </Text>
+        </Animated.View>
+
+        {/* Weekly Calories */}
+        <Animated.View style={[animations.weeklyStatsAnim.animatedStyle]}>
+          <View className="flex-row">
+            <Text className="text-3xl text-text font-montserrat-alt mr-4">
+              {isInitialLoading ? "?" : formatNumber(stats.weeklyCalories)}
+            </Text>
+            <WeeklyCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
+          </View>
+          <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
+            Calories burnt this week.
+          </Text>
+        </Animated.View>
+
+        {/* All-time Calories */}
+        <Animated.View style={[animations.allTimeStatsAnim.animatedStyle]}>
+          <View className="flex-row">
+            <Text className="text-3xl text-text font-montserrat-alt mr-4">
+              {isInitialLoading ? "?" : formatNumber(stats.allTimeCalories)}
+            </Text>
+            <AllTimeCalories
+              width={iconsize}
+              height={iconsize}
+              fill="#4FEDE2"
+            />
+          </View>
+          <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
+            All-time calories burnt.
+          </Text>
+        </Animated.View>
+
+        {/* Mastery Percentage */}
+        <Animated.View style={[animations.masteryStatsAnim.animatedStyle]}>
+          <View className="flex-row items-center h-[48px]">
+            <Text className="text-3xl text-text font-montserrat-alt mr-4">
+              {isMasteryLoading ? "?" : `${formatMastery(masteryPercentage)} %`}
+            </Text>
+            <Skull width={iconsize} height={iconsize} fill="#4FEDE2" />
+          </View>
+          <Text className="pl-8 mt-1 text-xl text-text font-montserrat-alt">
+            To skateboard mastery.
+          </Text>
+        </Animated.View>
       </View>
       <Timer
         onTimeUpdate={handleTimeUpdate}
