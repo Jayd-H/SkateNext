@@ -44,6 +44,7 @@ export default function Home() {
   const handleSkillLevelComplete = async (selectedLevel: SkillLevel) => {
     if (!age || !weight) return;
     setIsInitializing(true);
+
     try {
       await StorageService.initializeWithSkillLevel(selectedLevel, age, weight);
       router.replace("/tabs/map");
@@ -63,7 +64,7 @@ export default function Home() {
 
   if (isCheckingSetup) {
     return (
-      <View className="flex-1 items-center justify-center">
+      <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" />
       </View>
     );
