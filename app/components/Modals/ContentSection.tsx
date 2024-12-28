@@ -18,7 +18,6 @@ interface ContentSectionProps {
 const ContentSection: React.FC<ContentSectionProps> = ({
   description,
   commonMistakes,
-  renderCommonMistakes,
 }) => {
   const [showingDescription, setShowingDescription] = React.useState(true);
   const progress = useSharedValue(0);

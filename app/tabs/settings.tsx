@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { View, Text, BackHandler } from "react-native";
-import Modal from "../components/Modals/Modal";
+import Modal from "../components/Modals/GenericModal";
 import DeleteConfirmModal from "../components/Modals/DeleteConfirmModal";
 import { StorageService } from "../components/Utils/StorageService";
 import Button from "../components/Generic/Button";

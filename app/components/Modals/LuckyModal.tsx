@@ -1,19 +1,5 @@
-import React from "react";
-import { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ViewStyle,
-  Pressable,
-} from "react-native";
-import { BlurView } from "expo-blur";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Pressable } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import Sparkles from "../../../assets/icons/sparkles.svg";
@@ -24,6 +10,7 @@ import { TRICK_DATA } from "../Data/trickData";
 import Alert from "../Generic/Alert";
 import Button from "../Generic/Button";
 import { useHaptics } from "../Utils/useHaptics";
+import DraggableModal from "../Generic/DraggableModal";
 
 interface LuckyModalProps {
   isVisible: boolean;
@@ -40,24 +27,8 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
   onTrickSelect,
   onShowRecommendations,
 }) => {
-  const translateY = useSharedValue(1000);
   const [isCalculating, setIsCalculating] = useState(false);
   const [alert, setAlert] = useState<string | null>(null);
-
-  React.useEffect(() => {
-    if (isVisible) {
-      translateY.value = withTiming(0, {
-        duration: 300,
-        easing: Easing.out(Easing.exp),
-      });
-    } else {
-      translateY.value = withTiming(1000, {
-        duration: 300,
-        easing: Easing.in(Easing.exp),
-      });
-    }
-  }, [isVisible]);
-
   const { triggerHaptic } = useHaptics();
 
   const handleRecommendation = async () => {
@@ -120,36 +91,13 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
     onTrickSelect(getRandomTrick(notStartedTricks));
   };
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: translateY.value }],
-    };
-  });
-
   if (!isVisible) return null;
 
-  const blurViewStyle: ViewStyle = {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  };
-
   return (
-    <BlurView intensity={30} tint="dark" style={blurViewStyle}>
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={onClose}
-        className="flex-1"
-      />
+    <>
       {alert && <Alert message={alert} onHide={() => setAlert(null)} />}
-      <Animated.View
-        style={[animatedStyle]}
-        className="bg-bg-card rounded-t-3xl h-full pt-6"
-      >
-        <View className="p-6">
-          <View className="w-12 h-1 bg-accent-bright rounded-full mb-2 self-center opacity-50" />
+      <DraggableModal isVisible={isVisible} onClose={onClose}>
+        <View className="px-6 pt-4">
           <View className="flex-row justify-between items-center mb-6">
             <TouchableOpacity
               onPress={onClose}
@@ -242,8 +190,8 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
             onPress={handleNotStartedTrick}
           />
         </View>
-      </Animated.View>
-    </BlurView>
+      </DraggableModal>
+    </>
   );
 };
 
