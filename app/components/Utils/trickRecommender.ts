@@ -113,18 +113,6 @@ export async function getRecommendedTricks(
       };
     });
 
-    const topScores = scoredTricks
-      .sort((a, b) => b.finalScore - a.finalScore)
-      .slice(0, 3);
-    console.log(
-      `Top 3 scores for slot ${i}:`,
-      topScores.map((t) => ({
-        id: t.id,
-        score: t.finalScore,
-        status: trickStates[t.id] || 0,
-      }))
-    );
-
     const selected = selectBestTrick(scoredTricks, recommendations);
     if (selected) {
       recommendations.push(selected);
