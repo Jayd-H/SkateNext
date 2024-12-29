@@ -12,38 +12,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: Clear Bun Cache
-        run: bun pm cache rm
+      - run: bun pm cache rm
 
-      - name: Install Dependencies with Retry
-        run: |
-          for i in {1..3}; do bun install --force && break || sleep 10; done
+      - run: bun install --force
         env:
           NODE_ENV: development
 
-      - name: Run Tests
-        run: bun test
+      - run: bun test
         env:
           NODE_ENV: test
-
-      - name: Report Status
-        if: always()
-        run: |
-          if [ ${{ job.status }} == 'success' ]; then
-            echo "✅ Tests passed successfully"
-          else
-            echo "❌ Tests failed"
-          fi
