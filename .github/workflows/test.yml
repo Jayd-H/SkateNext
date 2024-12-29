@@ -14,13 +14,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
       - name: Install Dependencies
-        run: bun install
+        run: |
+          npm install -g expo-cli
+          bun install --no-save
+        env:
+          NODE_ENV: development
 
       - name: Run Tests
         run: bun test
+        env:
+          NODE_ENV: test
