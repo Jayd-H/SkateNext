@@ -18,19 +18,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: Clean Install
-        run: rm -rf node_modules && rm -f package-lock.json && rm -f bun.lockb
-
       - name: Install Dependencies
         run: |
-          bun install --frozen-lockfile=false
+          bun install
         env:
           NODE_ENV: development
 

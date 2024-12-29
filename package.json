@@ -49,6 +49,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^12.9.0",
     "@types/react": "~18.2.45",
     "bun-types": "^1.1.42",
     "react-native-svg-transformer": "^1.5.0",
