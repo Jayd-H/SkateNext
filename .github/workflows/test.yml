@@ -24,7 +24,9 @@ jobs:
 
       - run: bun pm cache rm
 
-      - run: bun install --force
+      - name: Install dependencies with retry
+        run: |
+          for i in {1..3}; do bun install --force && break || sleep 10; done
         env:
           NODE_ENV: development
 
