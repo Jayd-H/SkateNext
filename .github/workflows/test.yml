@@ -25,10 +25,12 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Clean Install
+        run: rm -rf node_modules && rm -f package-lock.json && rm -f bun.lockb
+
       - name: Install Dependencies
         run: |
-          npm install -g expo-cli
-          bun install --no-save
+          bun install --frozen-lockfile=false
         env:
           NODE_ENV: development
 
@@ -36,3 +38,12 @@ jobs:
         run: bun test
         env:
           NODE_ENV: test
+
+      - name: Report Status
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Tests passed successfully"
+          else
+            echo "❌ Tests failed"
+          fi
