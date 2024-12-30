@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -23,8 +29,20 @@ class WelcomeState {
 
 const AgeSelector: React.FC<AgeSelectorProps> = ({ onComplete, onBack }) => {
   const [age, setAge] = useState<number>(18);
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputValue, setInputValue] = useState("18");
   const [showWelcome, setShowWelcome] = useState(!WelcomeState.hasShownWelcome);
   const scale = useSharedValue(1);
+
+  const handleInputComplete = () => {
+    const newValue = parseInt(inputValue);
+    if (!isNaN(newValue) && newValue >= 8 && newValue <= 80) {
+      setAge(newValue);
+    } else {
+      setInputValue(age.toString());
+    }
+    setIsEditing(false);
+  };
 
   const handleWelcomeComplete = () => {
     WelcomeState.hasShownWelcome = true;
@@ -80,9 +98,24 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({ onComplete, onBack }) => {
           <Text className="text-text-muted font-montserrat-light text-xl mb-2">
             Your age
           </Text>
-          <Text className="text-accent-bright font-montserrat-alt-bold text-7xl">
-            {age}
-          </Text>
+          <TouchableOpacity onPress={() => setIsEditing(true)}>
+            {isEditing ? (
+              <TextInput
+                className="text-accent-bright font-montserrat-alt-bold text-7xl"
+                value={inputValue}
+                onChangeText={setInputValue}
+                keyboardType="numeric"
+                autoFocus
+                onBlur={handleInputComplete}
+                onSubmitEditing={handleInputComplete}
+                maxLength={2}
+              />
+            ) : (
+              <Text className="text-accent-bright font-montserrat-alt-bold text-7xl">
+                {age}
+              </Text>
+            )}
+          </TouchableOpacity>
         </Animated.View>
 
         <View className="w-full px-4">
@@ -97,7 +130,6 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({ onComplete, onBack }) => {
             maximumTrackTintColor="#1D7267"
             thumbTintColor="#4FEDE2"
           />
-
           <View className="flex-row justify-between mt-2 px-2">
             <Text className="text-text-dim font-montserrat-light text-sm">
               8
