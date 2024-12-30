@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -21,8 +27,19 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({
   onBack,
 }) => {
   const [weight, setWeight] = useState<number>(70);
+  const [isEditing, setIsEditing] = useState(false);
+  const [inputValue, setInputValue] = useState("70");
   const scale = useSharedValue(1);
 
+  const handleInputComplete = () => {
+    const newValue = parseInt(inputValue);
+    if (!isNaN(newValue) && newValue >= 30 && newValue <= 150) {
+      setWeight(newValue);
+    } else {
+      setInputValue(weight.toString());
+    }
+    setIsEditing(false);
+  };
   const handleNext = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     scale.value = withSpring(0.95, {
@@ -78,14 +95,30 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({
           <Text className="text-text-muted font-montserrat-light text-xl mb-2">
             Your weight
           </Text>
-          <View className="flex-row items-baseline">
-            <Text className="text-accent-bright font-montserrat-alt-bold text-7xl">
-              {weight}
-            </Text>
+          <TouchableOpacity
+            onPress={() => setIsEditing(true)}
+            className="flex-row items-baseline"
+          >
+            {isEditing ? (
+              <TextInput
+                className="text-accent-bright font-montserrat-alt-bold text-7xl"
+                value={inputValue}
+                onChangeText={setInputValue}
+                keyboardType="numeric"
+                autoFocus
+                onBlur={handleInputComplete}
+                onSubmitEditing={handleInputComplete}
+                maxLength={3}
+              />
+            ) : (
+              <Text className="text-accent-bright font-montserrat-alt-bold text-7xl">
+                {weight}
+              </Text>
+            )}
             <Text className="text-text-dim font-montserrat-light text-2xl ml-2">
               kg
             </Text>
-          </View>
+          </TouchableOpacity>
         </Animated.View>
 
         <View className="w-full px-4">
