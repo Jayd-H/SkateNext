@@ -736,7 +736,7 @@ export const TRICK_DATA: Trick[] = [
       "A Biggerspin performed in switch stance. Execute a 540° backside board rotation combined with a 180° body rotation while riding switch. This requires exceptional control as you'll be popping and scooping with your non-dominant foot.",
     common_mistakes:
       "[Inconsistent pop] Focus on getting a clean switch pop before initiating rotation. [Poor scoop control] Practice the switch scoop separately.",
-    difficulty: "10",
+    difficulty: "11",
     video_link: "",
     alt_names: "Switch BS Biggerspin, Switch 540 Shuv 180",
   },
@@ -747,7 +747,7 @@ export const TRICK_DATA: Trick[] = [
       "A frontside Biggerspin performed in switch stance. Combine a 540° frontside board rotation with a 180° frontside body rotation while riding switch. This is one of the most technically demanding variations.",
     common_mistakes:
       "[Rotation hesitation] Commit fully to both rotations. [Switch stance instability] Maintain proper switch form throughout.",
-    difficulty: "10",
+    difficulty: "11",
     video_link: "https://www.youtube.com/watch?v=dIwDjl3AGkU",
     alt_names: "Switch FS Biggerspin, Switch Front Biggerspin",
   },
@@ -2000,5 +2000,27 @@ export const TRICK_DATA: Trick[] = [
     difficulty: "9",
     video_link: "",
     alt_names: "Switch FS Shuvit BS Body Varial",
+  },
+  {
+    id: "switchfsbigspin",
+    name: "Switch Frontside Bigspin",
+    description:
+      "A frontside Bigspin performed in switch stance. Combine a switch frontside 360° board rotation with a frontside 180° body rotation. Start with your feet in switch stance, wind up in the direction of spin, then scoop the tail frontside while initiating your body rotation.",
+    common_mistakes:
+      "[Poor scoop direction] Ensure a clean frontside scoop despite the switch stance. [Rotation timing] Keep your body rotation in sync with the board's rotation.",
+    difficulty: "9",
+    video_link: "https://www.youtube.com/watch?v=MGrgaYxsQ9Y&",
+    alt_names: "Switch Front Bigspin, Switch FS Big Spin",
+  },
+  {
+    id: "switchbigspin",
+    name: "Switch Backside Bigspin",
+    description:
+      "A backside Bigspin performed in switch stance. Combine a switch backside 360° board rotation with a backside 180° body rotation. Set up in switch stance with your feet positioned for a backside scoop. Wind up opposite to the spin direction, then pop while scooping backside and rotating your body.",
+    common_mistakes:
+      "[Scoop power] Get enough rotation for the full 360° despite being switch. [Board tracking] Keep the board under you during both rotations.",
+    difficulty: "9",
+    video_link: "https://www.youtube.com/watch?v=R84dTWmZKFM",
+    alt_names: "Switch Back Bigspin, Switch BS Big Spin",
   },
 ];
