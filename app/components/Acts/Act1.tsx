@@ -2,6 +2,66 @@ import React from "react";
 import ActGrid, { ActNodeData, ActConnectionData } from "./ActGrid";
 import Gyroscope from "../../../assets/icons/gyroscope.svg";
 
+const ICON_CONFIG = {
+  SIZE: 400,
+  SPACING: 400,
+  INITIAL_OFFSET: 20,
+};
+
+type IconPosition = "left" | "right";
+
+const getIconStyle = (position: IconPosition) => ({
+  transform: position === "left" ? [{ scaleX: -1 }] : undefined,
+});
+
+const getIconPosition = (position: IconPosition, index: number) => ({
+  left: position === "left" ? -(ICON_CONFIG.SIZE / 2) : ICON_CONFIG.SIZE / 2,
+  top: ICON_CONFIG.INITIAL_OFFSET + index * ICON_CONFIG.SPACING,
+});
+
+const backgroundElements = [
+  {
+    component: (
+      <Gyroscope
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("left")}
+      />
+    ),
+    position: getIconPosition("left", 0),
+  },
+  {
+    component: (
+      <Gyroscope
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("right")}
+      />
+    ),
+    position: getIconPosition("right", 1),
+  },
+  {
+    component: (
+      <Gyroscope
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("left")}
+      />
+    ),
+    position: getIconPosition("left", 2),
+  },
+  {
+    component: (
+      <Gyroscope
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("right")}
+      />
+    ),
+    position: getIconPosition("right", 3),
+  },
+];
+
 const nodes: ActNodeData[] = [
   {
     id: "stance",
@@ -121,19 +181,6 @@ const createConnections = (): ActConnectionData[] => {
     { fromNode: "ncs", toNode: "boneless", type: "dotted" },
   ];
 };
-
-const backgroundElements = [
-  {
-    component: (
-      <Gyroscope
-        width={400}
-        height={400}
-        style={{ transform: [{ scaleX: -1 }] }}
-      />
-    ),
-    position: { left: -200, top: 20 },
-  },
-];
 
 interface Act1Props {
   onTrickPress: (id: string) => void;

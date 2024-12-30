@@ -1,6 +1,92 @@
 import React from "react";
 import ActGrid, { ActNodeData, ActConnectionData } from "./ActGrid";
-import Gyroscope from "../../../assets/icons/gyroscope.svg";
+import Minerals from "../../../assets/icons/minerals.svg";
+
+const ICON_CONFIG = {
+  SIZE: 400,
+  SPACING: 400,
+  INITIAL_OFFSET: 20,
+};
+
+type IconPosition = "left" | "right";
+
+const getIconStyle = (position: IconPosition) => ({
+  transform: position === "left" ? [{ scaleX: -1 }] : undefined,
+});
+
+const getIconPosition = (position: IconPosition, index: number) => ({
+  left: position === "left" ? -(ICON_CONFIG.SIZE / 2) : ICON_CONFIG.SIZE / 2,
+  top: ICON_CONFIG.INITIAL_OFFSET + index * ICON_CONFIG.SPACING,
+});
+
+const backgroundElements = [
+  {
+    component: (
+      <Minerals
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("left")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("left", 0),
+  },
+  {
+    component: (
+      <Minerals
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("right")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("right", 1),
+  },
+  {
+    component: (
+      <Minerals
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("left")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("left", 2),
+  },
+  {
+    component: (
+      <Minerals
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("right")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("right", 3),
+  },
+  {
+    component: (
+      <Minerals
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("left")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("left", 4),
+  },
+  {
+    component: (
+      <Minerals
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("right")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("right", 5),
+  },
+];
 
 const nodes: ActNodeData[] = [
   {
@@ -205,19 +291,6 @@ const connections: ActConnectionData[] = [
   { fromNode: "biggerspin", toNode: "fsbiggerspin", type: "dotted" },
   { fromNode: "fsbiggerspin", toNode: "impossible", type: "dotted" },
   { fromNode: "impossible", toNode: "treflip", type: "lined" },
-];
-
-const backgroundElements = [
-  {
-    component: (
-      <Gyroscope
-        width={400}
-        height={400}
-        style={{ transform: [{ scaleX: -1 }] }}
-      />
-    ),
-    position: { left: -200, top: 20 },
-  },
 ];
 
 interface Act3Props {
