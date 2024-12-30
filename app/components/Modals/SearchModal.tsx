@@ -20,41 +20,72 @@ interface SearchModalProps {
   trickCompletionStates: Record<string, number>;
 }
 
-const calculateSimilarity = (str1: string, str2: string): number => {
-  const s1 = str1.toLowerCase();
-  const s2 = str2.toLowerCase();
+const calculateLevenshteinDistance = (str1: string, str2: string): number => {
+  const matrix: number[][] = [];
+  for (let i = 0; i <= str1.length; i++) matrix[i] = [i];
+  for (let j = 0; j <= str2.length; j++) matrix[0][j] = j;
 
-  if (s1 === s2) return 1;
-  if (s1.includes(s2) || s2.includes(s1)) return 0.8;
-
-  const words1 = s1.split(/\s+/);
-  const words2 = s2.split(/\s+/);
-
-  let matches = 0;
-  let totalWords = Math.max(words1.length, words2.length);
-
-  words1.forEach((word1) => {
-    words2.forEach((word2) => {
-      if (
-        word1.slice(0, 3) === word2.slice(0, 3) ||
-        word1.includes(word2) ||
-        word2.includes(word1)
-      ) {
-        matches++;
+  for (let i = 1; i <= str1.length; i++) {
+    for (let j = 1; j <= str2.length; j++) {
+      if (str1[i - 1] === str2[j - 1]) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
       }
-    });
-  });
+    }
+  }
 
-  return matches / totalWords;
+  return matrix[str1.length][str2.length];
+};
+
+const hasExactMatch = (
+  searchStr: string,
+  name: string,
+  altNames: string | undefined
+): boolean => {
+  const search = searchStr.toLowerCase().trim();
+  const mainName = name.toLowerCase().trim();
+
+  if (mainName === search) return true;
+
+  if (altNames) {
+    const altNamesList = altNames.split(",").map((n) => n.toLowerCase().trim());
+    return altNamesList.includes(search);
+  }
+
+  return false;
+};
+
+const calculateSimilarity = (str1: string, str2: string): number => {
+  const s1 = str1.toLowerCase().trim();
+  const s2 = str2.toLowerCase().trim();
+
+  const distance = calculateLevenshteinDistance(s1, s2);
+  const maxLength = Math.max(s1.length, s2.length);
+
+  return 1 - distance / maxLength;
 };
 
 const scoreTrick = (trick: Trick, query: string): number => {
-  const nameScore = calculateSimilarity(trick.name, query);
-  const altScore = trick.alt_names
-    ? calculateSimilarity(trick.alt_names, query)
-    : 0;
+  if (hasExactMatch(query, trick.name, trick.alt_names)) {
+    return 1000;
+  }
 
-  return Math.max(nameScore, altScore);
+  let maxScore = calculateSimilarity(trick.name, query);
+
+  if (trick.alt_names) {
+    const altNamesList = trick.alt_names.split(",");
+    for (const altName of altNamesList) {
+      const score = calculateSimilarity(altName, query);
+      maxScore = Math.max(maxScore, score);
+    }
+  }
+
+  return maxScore;
 };
 
 const SearchModal: React.FC<SearchModalProps> = ({
@@ -77,7 +108,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
   useEffect(() => {
     const filterTricks = () => {
       if (searchQuery.trim() === "") {
-        setSearchResults(TRICK_DATA.slice(0, 5));
+        setSearchResults(TRICK_DATA.slice(0, 6));
         return;
       }
 
@@ -87,10 +118,9 @@ const SearchModal: React.FC<SearchModalProps> = ({
       }));
 
       const filteredTricks = scoredTricks
-        .filter(({ score }) => score > 0.3)
         .sort((a, b) => b.score - a.score)
-        .map(({ trick }) => trick)
-        .slice(0, 5);
+        .slice(0, 5)
+        .map(({ trick }) => trick);
 
       setSearchResults(filteredTricks);
     };
