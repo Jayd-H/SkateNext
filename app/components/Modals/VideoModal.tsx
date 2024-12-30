@@ -102,22 +102,35 @@ const VideoModal: React.FC<VideoModalProps> = ({
     return `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&playsinline=1&modestbranding=1&rel=0&showinfo=0${muteParam}`;
   };
 
-  const embedUrl = getEmbedUrl(videoUrl);
-  const screenWidth = Dimensions.get("window").width;
-  const screenHeight = Dimensions.get("window").height;
-  const videoWidth = screenWidth * 0.95;
-  const videoHeight = videoWidth * 0.5625;
+  const getDimensions = () => {
+    const screenWidth = Dimensions.get("window").width;
+    const screenHeight = Dimensions.get("window").height;
+    const maxHeight = screenHeight * 0.7;
+    const heightBasedWidth = maxHeight * (16 / 9);
+    const maxWidth = screenWidth * 0.95;
+    const finalWidth = Math.min(maxWidth, heightBasedWidth);
+    const finalHeight = finalWidth * 0.5625;
+
+    return {
+      width: finalWidth,
+      height: finalHeight,
+      top: (screenHeight - finalHeight) / 2,
+      left: (screenWidth - finalWidth) / 2,
+    };
+  };
+
+  const dimensions = getDimensions();
 
   const containerStyle = {
     position: "absolute" as const,
-    width: videoWidth,
-    top: (screenHeight - videoHeight) / 2,
-    left: (screenWidth - videoWidth) / 2,
+    width: dimensions.width,
+    top: dimensions.top,
+    left: dimensions.left,
   };
 
   const ErrorView = () => (
     <View
-      style={{ height: videoHeight }}
+      style={{ height: dimensions.height }}
       className="bg-background items-center justify-center"
     >
       <Text className="text-text font-montserrat-alt text-base text-center">
@@ -125,6 +138,8 @@ const VideoModal: React.FC<VideoModalProps> = ({
       </Text>
     </View>
   );
+
+  const embedUrl = getEmbedUrl(videoUrl);
 
   return (
     <View
@@ -159,46 +174,46 @@ const VideoModal: React.FC<VideoModalProps> = ({
       </Animated.View>
 
       <Animated.View style={[containerStyle, animatedModalStyle]}>
-        <View className="bg-bg-card rounded-3xl overflow-hidden">
-          {/* Pill Handle */}
-          <View className="w-12 h-1 bg-accent-bright/50 rounded-full self-center mt-4" />
+        <View className="bg-bg-card rounded-3xl border border-accent-dark overflow-hidden">
+          <View className="w-12 h-1 bg-accent-muted rounded-full self-center my-4" />
 
-          <View className="p-3">
-            <View className="bg-bg-elevated rounded-2xl p-1">
-              <View className="rounded-xl overflow-hidden">
-                {!embedUrl || isError ? (
-                  <ErrorView />
-                ) : (
-                  <WebView
-                    source={{
-                      uri: embedUrl,
-                      headers: {
-                        Accept: "text/html",
-                        "Content-Type": "text/html",
-                      },
-                    }}
-                    allowsFullscreenVideo
-                    allowsInlineMediaPlayback
-                    mediaPlaybackRequiresUserAction={false}
-                    javaScriptEnabled={true}
-                    domStorageEnabled={true}
-                    onError={() => setIsError(true)}
-                    onHttpError={() => setIsError(true)}
-                    style={{ height: videoHeight, width: "100%" }}
-                  />
-                )}
-              </View>
-            </View>
-
-            {/* Channel Credit */}
-            {channelName && (
-              <View className="mt-2">
-                <Text className="text-text-dim font-montserrat-medium text-sm text-center">
-                  credit: {channelName}
-                </Text>
-              </View>
+          <View className="bg-bg-elevated mx-3 rounded-2xl overflow-hidden">
+            {!embedUrl || isError ? (
+              <ErrorView />
+            ) : (
+              <WebView
+                source={{
+                  uri: embedUrl,
+                  headers: {
+                    Accept: "text/html",
+                    "Content-Type": "text/html",
+                  },
+                }}
+                allowsFullscreenVideo
+                allowsInlineMediaPlayback
+                mediaPlaybackRequiresUserAction={false}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                onError={() => setIsError(true)}
+                onHttpError={() => setIsError(true)}
+                style={{
+                  height: dimensions.height + 4,
+                  marginTop: -9,
+                  marginBottom: -9,
+                  width: "100%",
+                  backgroundColor: "#000",
+                }}
+              />
             )}
           </View>
+
+          {channelName && (
+            <View className="px-3 my-4">
+              <Text className="text-text-dim font-montserrat-medium text-sm text-center">
+                credit: {channelName}
+              </Text>
+            </View>
+          )}
         </View>
       </Animated.View>
     </View>
