@@ -169,7 +169,7 @@ const TrickModal: React.FC<TrickModalProps> = ({
   };
 
   const handleVHSPress = async () => {
-    if (!isConnected) return;
+    if (!isConnected || trick.video_link === "") return;
 
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setIsVideoModalVisible(true);
@@ -205,15 +205,19 @@ const TrickModal: React.FC<TrickModalProps> = ({
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleVHSPress}
-              disabled={!isConnected}
+              disabled={!isConnected || trick.video_link === ""}
               className={`bg-bg-elevated border-2 ${
-                isConnected ? "border-accent-bright" : "border-text-dim"
+                isConnected && trick.video_link !== ""
+                  ? "border-accent-bright"
+                  : "border-text-dim"
               } rounded-2xl p-3`}
             >
               <VHS
                 width={24}
                 height={24}
-                fill={isConnected ? "#4FEDE2" : "#7A9E9B"}
+                fill={
+                  isConnected && trick.video_link !== "" ? "#4FEDE2" : "#7A9E9B"
+                }
               />
             </TouchableOpacity>
           </View>

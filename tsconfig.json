@@ -4,13 +4,17 @@
     "strict": true,
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "types": ["bun-types"],
+    "allowJs": true,
+    "allowImportingTsExtensions": true
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "nativewind-env.d.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "app/__tests__/**/*"
   ]
 }

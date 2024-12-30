@@ -680,7 +680,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Under-rotating the board] The frontside scoop needs to be powerful enough for the full 540°. [Poor spot landing] Keep your head turned to maintain visibility.",
     difficulty: "9",
-    video_link: "frontside_biggerspin.mp4",
+    video_link: "",
     alt_names: "FS Biggerspin, Front Biggerspin",
   },
   {
@@ -725,7 +725,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Weak pop] The nollie pop must be strong enough for the full rotation. [Loss of control] Maintain centered weight throughout.",
     difficulty: "9",
-    video_link: "nollie_frontside_biggerspin.mp4",
+    video_link: "",
     alt_names: "Nollie FS Biggerspin, Nollie Front Biggerspin",
   },
   //! SWITCH BS BIGGERSPIN WANTED
@@ -737,7 +737,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Inconsistent pop] Focus on getting a clean switch pop before initiating rotation. [Poor scoop control] Practice the switch scoop separately.",
     difficulty: "10",
-    video_link: "switch_biggerspin.mp4",
+    video_link: "",
     alt_names: "Switch BS Biggerspin, Switch 540 Shuv 180",
   },
   {
@@ -1123,7 +1123,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Lost orientation] Maintain awareness through the rotations. [Flip timing] The kickflip must stay with the rotation.",
     difficulty: "11",
-    video_link: "frontside_gazelle_flip.mp4",
+    video_link: "",
     alt_names: "FS Gazelle Flip, FS 540 Flip Body 360",
   },
   {
@@ -1146,7 +1146,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Over-rotation] Control the multiple rotation elements carefully. [Lost board control] Keep the board underneath throughout.",
     difficulty: "11",
-    video_link: "fakie_frontside_gazelle_flip.mp4",
+    video_link: "",
     alt_names: "Fakie FS Gazelle Flip",
   },
   {
@@ -1180,7 +1180,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Switch pop instability] Maintain control while popping switch. [Rotation sync] Keep all elements coordinated.",
     difficulty: "11",
-    video_link: "switch_gazelle_flip.mp4",
+    video_link: "",
     alt_names: "Switch BS Gazelle Flip",
   },
   //! SWITCH FRONT GAZELLE FLIP WANTED
@@ -1192,7 +1192,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Poor switch control] Maintain switch form throughout. [Rotation timing] Keep all elements synchronized.",
     difficulty: "11",
-    video_link: "switch_frontside_gazelle_flip.mp4",
+    video_link: "",
     alt_names: "Switch FS Gazelle Flip",
   },
   {
@@ -1215,7 +1215,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Lost orientation] Keep track of the landing throughout. [Uneven rotation] Maintain consistent rotation speed.",
     difficulty: "11",
-    video_link: "frontside_gazelle_spin.mp4",
+    video_link: "",
     alt_names: "FS Gazelle Spin",
   },
   {
@@ -1260,7 +1260,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Rotation control] Keep both rotations coordinated. [Balance] Stay centered throughout the trick.",
     difficulty: "11",
-    video_link: "nollie_frontside_gazelle_spin.mp4",
+    video_link: "",
     alt_names: "Nollie FS Gazelle Spin",
   },
   //! SWITCH GAZELLE SPIN WANTED
@@ -1272,7 +1272,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Switch stance control] Maintain proper form throughout. [Rotation sync] Keep both rotations coordinated.",
     difficulty: "11",
-    video_link: "switch_gazelle_spin.mp4",
+    video_link: "",
     alt_names: "Switch BS Gazelle Spin",
   },
   //! SWITCH FRONT GAZELLE SPIN WANTED
@@ -1284,7 +1284,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Switch balance] Keep centered despite the complex rotation. [Spot landing] Track your landing throughout.",
     difficulty: "11",
-    video_link: "switch_frontside_gazelle_spin.mp4",
+    video_link: "",
     alt_names: "Switch FS Gazelle Spin",
   },
   {
@@ -1307,7 +1307,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Rotation separation] Keep all elements working together. [Poor balance] Maintain center of gravity.",
     difficulty: "11",
-    video_link: "fakie_blizzard_flip.mp4",
+    video_link: "",
     alt_names: "Fakie BS Blizzard",
   },
   //! NOLLIE BLIZZARD FLIP WANTED
@@ -1319,7 +1319,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Weak nollie pop] Ensure sufficient pop for all rotations. [Forward lean] Stay centered despite nollie position.",
     difficulty: "11",
-    video_link: "nollie_blizzard_flip.mp4",
+    video_link: "",
     alt_names: "Nollie BS Blizzard",
   },
   //! SWITCH BLIZZARD FLIP WANTED
@@ -1331,7 +1331,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Switch control] Maintain proper form throughout all rotations. [Element timing] Keep all components synchronized.",
     difficulty: "11",
-    video_link: "switch_blizzard_flip.mp4",
+    video_link: "",
     alt_names: "Switch BS Blizzard",
   },
   {
@@ -1574,7 +1574,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Weight distribution] Stay centered through trick. [Rotation control] Keep all motions coordinated.",
     difficulty: "11",
-    video_link: "fakie_double_laser_flip.mp4",
+    video_link: "",
     alt_names: "Fakie Double 360 Heel",
   },
   //! NOLLIE DOUBLE LASER FLIP WANTED
@@ -1586,7 +1586,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Nollie pop control] Get sufficient height. [Balance] Stay centered throughout.",
     difficulty: "11",
-    video_link: "nollie_double_laser_flip.mp4",
+    video_link: "",
     alt_names: "Nollie Double 360 Heel",
   },
   //! SWITCH DOUBLE LASER FLIP WANTED
@@ -1598,7 +1598,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Switch stance stability] Maintain form throughout. [Motion timing] Keep rotations synchronized.",
     difficulty: "11",
-    video_link: "switch_double_laser_flip.mp4",
+    video_link: "",
     alt_names: "Switch Double 360 Heel",
   },
   {
@@ -1885,7 +1885,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Balance control] Stay centered through both flips. [Rotation timing] Keep heelflips synchronized with rotation. [Poor catch] Let both flips complete before catching.",
     difficulty: "11",
-    video_link: "fakie_daydream_flip.mp4",
+    video_link: "",
     alt_names: "Fakie Varial Double Heelflip, Fakie FS 180 Double Heel",
   },
   //! NOLLIE DAYDREAM FLIP WANTED
@@ -1897,7 +1897,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Nollie pop strength] Get enough height for full rotation. [Forward lean] Maintain centered position throughout. [Flip control] Keep both heelflips consistent.",
     difficulty: "11",
-    video_link: "nollie_daydream_flip.mp4",
+    video_link: "",
     alt_names: "Nollie Varial Double Heelflip, Nollie FS 180 Double Heel",
   },
   //! SWITCH DAYDREAM FLIP WANTED
@@ -1909,7 +1909,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Switch stance control] Maintain proper form throughout. [Motion coordination] Keep all rotations synchronized. [Poor flick] Ensure consistent heelflips despite switch stance.",
     difficulty: "11",
-    video_link: "switch_daydream_flip.mp4",
+    video_link: "",
     alt_names: "Switch Varial Double Heelflip, Switch FS 180 Double Heel",
   },
   //! ALL MYSTIC SPINS WANTED
@@ -1921,7 +1921,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Body rotation timing] Start the frontside body rotation after initiating the backside shuvit. [Lost board control] Keep eyes on the board during opposite rotations. [Poor landing balance] Prepare for the reversed stance landing.",
     difficulty: "7",
-    video_link: "bs_mystic_spin.mp4",
+    video_link: "",
     alt_names: "BS Shuvit FS Body Varial, Anti-Spin",
   },
   {
@@ -1932,7 +1932,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Rotation confusion] Keep the FS shuvit and BS body varial distinct. [Board tracking] Maintain visual contact with board throughout. [Landing preparation] Ready yourself for the reversed stance.",
     difficulty: "7",
-    video_link: "fs_mystic_spin.mp4",
+    video_link: "",
     alt_names: "FS Shuvit BS Body Varial",
   },
   {
@@ -1943,7 +1943,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Balance point] Stay centered despite fakie stance. [Rotation separation] Keep shuvit and body varial distinct. [Landing stance] Prepare for the switch landing position.",
     difficulty: "8",
-    video_link: "fakie_bs_mystic_spin.mp4",
+    video_link: "",
     alt_names: "Fakie BS Shuvit FS Body Varial",
   },
   {
@@ -1954,7 +1954,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Weight distribution] Maintain center of gravity during rotations. [Visual tracking] Keep eyes on board through opposite spins. [Landing control] Be ready for the switch stance landing.",
     difficulty: "8",
-    video_link: "fakie_fs_mystic_spin.mp4",
+    video_link: "",
     alt_names: "Fakie FS Shuvit BS Body Varial",
   },
   {
@@ -1965,7 +1965,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Nollie pop control] Get proper height from nose. [Rotation timing] Start body rotation after solid shuvit. [Forward lean] Stay centered despite nollie position.",
     difficulty: "8",
-    video_link: "nollie_bs_mystic_spin.mp4",
+    video_link: "",
     alt_names: "Nollie BS Shuvit FS Body Varial",
   },
   {
@@ -1976,7 +1976,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Pop direction] Maintain proper nollie pop. [Rotation clarity] Keep shuvit and body varial separate. [Landing position] Prepare for the switch landing.",
     difficulty: "8",
-    video_link: "nollie_fs_mystic_spin.mp4",
+    video_link: "",
     alt_names: "Nollie FS Shuvit BS Body Varial",
   },
   {
@@ -1987,7 +1987,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Switch stance control] Maintain form during rotations. [Board awareness] Track board through opposite spins. [Landing preparation] Ready for regular stance landing.",
     difficulty: "9",
-    video_link: "switch_bs_mystic_spin.mp4",
+    video_link: "",
     alt_names: "Switch BS Shuvit FS Body Varial",
   },
   {
@@ -1998,7 +1998,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Switch stability] Keep proper form throughout trick. [Rotation control] Maintain clean, opposite rotations. [Landing stance] Prepare for regular stance landing.",
     difficulty: "9",
-    video_link: "switch_fs_mystic_spin.mp4",
+    video_link: "",
     alt_names: "Switch FS Shuvit BS Body Varial",
   },
 ];
