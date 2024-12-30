@@ -1,7 +1,116 @@
 import React from "react";
 import ActGrid, { ActNodeData, ActConnectionData } from "./ActGrid";
-import Gyroscope from "../../../assets/icons/gyroscope.svg";
 import { View } from "react-native";
+import Gems from "../../../assets/icons/gems.svg";
+import { G } from "react-native-svg";
+
+const ICON_CONFIG = {
+  SIZE: 400,
+  SPACING: 400,
+  INITIAL_OFFSET: 20,
+};
+
+type IconPosition = "left" | "right";
+
+const getIconStyle = (position: IconPosition) => ({
+  transform: position === "left" ? [{ scaleX: -1 }] : undefined,
+});
+
+const getIconPosition = (position: IconPosition, index: number) => ({
+  left: position === "left" ? -(ICON_CONFIG.SIZE / 2) : ICON_CONFIG.SIZE / 2,
+  top: ICON_CONFIG.INITIAL_OFFSET + index * ICON_CONFIG.SPACING,
+});
+
+const backgroundElements = [
+  {
+    component: (
+      <Gems
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("left")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("left", 0),
+  },
+  {
+    component: (
+      <Gems
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("right")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("right", 1),
+  },
+  {
+    component: (
+      <Gems
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("left")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("left", 2),
+  },
+  {
+    component: (
+      <Gems
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("right")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("right", 3),
+  },
+  {
+    component: (
+      <Gems
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("left")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("left", 4),
+  },
+  {
+    component: (
+      <Gems
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("right")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("right", 5),
+  },
+  {
+    component: (
+      <Gems
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("left")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("left", 6),
+  },
+  {
+    component: (
+      <Gems
+        width={ICON_CONFIG.SIZE}
+        height={ICON_CONFIG.SIZE}
+        style={getIconStyle("right")}
+        fill={"#131b19"}
+      />
+    ),
+    position: getIconPosition("right", 7),
+  },
+];
 
 const nodes: ActNodeData[] = [
   {
@@ -213,19 +322,6 @@ const connections: ActConnectionData[] = [
   { fromNode: "bs360ollie", toNode: "fs360ollie", type: "dotted" },
   { fromNode: "bs360ollie", toNode: "blizzardflip", type: "lined" },
   { fromNode: "blizzardflip", toNode: "ghettobirds", type: "lined" },
-];
-
-const backgroundElements = [
-  {
-    component: (
-      <Gyroscope
-        width={400}
-        height={400}
-        style={{ transform: [{ scaleX: -1 }] }}
-      />
-    ),
-    position: { left: -200, top: 20 },
-  },
 ];
 
 interface Act4Props {
