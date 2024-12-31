@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { BlurView } from "expo-blur";
 import WebView from "react-native-webview";
-import * as Haptics from "expo-haptics";
+import { useHaptics } from "../../Utils/useHaptics";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -32,6 +32,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
   const [channelName, setChannelName] = useState<string | null>(null);
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
+  const { triggerHaptic } = useHaptics();
 
   useEffect(() => {
     if (isVisible) {
@@ -83,7 +84,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
   if (!isVisible) return null;
 
   const handleClose = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    triggerHaptic("light");
     onClose();
   };
 
