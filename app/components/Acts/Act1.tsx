@@ -167,6 +167,8 @@ const nodes: ActNodeData[] = [
   },
 ];
 
+export const act1Nodes = nodes;
+
 const createConnections = (): ActConnectionData[] => {
   return [
     { fromNode: "stance", toNode: "pushing", type: "lined" },

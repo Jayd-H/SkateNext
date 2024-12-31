@@ -171,6 +171,8 @@ const nodes: ActNodeData[] = [
   },
 ];
 
+export const act2Nodes = nodes;
+
 const createConnections = (): ActConnectionData[] => {
   return [
     { fromNode: "fakieollie", toNode: "switchollie", type: "lined" },

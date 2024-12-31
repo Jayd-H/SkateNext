@@ -275,6 +275,8 @@ const nodes: ActNodeData[] = [
   },
 ];
 
+export const act3Nodes = nodes;
+
 const connections: ActConnectionData[] = [
   { fromNode: "heelflip", toNode: "heelflipvariations", type: "lined" },
   { fromNode: "kickflipvariations", toNode: "varialkickflip", type: "lined" },

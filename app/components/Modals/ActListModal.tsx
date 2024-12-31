@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import { TRICK_DATA } from "../Data/trickData";
 import ModalTrickButton from "../Generic/ModalTrickButton";
-import { FOLDER_DATA } from "../Data/folderData";
 import DraggableModal from "../Generic/DraggableModal";
 
 interface ActListModalProps {
@@ -23,11 +22,22 @@ const ActListModal: React.FC<ActListModalProps> = ({
   trickCompletionStates,
   actTitle,
 }) => {
-  //! this is a bit of a mess and a temp solution
-  //! ideally, this modal should be populated dynamically by passing trick ids and folder ids into it from the act components
-  //! this would be faster and more maintainable
-  //! currently its just cycling through folder data looking for an id, if not, it cycles through trick data
-  //! i will return to this when i can be bothered
+  const tricksList = useMemo(() => {
+    return trickIds
+      .map((trickId) => {
+        const trick = TRICK_DATA.find((t) => t.id === trickId);
+        if (!trick) return null;
+
+        return {
+          id: trick.id,
+          name: trick.name,
+          altNames: trick.alt_names,
+          difficulty: trick.difficulty,
+          completionState: trickCompletionStates[trickId] || 0,
+        };
+      })
+      .filter((trick) => trick !== null);
+  }, [trickIds, trickCompletionStates]);
 
   if (!isVisible) return null;
 
@@ -58,7 +68,6 @@ const ActListModal: React.FC<ActListModalProps> = ({
           All tricks available in this act
         </Text>
       </View>
-
       <ScrollView
         className="px-6"
         showsVerticalScrollIndicator={false}
@@ -69,28 +78,19 @@ const ActListModal: React.FC<ActListModalProps> = ({
       >
         <View className="relative">
           <View className="absolute inset-0 rounded-3xl" />
-          {trickIds
-            .flatMap((id) => {
-              const folder = FOLDER_DATA.find((f) => f.id === id);
-              if (folder) {
-                return folder.containedTricks;
-              }
-              return [id];
-            })
-            .map((trickId) => {
-              const trick = TRICK_DATA.find((t) => t.id === trickId);
-              if (!trick) return null;
-              return (
+          {tricksList.map(
+            (trick) =>
+              trick && (
                 <ModalTrickButton
-                  key={trickId}
+                  key={trick.id}
                   name={trick.name}
-                  altNames={trick.alt_names}
+                  altNames={trick.altNames}
                   difficulty={trick.difficulty}
-                  completionState={trickCompletionStates[trickId] || 0}
-                  onPress={() => onTrickSelect(trickId)}
+                  completionState={trick.completionState}
+                  onPress={() => onTrickSelect(trick.id)}
                 />
-              );
-            })}
+              )
+          )}
         </View>
       </ScrollView>
     </DraggableModal>
