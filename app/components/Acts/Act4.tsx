@@ -307,6 +307,8 @@ const nodes: ActNodeData[] = [
   },
 ];
 
+export const act4Nodes = nodes;
+
 const connections: ActConnectionData[] = [
   { fromNode: "bsmysticspins", toNode: "fsmysticspins", type: "dotted" },
   { fromNode: "doubleflips", toNode: "doubleheels", type: "dotted" },
