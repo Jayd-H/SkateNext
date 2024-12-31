@@ -31,12 +31,15 @@ module.exports = {
         // Colour Pairs
         green: "#3EE9B4",
         "green-dark": "#2A916F",
+        "green-surface": "#153B2E",
 
         yellow: "#FFD571",
         "yellow-dark": "#B38834",
+        "yellow-surface": "#2E2516",
 
         red: "#FF7C98",
         "red-dark": "#B34359",
+        "red-surface": "#2E1820",
 
         // Achievement Colors
         gold: "#FFE5A3",

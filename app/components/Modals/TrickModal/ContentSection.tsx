@@ -7,7 +7,7 @@ import Animated, {
   Easing,
   interpolateColor,
 } from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
+import { useHaptics } from "../../Utils/useHaptics";
 
 interface ContentSectionProps {
   description: string;
@@ -21,6 +21,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
 }) => {
   const [showingDescription, setShowingDescription] = React.useState(true);
   const progress = useSharedValue(0);
+  const { triggerHaptic } = useHaptics();
 
   const getDescriptionTextSize = (text: string) => {
     return text.length > 300 ? "text-xs" : "text-sm";
@@ -59,7 +60,7 @@ const ContentSection: React.FC<ContentSectionProps> = ({
 
   const toggleSection = async (showDesc: boolean) => {
     if (showDesc !== showingDescription) {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await triggerHaptic("light");
       setShowingDescription(showDesc);
       progress.value = withTiming(showDesc ? 0 : 1, {
         duration: 200,

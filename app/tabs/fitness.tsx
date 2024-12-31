@@ -239,9 +239,9 @@ const Fitness: React.FC = () => {
             <Text className="text-3xl text-text font-montserrat-alt mr-4">
               {isInitialLoading ? "?" : formatNumber(stats.todayCalories)}
             </Text>
-            <DailyCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
+            <DailyCalories width={iconsize} height={iconsize} fill="#EEFFFE" />
           </View>
-          <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
+          <Text className="pl-8 mt-1 mb-8 text-xl text-text-muted font-montserrat-alt">
             Calories burnt today.
           </Text>
         </Animated.View>
@@ -252,9 +252,9 @@ const Fitness: React.FC = () => {
             <Text className="text-3xl text-text font-montserrat-alt mr-4">
               {isInitialLoading ? "?" : formatNumber(stats.weeklyCalories)}
             </Text>
-            <WeeklyCalories width={iconsize} height={iconsize} fill="#4FEDE2" />
+            <WeeklyCalories width={iconsize} height={iconsize} fill="#EEFFFE" />
           </View>
-          <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
+          <Text className="pl-8 mt-1 mb-8 text-xl text-text-muted font-montserrat-alt">
             Calories burnt this week.
           </Text>
         </Animated.View>
@@ -268,10 +268,10 @@ const Fitness: React.FC = () => {
             <AllTimeCalories
               width={iconsize}
               height={iconsize}
-              fill="#4FEDE2"
+              fill="#EEFFFE"
             />
           </View>
-          <Text className="pl-8 mt-1 mb-8 text-xl text-text font-montserrat-alt">
+          <Text className="pl-8 mt-1 mb-8 text-xl text-text-muted font-montserrat-alt">
             All-time calories burnt.
           </Text>
         </Animated.View>
@@ -284,7 +284,7 @@ const Fitness: React.FC = () => {
             </Text>
             <Skull width={iconsize} height={iconsize} fill="#4FEDE2" />
           </View>
-          <Text className="pl-8 mt-1 text-xl text-text font-montserrat-alt">
+          <Text className="pl-8 mt-1 text-xl text-text-muted font-montserrat-alt">
             To skateboard mastery.
           </Text>
         </Animated.View>
