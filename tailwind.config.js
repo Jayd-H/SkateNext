@@ -42,9 +42,9 @@ module.exports = {
         "red-surface": "#2E1820",
 
         // Achievement Colors
-        gold: "#FFE5A3",
         silver: "#D8E3E3",
         bronze: "#E5B199",
+        diamond: "#82AEB3",
 
         success: "#A5FF75",
         "success-dark": "#588A3D",
