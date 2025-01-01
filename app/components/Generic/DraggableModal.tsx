@@ -11,21 +11,24 @@ import Animated, {
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
-//* this file is a bit of a mess and could use some refactoring, dont know if this is the very most efficient way to do this
-//* in future, i might delete this and genericmodal, combining the two functionalitys or something
-//* it works for now and is a good start
-
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const SNAP_THRESHOLD = 0.3;
-const SPRING_CONFIG = {
-  damping: 20,
-  mass: 1,
-  stiffness: 200,
-};
-const OPEN_SPRING_CONFIG = {
-  damping: 50,
-  mass: 1,
-  stiffness: 600,
+
+const CONSTANTS = {
+  SNAP_THRESHOLD: 0.3,
+  SPRING_CONFIG: {
+    damping: 20,
+    mass: 1,
+    stiffness: 200,
+  },
+  OPEN_SPRING_CONFIG: {
+    damping: 50,
+    mass: 1,
+    stiffness: 600,
+  },
+  CLOSE_TIMING: {
+    duration: 200,
+    easing: Easing.out(Easing.ease),
+  },
 };
 
 interface DraggableModalProps {
@@ -39,7 +42,7 @@ interface DraggableModalProps {
   dragFromHandle?: boolean;
 }
 
-const Handle: React.FC<{ isFullScreen: boolean }> = ({ isFullScreen }) => (
+const Handle = ({ isFullScreen }: { isFullScreen: boolean }) => (
   <View
     className={`w-full items-center ${isFullScreen ? "mt-10" : "mt-4 mb-4"}`}
   >
@@ -47,7 +50,7 @@ const Handle: React.FC<{ isFullScreen: boolean }> = ({ isFullScreen }) => (
   </View>
 );
 
-export const DraggableModal: React.FC<DraggableModalProps> = ({
+const DraggableModal: React.FC<DraggableModalProps> = ({
   children,
   isVisible,
   onClose,
@@ -84,40 +87,33 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
     .onEnd((event) => {
       const threshold =
         modalHeight === "auto"
-          ? SCREEN_HEIGHT * SNAP_THRESHOLD
-          : modalHeight * SNAP_THRESHOLD;
+          ? SCREEN_HEIGHT * CONSTANTS.SNAP_THRESHOLD
+          : modalHeight * CONSTANTS.SNAP_THRESHOLD;
+
       if (event.translationY > threshold) {
         translateY.value = withTiming(
           SCREEN_HEIGHT,
-          {
-            duration: 200,
-            easing: Easing.out(Easing.ease),
-          },
+          CONSTANTS.CLOSE_TIMING,
           () => {
             runOnJS(onClose)();
           }
         );
       } else {
-        translateY.value = withSpring(0, SPRING_CONFIG);
+        translateY.value = withSpring(0, CONSTANTS.SPRING_CONFIG);
       }
     });
 
   React.useEffect(() => {
     if (isVisible) {
-      translateY.value = withSpring(0, OPEN_SPRING_CONFIG);
+      translateY.value = withSpring(0, CONSTANTS.OPEN_SPRING_CONFIG);
     } else {
-      translateY.value = withTiming(SCREEN_HEIGHT, {
-        duration: 200,
-        easing: Easing.out(Easing.ease),
-      });
+      translateY.value = withTiming(SCREEN_HEIGHT, CONSTANTS.CLOSE_TIMING);
     }
   }, [isVisible]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
-
-  if (!isVisible) return null;
 
   const renderContent = () => (
     <Animated.View
@@ -154,6 +150,8 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
       )}
     </Animated.View>
   );
+
+  if (!isVisible) return null;
 
   return (
     <View

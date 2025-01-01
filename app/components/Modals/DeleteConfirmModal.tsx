@@ -13,12 +13,14 @@ interface DeleteConfirmModalProps {
   isVisible: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  zIndex?: number;
 }
 
 const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   isVisible,
   onClose,
   onConfirm,
+  zIndex = 1,
 }) => {
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.8);
@@ -70,7 +72,10 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   if (!isVisible) return null;
 
   return (
-    <View className="flex-1 h-full w-full absolute top-0 left-0 right-0 bottom-0">
+    <View
+      className="flex-1 h-full w-full absolute top-0 left-0 right-0 bottom-0"
+      style={{ zIndex }}
+    >
       <Pressable className="flex-1" onPress={handleClose}>
         <View className="flex-1 flex justify-center items-center">
           <Animated.View
@@ -121,4 +126,4 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   );
 };
 
-export default DeleteConfirmModal;
+export default React.memo(DeleteConfirmModal);

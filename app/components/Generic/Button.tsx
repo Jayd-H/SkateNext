@@ -9,6 +9,7 @@ interface ButtonProps {
   warning?: boolean;
   isSelected?: boolean;
   variant?: "default" | "selectable";
+  size?: "small" | "medium" | "large";
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -18,6 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
   warning = false,
   isSelected = false,
   variant = "default",
+  size = "large",
 }) => {
   const getStyleClasses = () => {
     if (variant === "selectable") {
@@ -34,8 +36,41 @@ export const Button: React.FC<ButtonProps> = ({
     };
   };
 
-  const styles = getStyleClasses();
+  const getSizeClasses = () => {
+    switch (size) {
+      case "small":
+        return {
+          padding: "px-4 py-3",
+          topText: "text-sm",
+          bottomText: "text-xs",
+          rounded: "rounded-lg",
+        };
+      case "medium":
+        return {
+          padding: "px-5 py-3",
+          topText: "text-base",
+          bottomText: "text-sm",
+          rounded: "rounded-xl",
+        };
+      case "large":
+        return {
+          padding: "px-6 py-4",
+          topText: "text-base",
+          bottomText: "text-sm",
+          rounded: "rounded-2xl",
+        };
+      default:
+        return {
+          padding: "px-6 py-4",
+          topText: "text-base",
+          bottomText: "text-sm",
+          rounded: "rounded-2xl",
+        };
+    }
+  };
 
+  const styles = getStyleClasses();
+  const sizeClasses = getSizeClasses();
   const { triggerHaptic } = useHaptics();
 
   const handlePressIn = async () => {
@@ -53,7 +88,7 @@ export const Button: React.FC<ButtonProps> = ({
             left-0
             right-0
             h-full
-            rounded-3xl
+            ${sizeClasses.rounded}
             ${styles.shadow}
           `}
         />
@@ -63,14 +98,13 @@ export const Button: React.FC<ButtonProps> = ({
           onPressIn={handlePressIn}
           className={`
             relative
-            rounded-3xl
+            ${sizeClasses.rounded}
             w-full
             border-2
             ${styles.border}
             ${styles.background}
             active:translate-y-1
-            px-6
-            py-4
+            ${sizeClasses.padding}
           `}
         >
           <View className="flex-col justify-between -my-1">
@@ -80,13 +114,16 @@ export const Button: React.FC<ButtonProps> = ({
                 font-montserrat-alt-semibold
                 text-center
                 tracking-wide
-                ${bottomText ? "text-base" : "text-base tracking-widest"}
+                ${sizeClasses.topText}
+                ${bottomText ? "" : "tracking-widest"}
               `}
             >
               {topText}
             </Text>
             {bottomText && (
-              <Text className="text-text-dim font-montserrat-alt text-center text-sm">
+              <Text
+                className={`text-text-dim font-montserrat-alt text-center ${sizeClasses.bottomText}`}
+              >
                 {bottomText}
               </Text>
             )}
