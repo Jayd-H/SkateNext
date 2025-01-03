@@ -14,12 +14,15 @@ import { useTrickStates } from "../components/Utils/StorageService";
 import { useHaptics } from "../components/Utils/useHaptics";
 import { StorageService } from "../components/Utils/StorageService";
 import { TROPHY_DATA } from "../components/Data/trophyData";
+import SaveBackupModal from "../components/Modals/SaveBackupModal";
+import LoadBackupModal from "../components/Modals/LoadBackupModal";
 
-// Z-index constants for modals
 const MODAL_Z_INDEXES = {
   preferences: 1,
   info: 1,
   generic: 2,
+  saveProgress: 2,
+  loadBackup: 3,
   allTrophies: 1,
   trophy: 2,
   trick: 3,
@@ -39,6 +42,10 @@ export default function Settings() {
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", content: "" });
+  const [saveProgressModalVisible, setSaveProgressModalVisible] =
+    useState(false);
+  const [backupString, setBackupString] = useState<string>("");
+  const [loadBackupModalVisible, setLoadBackupModalVisible] = useState(false);
 
   // Memoized trophy progress calculation
   const trophyProgress = useMemo(() => {
@@ -63,6 +70,8 @@ export default function Settings() {
     if (isAllTrophiesVisible) return "allTrophies";
     if (infoModalVisible) return "info";
     if (preferencesModalVisible) return "preferences";
+    if (saveProgressModalVisible) return "saveProgress";
+    if (loadBackupModalVisible) return "loadBackup";
     return null;
   }, [
     modalVisible,
@@ -72,6 +81,8 @@ export default function Settings() {
     isAllTrophiesVisible,
     infoModalVisible,
     preferencesModalVisible,
+    saveProgressModalVisible,
+    loadBackupModalVisible,
   ]);
 
   // Close active modal - memoized for back handler
@@ -100,6 +111,12 @@ export default function Settings() {
         break;
       case "generic":
         setModalVisible(false);
+        break;
+      case "saveProgress":
+        setSaveProgressModalVisible(false);
+        break;
+      case "loadBackup":
+        setLoadBackupModalVisible(false);
         break;
     }
     return true;
@@ -148,13 +165,52 @@ export default function Settings() {
     setModalVisible(true);
   }, []);
 
+  const generateBackupString = useCallback(async () => {
+    try {
+      const backupString = await StorageService.getAllDataForBackup();
+      setBackupString(backupString);
+    } catch (error) {
+      console.error("Error generating backup:", error);
+    }
+  }, []);
+
+  const handleLoadBackupPress = useCallback(() => {
+    setLoadBackupModalVisible(true);
+  }, []);
+
+  const handleLoadFromBackup = useCallback(
+    async (backupString: string) => {
+      try {
+        if (!StorageService.validateBackupString(backupString)) {
+          throw new Error("Invalid backup code");
+        }
+
+        await StorageService.restoreFromBackup(backupString);
+
+        setLoadBackupModalVisible(false);
+        setSaveProgressModalVisible(false);
+
+        router.replace("/");
+      } catch (error) {
+        console.error("Error loading backup:", error);
+      }
+    },
+    [router]
+  );
+
+  // Add this handler for the button in UserStats
+  const handleSaveProgress = useCallback(async () => {
+    await generateBackupString();
+    setSaveProgressModalVisible(true);
+  }, [generateBackupString]);
+
   return (
     <View className="flex-1 bg-background px-4">
       <View className="pt-10 flex-1">
         <View className="mb-6"></View>
 
         <View className="mb-12">
-          <UserStats />
+          <UserStats onSaveProgress={handleSaveProgress} />
         </View>
 
         <View className="mb-6">
@@ -285,6 +341,21 @@ export default function Settings() {
         onClose={() => setDeleteModalVisible(false)}
         onConfirm={handleDeleteData}
         zIndex={MODAL_Z_INDEXES.delete}
+      />
+
+      <SaveBackupModal
+        isVisible={saveProgressModalVisible}
+        onClose={() => setSaveProgressModalVisible(false)}
+        backupString={backupString}
+        onLoadPress={handleLoadBackupPress}
+        zIndex={MODAL_Z_INDEXES.saveProgress}
+      />
+
+      <LoadBackupModal
+        isVisible={loadBackupModalVisible}
+        onClose={() => setLoadBackupModalVisible(false)}
+        onLoad={handleLoadFromBackup}
+        zIndex={MODAL_Z_INDEXES.loadBackup}
       />
     </View>
   );
