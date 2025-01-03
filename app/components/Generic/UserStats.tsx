@@ -9,6 +9,10 @@ interface StatItemProps {
   value: string;
 }
 
+interface UserStatsProps {
+  onSaveProgress: () => void;
+}
+
 const StatItem: React.FC<StatItemProps> = ({ title, value }) => (
   <View className="w-[50%] mb-4">
     <Text className="text-text-dim font-montserrat-alt-medium text-center text-xs">
@@ -31,7 +35,7 @@ const StatItemSkeleton: React.FC<{ title: string }> = ({ title }) => (
   </View>
 );
 
-const UserStats: React.FC = () => {
+const UserStats: React.FC<UserStatsProps> = ({ onSaveProgress }) => {
   const stats = useUserStats();
 
   return (
@@ -77,9 +81,7 @@ const UserStats: React.FC = () => {
         <Button
           topText="SAVE USER PROGRESS"
           size="small"
-          onPress={async () => {
-            // TODO: saveprogressmodal
-          }}
+          onPress={onSaveProgress}
         />
       </View>
     </View>

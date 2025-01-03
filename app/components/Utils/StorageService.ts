@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TRICK_DATA } from "../Data/trickData";
 import { useState, useEffect } from "react";
+import { BackupService, IBackupData } from "./backupService";
 
 type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Master";
 
@@ -34,6 +35,19 @@ interface RecentTrickUpdate {
   timestamp: number;
 }
 
+interface BackupData {
+  version: number;
+  timestamp: number;
+  trickStates: TrickState;
+  infoStates: InfoState;
+  modalVisits: ModalVisitState;
+  userAge: number;
+  userWeight: number;
+  calorieLogs: { [date: string]: DailyCalorieLog };
+  hapticsEnabled: boolean;
+  recentTricks: RecentTrickUpdate[];
+}
+
 export const STORAGE_KEYS = {
   TRICK_STATES: "trick_states",
   INFO_STATES: "info_states",
@@ -60,6 +74,79 @@ interface TimerState {
 }
 
 class StorageService {
+  static async getAllDataForBackup(): Promise<string> {
+    try {
+      const [trickStates, userAge, userWeight, calorieLogs, hapticsEnabled] =
+        await Promise.all([
+          this.getTrickStates(),
+          AsyncStorage.getItem(STORAGE_KEYS.USER_AGE),
+          AsyncStorage.getItem(STORAGE_KEYS.USER_WEIGHT),
+          this.getAllCalorieLogs(),
+          this.getHapticsEnabled(),
+        ]);
+
+      const totalCalories = Object.values(calorieLogs).reduce(
+        (sum, log) => sum + (log.totalCalories || 0),
+        0
+      );
+
+      const backupData: Omit<IBackupData, "version"> = {
+        trickStates,
+        age: userAge ? parseInt(userAge) : 0,
+        weight: userWeight ? parseInt(userWeight) : 0,
+        totalCalories,
+        hapticsEnabled,
+      };
+
+      return await BackupService.createBackup(backupData);
+    } catch (error) {
+      console.error("Error creating backup:", error);
+      throw error;
+    }
+  }
+
+  static validateBackupString(backupString: string): boolean {
+    return BackupService.validateFormat(backupString);
+  }
+
+  static async restoreFromBackup(backupString: string): Promise<void> {
+    try {
+      const backupData = await BackupService.restoreFromBackup(backupString);
+
+      await Promise.all([
+        AsyncStorage.setItem(
+          STORAGE_KEYS.TRICK_STATES,
+          JSON.stringify(backupData.trickStates)
+        ),
+        AsyncStorage.setItem(STORAGE_KEYS.USER_AGE, backupData.age.toString()),
+        AsyncStorage.setItem(
+          STORAGE_KEYS.USER_WEIGHT,
+          backupData.weight.toString()
+        ),
+        AsyncStorage.setItem(
+          STORAGE_KEYS.HAPTICS_ENABLED,
+          backupData.hapticsEnabled.toString()
+        ),
+        AsyncStorage.setItem(STORAGE_KEYS.SETUP_COMPLETE, "true"),
+      ]);
+
+      const initialStates = {
+        [STORAGE_KEYS.INFO_STATES]: {},
+        [STORAGE_KEYS.MODAL_VISITS]: { lucky: false, search: false },
+        [STORAGE_KEYS.RECENT_TRICKS]: [],
+      };
+
+      await Promise.all(
+        Object.entries(initialStates).map(([key, value]) =>
+          AsyncStorage.setItem(key, JSON.stringify(value))
+        )
+      );
+    } catch (error) {
+      console.error("Error restoring backup:", error);
+      throw error;
+    }
+  }
+
   static async isSetupComplete(): Promise<boolean> {
     try {
       const setupComplete = await AsyncStorage.getItem(

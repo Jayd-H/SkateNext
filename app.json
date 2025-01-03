@@ -138,6 +138,12 @@
           "icon": "./assets/images/icon.png",
           "color": "#0F1413"
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access camera to scan QR codes."
+        }
       ]
     ],
     "experiments": {
