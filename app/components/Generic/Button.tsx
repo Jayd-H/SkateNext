@@ -10,6 +10,7 @@ interface ButtonProps {
   isSelected?: boolean;
   variant?: "default" | "selectable";
   size?: "small" | "medium" | "large";
+  disabled?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -20,8 +21,17 @@ export const Button: React.FC<ButtonProps> = ({
   isSelected = false,
   variant = "default",
   size = "large",
+  disabled = false,
 }) => {
   const getStyleClasses = () => {
+    if (disabled) {
+      return {
+        shadow: "bg-bg-surface opacity-50",
+        border: "border-bg-surface",
+        background: "bg-bg-elevated",
+      };
+    }
+
     if (variant === "selectable") {
       return {
         shadow: isSelected ? "bg-accent-dark" : "bg-accent-surface",
@@ -29,6 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
         background: isSelected ? "bg-accent-surface" : "bg-bg-surface",
       };
     }
+
     return {
       shadow: warning ? "bg-warning-dark" : "bg-accent-dark",
       border: warning ? "border-warning" : "border-accent-muted",
@@ -74,13 +85,20 @@ export const Button: React.FC<ButtonProps> = ({
   const { triggerHaptic } = useHaptics();
 
   const handlePressIn = async () => {
-    await triggerHaptic("light");
+    if (!disabled) {
+      await triggerHaptic("light");
+    }
+  };
+
+  const handlePress = () => {
+    if (!disabled && onPress) {
+      onPress();
+    }
   };
 
   return (
     <View className="w-full mb-4">
       <View className="relative">
-        {/* bottom */}
         <View
           className={`
             absolute 
@@ -92,9 +110,8 @@ export const Button: React.FC<ButtonProps> = ({
             ${styles.shadow}
           `}
         />
-        {/* top */}
         <Pressable
-          onPress={onPress}
+          onPress={handlePress}
           onPressIn={handlePressIn}
           className={`
             relative
@@ -103,7 +120,7 @@ export const Button: React.FC<ButtonProps> = ({
             border-2
             ${styles.border}
             ${styles.background}
-            active:translate-y-1
+            ${disabled ? "" : "active:translate-y-1"}
             ${sizeClasses.padding}
           `}
         >
@@ -116,13 +133,20 @@ export const Button: React.FC<ButtonProps> = ({
                 tracking-wide
                 ${sizeClasses.topText}
                 ${bottomText ? "" : "tracking-widest"}
+                ${disabled ? "opacity-50" : ""}
               `}
             >
               {topText}
             </Text>
             {bottomText && (
               <Text
-                className={`text-text-dim font-montserrat-alt text-center ${sizeClasses.bottomText}`}
+                className={`
+                  text-text-dim 
+                  font-montserrat-alt 
+                  text-center 
+                  ${sizeClasses.bottomText}
+                  ${disabled ? "opacity-50" : ""}
+                `}
               >
                 {bottomText}
               </Text>
