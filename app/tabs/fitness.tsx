@@ -1,14 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { View, Text, AppState, AppStateStatus } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import Animated, {
-  useAnimatedStyle,
-  withRepeat,
-  withSequence,
-  withTiming,
-  useSharedValue,
-  Easing,
-} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import DailyCalories from "../../assets/icons/fire3.svg";
 import WeeklyCalories from "../../assets/icons/fire2.svg";
 import AllTimeCalories from "../../assets/icons/fire4.svg";
@@ -225,6 +218,7 @@ const Fitness: React.FC = () => {
       {showAlert && (
         <Alert message={alertMessage} onHide={() => setShowAlert(false)} />
       )}
+
       <Text className="text-lg text-accent-muted font-montserrat-alt-semibold tracking-wide mt-10">
         F I T N E S S
       </Text>
@@ -232,35 +226,45 @@ const Fitness: React.FC = () => {
         Please note that calorie estimation is for informational purposes only
         and not a substitute for professional medical advice
       </Text>
-      <View className="mt-6">
+
+      <View className="w-5/6 flex-1 mt-2 justify-between">
         {/* Today's Calories */}
-        <Animated.View style={[animations.todayStatsAnim.animatedStyle]}>
+        <Animated.View
+          style={[animations.todayStatsAnim.animatedStyle]}
+          className="flex-1 justify-center"
+        >
           <View className="flex-row">
             <Text className="text-3xl text-text font-montserrat-alt mr-4">
               {isInitialLoading ? "?" : formatNumber(stats.todayCalories)}
             </Text>
             <DailyCalories width={iconsize} height={iconsize} fill="#EEFFFE" />
           </View>
-          <Text className="pl-8 mt-1 mb-8 text-xl text-text-muted font-montserrat-alt">
+          <Text className="pl-8 mt-1 text-xl text-text-muted font-montserrat-alt">
             Calories burnt today.
           </Text>
         </Animated.View>
 
         {/* Weekly Calories */}
-        <Animated.View style={[animations.weeklyStatsAnim.animatedStyle]}>
+        <Animated.View
+          style={[animations.weeklyStatsAnim.animatedStyle]}
+          className="flex-1 justify-center"
+        >
           <View className="flex-row">
             <Text className="text-3xl text-text font-montserrat-alt mr-4">
               {isInitialLoading ? "?" : formatNumber(stats.weeklyCalories)}
             </Text>
             <WeeklyCalories width={iconsize} height={iconsize} fill="#EEFFFE" />
           </View>
-          <Text className="pl-8 mt-1 mb-8 text-xl text-text-muted font-montserrat-alt">
+          <Text className="pl-8 mt-1 text-xl text-text-muted font-montserrat-alt">
             Calories burnt this week.
           </Text>
         </Animated.View>
 
         {/* All-time Calories */}
-        <Animated.View style={[animations.allTimeStatsAnim.animatedStyle]}>
+        <Animated.View
+          style={[animations.allTimeStatsAnim.animatedStyle]}
+          className="flex-1 justify-center"
+        >
           <View className="flex-row">
             <Text className="text-3xl text-text font-montserrat-alt mr-4">
               {isInitialLoading ? "?" : formatNumber(stats.allTimeCalories)}
@@ -271,13 +275,16 @@ const Fitness: React.FC = () => {
               fill="#EEFFFE"
             />
           </View>
-          <Text className="pl-8 mt-1 mb-8 text-xl text-text-muted font-montserrat-alt">
+          <Text className="pl-8 mt-1 text-xl text-text-muted font-montserrat-alt">
             All-time calories burnt.
           </Text>
         </Animated.View>
 
         {/* Mastery Percentage */}
-        <Animated.View style={[animations.masteryStatsAnim.animatedStyle]}>
+        <Animated.View
+          style={[animations.masteryStatsAnim.animatedStyle]}
+          className="flex-1 justify-center"
+        >
           <View className="flex-row items-center h-[48px]">
             <Text className="text-3xl text-text font-montserrat-alt mr-4">
               {isMasteryLoading ? "?" : `${formatMastery(masteryPercentage)} %`}
@@ -289,15 +296,21 @@ const Fitness: React.FC = () => {
           </Text>
         </Animated.View>
       </View>
-      <Timer
-        onTimeUpdate={handleTimeUpdate}
-        onTimerStop={handleTimerStop}
-        style={{ width: "85%", marginTop: 35 }}
-      />
-      <Text className="text-[12px] text-text-dim font-montserrat-light mb-12 w-5/6 pt-4 text-center">
-        Tap the button to begin a skate sesh, calories will be estimated based
-        on your skill level and duration of the session.
-      </Text>
+
+      {/* Bottom Section */}
+      <View className="w-5/6 mt-2 mb-4">
+        <Timer
+          onTimeUpdate={handleTimeUpdate}
+          onTimerStop={handleTimerStop}
+          style={{ width: "100%", marginBottom: 16 }}
+        />
+        <Text className="text-[12px] text-text-dim font-montserrat-light text-center">
+          Tap the button to begin a skate sesh, calories will be estimated based
+          on your skill level and duration of the session.
+        </Text>
+      </View>
+
+      {/* Background Honeycomb */}
       <View className="absolute -z-10 left-[200px] top-[150px]">
         <HoneyComb width={400} height={400} />
       </View>

@@ -81,7 +81,6 @@ const TrickModal: React.FC<TrickModalProps> = ({
 
   const modalContent = (
     <View className="flex-1 bg-bg-card relative">
-      {/* Background container */}
       <View
         style={{
           position: "absolute",
@@ -90,7 +89,6 @@ const TrickModal: React.FC<TrickModalProps> = ({
           zIndex: 0,
         }}
       >
-        {/* Gradient Background */}
         {theme.hasGradient && (
           <LinearGradient
             colors={theme.colors as unknown as [string, string, string]}
@@ -104,7 +102,6 @@ const TrickModal: React.FC<TrickModalProps> = ({
           />
         )}
 
-        {/* Background Icons */}
         {theme.hasBackgroundIcons && (
           <View
             style={{
@@ -118,9 +115,7 @@ const TrickModal: React.FC<TrickModalProps> = ({
         )}
       </View>
 
-      {/* Content container */}
-      <View className="flex-1" style={{ position: "relative", zIndex: 1 }}>
-        {/* Header section */}
+      <View className="flex-1 relative z-1">
         <View className="p-6 -mt-2">
           <TrickModalHeader
             onClose={onClose}
@@ -148,8 +143,7 @@ const TrickModal: React.FC<TrickModalProps> = ({
           />
         </View>
 
-        <View className="-mt-4">
-          {/* Content section */}
+        <View className="flex-1 -mt-4">
           <ContentSection
             description={trick.description}
             commonMistakes={trick.common_mistakes}
