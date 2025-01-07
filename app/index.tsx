@@ -7,11 +7,14 @@ import WeightSelector from "./components/Onboarding/WeightSelector";
 import SkillLevelSelector from "./components/Onboarding/SkillLevelSelector";
 
 type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Master";
+type WeightUnit = "kg" | "lbs" | "st";
 const DEFAULT_WEIGHT = 70;
 
 export default function Home() {
   const [age, setAge] = useState<number | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
+  const [displayWeight, setDisplayWeight] = useState<number>(DEFAULT_WEIGHT);
+  const [displayUnit, setDisplayUnit] = useState<WeightUnit>("kg");
   const [isInitializing, setIsInitializing] = useState(false);
   const [isCheckingSetup, setIsCheckingSetup] = useState(true);
   const router = useRouter();
@@ -37,14 +40,19 @@ export default function Home() {
     setAge(selectedAge);
   };
 
-  const handleWeightComplete = (selectedWeight: number | null) => {
-    setWeight(selectedWeight || DEFAULT_WEIGHT);
+  const handleWeightComplete = (
+    weightInKg: number | null,
+    unit: WeightUnit,
+    displayValue: number
+  ) => {
+    setWeight(weightInKg || DEFAULT_WEIGHT);
+    setDisplayUnit(unit);
+    setDisplayWeight(displayValue);
   };
 
   const handleSkillLevelComplete = async (selectedLevel: SkillLevel) => {
     if (!age || !weight) return;
     setIsInitializing(true);
-
     try {
       await StorageService.initializeWithSkillLevel(selectedLevel, age, weight);
       router.replace("/tabs/map");
@@ -76,7 +84,12 @@ export default function Home() {
 
   if (!weight) {
     return (
-      <WeightSelector onComplete={handleWeightComplete} onBack={handleBack} />
+      <WeightSelector
+        onComplete={handleWeightComplete}
+        onBack={handleBack}
+        initialWeight={displayWeight}
+        initialUnit={displayUnit}
+      />
     );
   }
 
