@@ -17,6 +17,8 @@ import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import ProgressIndicator from "./ProgressIndicator";
 import BackgroundWave from "./BackgroundWave";
 
+type WeightUnit = "kg" | "lbs" | "st";
+
 interface WeightSelectorProps {
   onComplete: (weight: number | null) => void;
   onBack?: () => void;
@@ -26,20 +28,74 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({
   onComplete,
   onBack,
 }) => {
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>("kg");
   const [weight, setWeight] = useState<number>(70);
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("70");
   const scale = useSharedValue(1);
 
+  //* got these from google
+
+  const convertToKg = (value: number, fromUnit: WeightUnit): number => {
+    switch (fromUnit) {
+      case "lbs":
+        return value * 0.45359237;
+      case "st":
+        return value * 6.35029318;
+      default:
+        return value;
+    }
+  };
+
+  const convertFromKg = (value: number, toUnit: WeightUnit): number => {
+    switch (toUnit) {
+      case "lbs":
+        return value / 0.45359237;
+      case "st":
+        return value / 6.35029318;
+      default:
+        return value;
+    }
+  };
+
+  const getUnitConstraints = (unit: WeightUnit) => {
+    switch (unit) {
+      case "lbs":
+        return { min: 60, max: 330 };
+      case "st":
+        return { min: 4, max: 24 };
+      default:
+        return { min: 30, max: 150 };
+    }
+  };
+
+  const handleUnitChange = () => {
+    const units: WeightUnit[] = ["kg", "lbs", "st"];
+    const currentIndex = units.indexOf(weightUnit);
+    const nextUnit = units[(currentIndex + 1) % units.length];
+    const currentValueInKg = convertToKg(weight, weightUnit);
+    const newValue = Math.round(convertFromKg(currentValueInKg, nextUnit));
+
+    setWeightUnit(nextUnit);
+    setWeight(newValue);
+    setInputValue(newValue.toString());
+  };
+
   const handleInputComplete = () => {
     const newValue = parseInt(inputValue);
-    if (!isNaN(newValue) && newValue >= 30 && newValue <= 150) {
+    const constraints = getUnitConstraints(weightUnit);
+    if (
+      !isNaN(newValue) &&
+      newValue >= constraints.min &&
+      newValue <= constraints.max
+    ) {
       setWeight(newValue);
     } else {
       setInputValue(weight.toString());
     }
     setIsEditing(false);
   };
+
   const handleNext = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     scale.value = withSpring(0.95, {
@@ -52,7 +108,8 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({
         stiffness: 300,
       });
     }, 100);
-    onComplete(weight);
+    const weightInKg = convertToKg(weight, weightUnit);
+    onComplete(weightInKg);
   };
 
   const handleSkip = async () => {
@@ -65,12 +122,15 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({
     if (roundedValue !== weight) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       setWeight(roundedValue);
+      setInputValue(roundedValue.toString());
     }
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
+
+  const constraints = getUnitConstraints(weightUnit);
 
   return (
     <View className="flex-1 bg-background">
@@ -115,17 +175,19 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({
                 {weight}
               </Text>
             )}
-            <Text className="text-text-dim font-montserrat-light text-2xl ml-2">
-              kg
-            </Text>
+            <TouchableOpacity onPress={handleUnitChange}>
+              <Text className="text-text-muted font-montserrat-light text-2xl ml-4">
+                {weightUnit}
+              </Text>
+            </TouchableOpacity>
           </TouchableOpacity>
         </Animated.View>
 
         <View className="w-full px-4">
           <Slider
             style={{ width: "100%", height: 40 }}
-            minimumValue={30}
-            maximumValue={150}
+            minimumValue={constraints.min}
+            maximumValue={constraints.max}
             step={1}
             value={weight}
             onValueChange={handleSliderChange}
@@ -136,10 +198,10 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({
 
           <View className="flex-row justify-between mt-2">
             <Text className="text-text-dim font-montserrat-light text-sm">
-              30
+              {constraints.min}
             </Text>
             <Text className="text-text-dim font-montserrat-light text-sm">
-              150
+              {constraints.max}
             </Text>
           </View>
         </View>
