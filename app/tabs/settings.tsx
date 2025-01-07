@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { View, BackHandler } from "react-native";
+import { View, BackHandler, Pressable, Text, TextInput } from "react-native";
 import Modal from "../components/Modals/GenericModal";
 import TrophyModal from "../components/Modals/TrophyModal";
 import TrickModal from "../components/Modals/TrickModal";
@@ -16,6 +16,8 @@ import { StorageService } from "../components/Utils/StorageService";
 import { TROPHY_DATA } from "../components/Data/trophyData";
 import SaveBackupModal from "../components/Modals/SaveBackupModal";
 import LoadBackupModal from "../components/Modals/LoadBackupModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { STORAGE_KEYS } from "../components/Utils/StorageService";
 
 const MODAL_Z_INDEXES = {
   preferences: 1,
@@ -46,6 +48,21 @@ export default function Settings() {
     useState(false);
   const [backupString, setBackupString] = useState<string>("");
   const [loadBackupModalVisible, setLoadBackupModalVisible] = useState(false);
+  const [userAge, setUserAge] = useState<string>("");
+  const [userWeight, setUserWeight] = useState<string>("");
+  const [isEditingAge, setIsEditingAge] = useState(false);
+  const [isEditingWeight, setIsEditingWeight] = useState(false);
+
+  const { triggerHaptic } = useHaptics();
+
+  useEffect(() => {
+    const loadUserStats = async () => {
+      const stats = await StorageService.getUserStats();
+      setUserAge(stats.age.toString());
+      setUserWeight(stats.weight.toString());
+    };
+    loadUserStats();
+  }, []);
 
   // Memoized trophy progress calculation
   const trophyProgress = useMemo(() => {
@@ -221,7 +238,6 @@ export default function Settings() {
           />
         </View>
       </View>
-
       {/* Bottom Buttons */}
       <View className="flex-row justify-between mb-2">
         <View className="flex-1 mr-2">
@@ -239,30 +255,116 @@ export default function Settings() {
           />
         </View>
       </View>
-
-      {/* Modals */}
+      {/* Preferences Modal */}
       <Modal
         isVisible={preferencesModalVisible}
         onClose={() => setPreferencesModalVisible(false)}
         title="Preferences"
         zIndex={MODAL_Z_INDEXES.preferences}
         content={
-          <View className="space-y-4">
-            <ToggleSwitch
-              isEnabled={hapticsEnabled}
-              onToggle={toggleHaptics}
-              topText="H A P T I C S"
-              bottomText="Toggle haptic feedback throughout the app"
-            />
-            <Button
-              topText="Delete All Data"
-              warning={true}
-              onPress={() => setDeleteModalVisible(true)}
-            />
+          <View className="space-y-6">
+            <View className="space-y-4">
+              <Text className="text-accent-bright font-montserrat-alt-semibold tracking-wide text-sm">
+                USER INFO
+              </Text>
+              <View className="flex-row justify-between space-x-4">
+                {/* Age Input */}
+                <View className="flex-1">
+                  {isEditingAge ? (
+                    <View className="relative">
+                      <TextInput
+                        className="text-text font-montserrat-alt-semibold text-center text-base bg-accent-surface px-4 py-3 rounded-lg border-2 border-accent-muted"
+                        value={userAge}
+                        onChangeText={async (value) => {
+                          setUserAge(value);
+                          const numValue = parseInt(value);
+                          if (
+                            !isNaN(numValue) &&
+                            numValue > 0 &&
+                            numValue < 100
+                          ) {
+                            await StorageService.updateAge(numValue);
+                          }
+                        }}
+                        onBlur={() => setIsEditingAge(false)}
+                        keyboardType="numeric"
+                        maxLength={2}
+                        autoFocus
+                      />
+                    </View>
+                  ) : (
+                    <Button
+                      topText="AGE"
+                      bottomText={userAge}
+                      size="small"
+                      onPress={async () => {
+                        await triggerHaptic("light");
+                        setIsEditingAge(true);
+                      }}
+                    />
+                  )}
+                </View>
+
+                {/* Weight Input */}
+                <View className="flex-1">
+                  {isEditingWeight ? (
+                    <View className="relative">
+                      <TextInput
+                        className="text-text font-montserrat-alt-semibold text-center text-base bg-accent-surface px-4 py-3 rounded-lg border-2 border-accent-muted"
+                        value={userWeight}
+                        onChangeText={async (value) => {
+                          setUserWeight(value);
+                          const numValue = parseInt(value);
+                          if (
+                            !isNaN(numValue) &&
+                            numValue > 0 &&
+                            numValue < 200
+                          ) {
+                            await StorageService.updateWeight(numValue);
+                          }
+                        }}
+                        onBlur={() => setIsEditingWeight(false)}
+                        keyboardType="numeric"
+                        maxLength={3}
+                        autoFocus
+                      />
+                    </View>
+                  ) : (
+                    <Button
+                      topText="WEIGHT (kg)"
+                      bottomText={userWeight}
+                      size="small"
+                      onPress={async () => {
+                        await triggerHaptic("light");
+                        setIsEditingWeight(true);
+                      }}
+                    />
+                  )}
+                </View>
+              </View>
+            </View>
+
+            <View className="space-y-4">
+              <Text className="text-accent-bright font-montserrat-alt-semibold tracking-wide text-sm">
+                APP SETTINGS
+              </Text>
+              <View>
+                <ToggleSwitch
+                  isEnabled={hapticsEnabled}
+                  onToggle={toggleHaptics}
+                  topText="H A P T I C S"
+                  bottomText="Toggle haptic feedback throughout the app"
+                />
+                <Button
+                  topText="Delete All Data"
+                  warning={true}
+                  onPress={() => setDeleteModalVisible(true)}
+                />
+              </View>
+            </View>
           </View>
         }
       />
-
       <Modal
         isVisible={infoModalVisible}
         onClose={() => setInfoModalVisible(false)}
@@ -300,7 +402,6 @@ export default function Settings() {
           </View>
         }
       />
-
       <Modal
         isVisible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -308,7 +409,6 @@ export default function Settings() {
         zIndex={MODAL_Z_INDEXES.generic}
         content={modalContent.content}
       />
-
       <TrophyModal
         isVisible={selectedTrophyId !== null}
         onClose={() => setSelectedTrophyId(null)}
@@ -317,7 +417,6 @@ export default function Settings() {
         onTrickSelect={handleTrickSelect}
         zIndex={MODAL_Z_INDEXES.trophy}
       />
-
       <TrickModal
         isVisible={selectedTrickId !== null}
         onClose={() => setSelectedTrickId(null)}
@@ -327,7 +426,6 @@ export default function Settings() {
         }
         onCompletionChange={handleTrickCompletion}
       />
-
       <AllTrophiesModal
         isVisible={isAllTrophiesVisible}
         onClose={() => setIsAllTrophiesVisible(false)}
@@ -335,14 +433,12 @@ export default function Settings() {
         trophyProgress={trophyProgress}
         zIndex={MODAL_Z_INDEXES.allTrophies}
       />
-
       <DeleteConfirmModal
         isVisible={deleteModalVisible}
         onClose={() => setDeleteModalVisible(false)}
         onConfirm={handleDeleteData}
         zIndex={MODAL_Z_INDEXES.delete}
       />
-
       <SaveBackupModal
         isVisible={saveProgressModalVisible}
         onClose={() => setSaveProgressModalVisible(false)}
@@ -350,7 +446,6 @@ export default function Settings() {
         onLoadPress={handleLoadBackupPress}
         zIndex={MODAL_Z_INDEXES.saveProgress}
       />
-
       <LoadBackupModal
         isVisible={loadBackupModalVisible}
         onClose={() => setLoadBackupModalVisible(false)}
