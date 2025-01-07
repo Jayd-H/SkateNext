@@ -268,7 +268,6 @@ export default function Settings() {
                 USER INFO
               </Text>
               <View className="flex-row justify-between space-x-4">
-                {/* Age Input */}
                 <View className="flex-1">
                   {isEditingAge ? (
                     <View className="relative">
@@ -284,9 +283,17 @@ export default function Settings() {
                             numValue < 100
                           ) {
                             await StorageService.updateAge(numValue);
+                          } else {
+                            await StorageService.updateAge(18);
                           }
                         }}
-                        onBlur={() => setIsEditingAge(false)}
+                        onBlur={() => {
+                          if (!userAge || isNaN(parseInt(userAge))) {
+                            setUserAge("18");
+                            StorageService.updateAge(18);
+                          }
+                          setIsEditingAge(false);
+                        }}
                         keyboardType="numeric"
                         maxLength={2}
                         autoFocus
@@ -295,7 +302,7 @@ export default function Settings() {
                   ) : (
                     <Button
                       topText="AGE"
-                      bottomText={userAge}
+                      bottomText={userAge || "18"}
                       size="small"
                       onPress={async () => {
                         await triggerHaptic("light");
@@ -305,7 +312,6 @@ export default function Settings() {
                   )}
                 </View>
 
-                {/* Weight Input */}
                 <View className="flex-1">
                   {isEditingWeight ? (
                     <View className="relative">
@@ -321,9 +327,17 @@ export default function Settings() {
                             numValue < 200
                           ) {
                             await StorageService.updateWeight(numValue);
+                          } else {
+                            await StorageService.updateWeight(70);
                           }
                         }}
-                        onBlur={() => setIsEditingWeight(false)}
+                        onBlur={() => {
+                          if (!userWeight || isNaN(parseInt(userWeight))) {
+                            setUserWeight("70");
+                            StorageService.updateWeight(70);
+                          }
+                          setIsEditingWeight(false);
+                        }}
                         keyboardType="numeric"
                         maxLength={3}
                         autoFocus
@@ -332,7 +346,7 @@ export default function Settings() {
                   ) : (
                     <Button
                       topText="WEIGHT (kg)"
-                      bottomText={userWeight}
+                      bottomText={userWeight || "70"}
                       size="small"
                       onPress={async () => {
                         await triggerHaptic("light");
