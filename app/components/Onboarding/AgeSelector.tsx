@@ -21,16 +21,21 @@ import WelcomeAnimation from "./WelcomeAnimation";
 interface AgeSelectorProps {
   onComplete: (age: number) => void;
   onBack?: () => void;
+  initialAge?: number;
 }
 
 class WelcomeState {
   static hasShownWelcome = false;
 }
 
-const AgeSelector: React.FC<AgeSelectorProps> = ({ onComplete, onBack }) => {
-  const [age, setAge] = useState<number>(18);
+const AgeSelector: React.FC<AgeSelectorProps> = ({
+  onComplete,
+  onBack,
+  initialAge = 18,
+}) => {
+  const [age, setAge] = useState<number>(initialAge);
   const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState("18");
+  const [inputValue, setInputValue] = useState(initialAge.toString());
   const [showWelcome, setShowWelcome] = useState(!WelcomeState.hasShownWelcome);
   const scale = useSharedValue(1);
 
