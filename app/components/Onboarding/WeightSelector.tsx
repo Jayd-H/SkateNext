@@ -20,21 +20,27 @@ import BackgroundWave from "./BackgroundWave";
 type WeightUnit = "kg" | "lbs" | "st";
 
 interface WeightSelectorProps {
-  onComplete: (weight: number | null) => void;
+  onComplete: (
+    weightInKg: number | null,
+    unit: WeightUnit,
+    displayValue: number
+  ) => void;
   onBack?: () => void;
+  initialWeight?: number;
+  initialUnit?: WeightUnit;
 }
 
 const WeightSelector: React.FC<WeightSelectorProps> = ({
   onComplete,
   onBack,
+  initialWeight = 70,
+  initialUnit = "kg",
 }) => {
-  const [weightUnit, setWeightUnit] = useState<WeightUnit>("kg");
-  const [weight, setWeight] = useState<number>(70);
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>(initialUnit);
+  const [weight, setWeight] = useState<number>(initialWeight);
   const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState("70");
+  const [inputValue, setInputValue] = useState(initialWeight.toString());
   const scale = useSharedValue(1);
-
-  //* got these from google
 
   const convertToKg = (value: number, fromUnit: WeightUnit): number => {
     switch (fromUnit) {
@@ -96,6 +102,10 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({
     setIsEditing(false);
   };
 
+  const handleSkip = () => {
+    onComplete(null, weightUnit, weight);
+  };
+
   const handleNext = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     scale.value = withSpring(0.95, {
@@ -109,12 +119,7 @@ const WeightSelector: React.FC<WeightSelectorProps> = ({
       });
     }, 100);
     const weightInKg = convertToKg(weight, weightUnit);
-    onComplete(weightInKg);
-  };
-
-  const handleSkip = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onComplete(null);
+    onComplete(weightInKg, weightUnit, weight);
   };
 
   const handleSliderChange = (value: number) => {
