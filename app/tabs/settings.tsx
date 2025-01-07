@@ -222,37 +222,39 @@ export default function Settings() {
   }, [generateBackupString]);
 
   return (
-    <View className="flex-1 bg-background px-4">
-      <View className="pt-10 flex-1">
-        <View className="mb-6"></View>
+    <>
+      <View className="flex-1 bg-background px-4">
+        <View className="pt-10 flex-1">
+          <View className="mb-6"></View>
 
-        <View className="mb-12">
-          <UserStats onSaveProgress={handleSaveProgress} />
-        </View>
+          <View className="mb-12">
+            <UserStats onSaveProgress={handleSaveProgress} />
+          </View>
 
-        <View className="mb-6">
-          <UserTrophies
-            onTrophyPress={handleTrophyPress}
-            onShowAllTrophies={handleShowAllTrophies}
-            trickCompletionStates={trickStates}
-          />
+          <View className="mb-6">
+            <UserTrophies
+              onTrophyPress={handleTrophyPress}
+              onShowAllTrophies={handleShowAllTrophies}
+              trickCompletionStates={trickStates}
+            />
+          </View>
         </View>
-      </View>
-      {/* Bottom Buttons */}
-      <View className="flex-row justify-between mb-2">
-        <View className="flex-1 mr-2">
-          <Button
-            topText="PREFERENCES"
-            size="small"
-            onPress={() => setPreferencesModalVisible(true)}
-          />
-        </View>
-        <View className="flex-1 ml-2">
-          <Button
-            topText="INFO"
-            size="small"
-            onPress={() => setInfoModalVisible(true)}
-          />
+        {/* Bottom Buttons */}
+        <View className="flex-row justify-between mb-2">
+          <View className="flex-1 mr-2">
+            <Button
+              topText="PREFERENCES"
+              size="small"
+              onPress={() => setPreferencesModalVisible(true)}
+            />
+          </View>
+          <View className="flex-1 ml-2">
+            <Button
+              topText="INFO"
+              size="small"
+              onPress={() => setInfoModalVisible(true)}
+            />
+          </View>
         </View>
       </View>
       {/* Preferences Modal */}
@@ -416,6 +418,7 @@ export default function Settings() {
           </View>
         }
       />
+
       <Modal
         isVisible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -466,6 +469,6 @@ export default function Settings() {
         onLoad={handleLoadFromBackup}
         zIndex={MODAL_Z_INDEXES.loadBackup}
       />
-    </View>
+    </>
   );
 }
