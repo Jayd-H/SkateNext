@@ -159,6 +159,24 @@ class StorageService {
     }
   }
 
+  static async updateAge(age: number): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_AGE, age.toString());
+    } catch (error) {
+      console.error("Error updating age:", error);
+      throw error;
+    }
+  }
+
+  static async updateWeight(weight: number): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.USER_WEIGHT, weight.toString());
+    } catch (error) {
+      console.error("Error updating weight:", error);
+      throw error;
+    }
+  }
+
   static async getHapticsEnabled(): Promise<boolean> {
     try {
       const enabled = await AsyncStorage.getItem(STORAGE_KEYS.HAPTICS_ENABLED);
