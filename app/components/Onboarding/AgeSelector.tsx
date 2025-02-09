@@ -13,10 +13,13 @@ import Animated, {
 } from "react-native-reanimated";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
 import ProgressIndicator from "./ProgressIndicator";
 import BackgroundWave from "./BackgroundWave";
 import WelcomeAnimation from "./WelcomeAnimation";
+import LoadBackupModal from "../Modals/LoadBackupModal";
+import Button from "../Generic/Button";
 
 interface AgeSelectorProps {
   onComplete: (age: number) => void;
@@ -37,7 +40,9 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState(initialAge.toString());
   const [showWelcome, setShowWelcome] = useState(!WelcomeState.hasShownWelcome);
+  const [showLoadBackup, setShowLoadBackup] = useState(false);
   const scale = useSharedValue(1);
+  const router = useRouter();
 
   const handleInputComplete = () => {
     const newValue = parseInt(inputValue);
@@ -76,6 +81,11 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({
     }
   };
 
+  const handleBackupLoad = async (backupString: string) => {
+    setShowLoadBackup(false);
+    router.replace("/tabs/map");
+  };
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
@@ -83,7 +93,6 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({
   return (
     <View className="flex-1 bg-background">
       <BackgroundWave variant="age" />
-
       <View className="mt-8">
         <ProgressIndicator
           currentStep="age"
@@ -92,6 +101,15 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({
               onBack();
             }
           }}
+        />
+      </View>
+
+      <View className="absolute top-24 w-full px-8">
+        <Button
+          topText="LOAD BACKUP"
+          size="medium"
+          variant="default"
+          onPress={() => setShowLoadBackup(true)}
         />
       </View>
 
@@ -122,7 +140,6 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({
             )}
           </TouchableOpacity>
         </Animated.View>
-
         <View className="w-full px-4">
           <Slider
             style={{ width: "100%", height: 40 }}
@@ -144,7 +161,6 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({
             </Text>
           </View>
         </View>
-
         <Pressable
           onPress={handleNext}
           className="absolute bottom-12 right-8 bg-bg-elevated border-2 border-accent-bright rounded-2xl p-3"
@@ -152,6 +168,13 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({
           <ChevronRight width={24} height={24} fill="#4FEDE2" />
         </Pressable>
       </View>
+
+      <LoadBackupModal
+        isVisible={showLoadBackup}
+        onClose={() => setShowLoadBackup(false)}
+        onLoad={handleBackupLoad}
+        zIndex={2}
+      />
 
       {showWelcome && <WelcomeAnimation onComplete={handleWelcomeComplete} />}
     </View>
