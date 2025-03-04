@@ -1,0 +1,193 @@
+<mxfile host="app.diagrams.net" modified="2025-03-04T13:19:34.130Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0" etag="R9ov3Lk00uLfE5qBL_Zc" version="24.3.1" type="device">
+  <diagram name="Page-1" id="-3-CHd6-wZ_fZf2E5x_Y">
+    <mxGraphModel dx="1887" dy="1175" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#ffe6cc;strokeColor=default;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-1" target="Q-xdbErqiUkPD57s5RTt-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-1" value="App Container" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="352" y="120" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-2" target="Q-xdbErqiUkPD57s5RTt-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="412" y="310" />
+              <mxPoint x="138" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-2" target="Q-xdbErqiUkPD57s5RTt-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="412" y="310" />
+              <mxPoint x="274" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=default;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-2" target="Q-xdbErqiUkPD57s5RTt-7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="412" y="310" />
+              <mxPoint x="550" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-2" target="Q-xdbErqiUkPD57s5RTt-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-2" value="Acts Navigation" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="352" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-3" target="Q-xdbErqiUkPD57s5RTt-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-3" value="Act 1: Basic Tricks" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="78" y="340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-4" target="Q-xdbErqiUkPD57s5RTt-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-4" value="Act 2: Flip Tricks" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="214" y="340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-5" target="Q-xdbErqiUkPD57s5RTt-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-5" value="Act 3: Advanced Tricks" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="352" y="340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-7" target="Q-xdbErqiUkPD57s5RTt-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-7" value="Act 4: &#39;Pro&#39; Tricks" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="489.5" y="340" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-8" target="Q-xdbErqiUkPD57s5RTt-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-8" target="Q-xdbErqiUkPD57s5RTt-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="138" y="540" />
+              <mxPoint x="289" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-8" target="Q-xdbErqiUkPD57s5RTt-21">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="138" y="540" />
+              <mxPoint x="439" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-8" value="ActGrid" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="78" y="430" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-9" value="ActGrid" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="214" y="430" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-10" value="ActGrid" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="351.5" y="430" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-11" value="ActGrid" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="489.5" y="430" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-12" target="Q-xdbErqiUkPD57s5RTt-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-12" target="Q-xdbErqiUkPD57s5RTt-15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="139" y="840" />
+              <mxPoint x="275" y="840" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-12" target="Q-xdbErqiUkPD57s5RTt-16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="139" y="840" />
+              <mxPoint x="412" y="840" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-12" target="Q-xdbErqiUkPD57s5RTt-18">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="139" y="840" />
+              <mxPoint x="549" y="840" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-12" target="Q-xdbErqiUkPD57s5RTt-19">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="139" y="840" />
+              <mxPoint x="689" y="840" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-12" value="Node Buttons" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="78.5" y="580" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#d5e8d4;strokeColor=default;" edge="1" parent="1" source="Q-xdbErqiUkPD57s5RTt-13" target="Q-xdbErqiUkPD57s5RTt-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-13" value="Connection Container&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="228.5" y="580" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-14" value="Stats Button" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="79" y="900" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-15" value="Boss Button" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="215" y="900" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-16" value="Trick Button" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="352.5" y="900" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-18" value="Folder Button" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="489" y="900" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-19" value="Info Button" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="629" y="900" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-20" value="Connection" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="228.5" y="670" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-21" value="Background Elements&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="378.5" y="580" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-41" value="Acts Components Heirarchy Diagram" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="238" y="40" width="350" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-43" value="ActGrid is a generic component for each act.&amp;nbsp;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="570" width="110" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-44" value="Background Elements controls the distinct icons used in the background of each act" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="372.75" y="640" width="131.5" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-45" value="Each node button appears on the act and is used to interface with that act&#39;s contents." style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="580" y="730" width="131.5" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-46" value="Stats Button appears in place of the Boss Button on Act 4." style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="85" y="970" width="107.75" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-47" value="Boss Button is a differently styled Trick Button that appears at the end of an act.&amp;nbsp;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="220.99" y="970" width="107.75" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-48" value="Tricks within the act have a Trick Button which opens the respective Trick Modal." style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="359.87" y="970" width="107.75" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-49" value="Used to group similar tricks together within the act with a Folder Modal." style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="495.5" y="970" width="107.75" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="Q-xdbErqiUkPD57s5RTt-50" value="Used to display key information with the Info Modal." style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="635" y="970" width="107.75" height="90" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
