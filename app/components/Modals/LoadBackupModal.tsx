@@ -9,7 +9,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 import { CameraView, Camera } from "expo-camera";
 import ChevronRight from "../../../assets/icons/chevron-right.svg";
-import CameraIcon from "../../../assets/icons/cctv-camera.svg";
+import CameraIcon from "../../../assets/icons/photo-camera.svg";
 import Button from "../Generic/Button";
 import DraggableModal from "../Generic/DraggableModal";
 import { useHaptics } from "../Utils/useHaptics";
