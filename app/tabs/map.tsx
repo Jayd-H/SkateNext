@@ -28,6 +28,9 @@ import SearchModal from "../components/Modals/SearchModal";
 import RecommendationsModal from "../components/Modals/RecommendationsModal";
 import ActListModal from "../components/Modals/ActListModal";
 
+import { useFeedbackPopupPreferences } from "../components/Utils/StorageService";
+import FeedbackPopup from "../components/Modals/FeedbackPopup";
+
 import { ScrollView } from "react-native";
 import MapTutorial from "../components/Onboarding/MapTutorial";
 
@@ -70,6 +73,42 @@ export default function Map() {
   const [recommendations, setRecommendations] = useState<string[]>([]);
 
   const actScrollViewRef = useRef<ScrollView>(null);
+
+  const { feedbackPopupPrefs, updateFeedbackPopupPreferences } =
+    useFeedbackPopupPreferences();
+  const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
+
+  useEffect(() => {
+    if (feedbackPopupPrefs.dontShowAgain) {
+      return;
+    }
+
+    const checkFeedbackEligibility = async () => {
+      const now = Date.now();
+      const MIN_APP_USE_TIME = 100000;
+      const MIN_TIME_BETWEEN_PROMPTS = 3600000;
+
+      // Calculate app usage duration
+      const appUsageDuration = now - feedbackPopupPrefs.firstAppLaunchTimestamp;
+
+      // Calculate time since last shown
+      const timeSinceLastShown = now - feedbackPopupPrefs.lastShownTimestamp;
+
+      // Check if we should show the popup
+      const shouldShow =
+        appUsageDuration >= MIN_APP_USE_TIME &&
+        (feedbackPopupPrefs.lastShownTimestamp === 0 ||
+          timeSinceLastShown >= MIN_TIME_BETWEEN_PROMPTS);
+
+      if (shouldShow) {
+        setTimeout(() => {
+          setShowFeedbackPopup(true);
+        }, 1000);
+      }
+    };
+
+    checkFeedbackEligibility();
+  }, [feedbackPopupPrefs]);
 
   useEffect(() => {
     if (!tricksLoading && !infoLoading) {
@@ -170,6 +209,21 @@ export default function Map() {
     handleNavigationPress(() => setIsRecommendationsVisible(false));
   const handleActListClose = () =>
     handleNavigationPress(() => setIsActListModalVisible(false));
+
+  const handleCloseFeedbackPopup = async () => {
+    setShowFeedbackPopup(false);
+    await updateFeedbackPopupPreferences({
+      lastShownTimestamp: Date.now(),
+    });
+  };
+
+  const handleDontShowFeedbackAgain = async () => {
+    setShowFeedbackPopup(false);
+    await updateFeedbackPopupPreferences({
+      dontShowAgain: true,
+      lastShownTimestamp: Date.now(),
+    });
+  };
 
   const getActiveModal = () => {
     if (selectedTrickId !== null) return "trick";
@@ -426,6 +480,11 @@ export default function Map() {
         trickIds={currentActTricks}
         trickCompletionStates={trickStates}
         actTitle={getActInfo(currentPage).topText}
+      />
+      <FeedbackPopup
+        isVisible={showFeedbackPopup}
+        onClose={handleCloseFeedbackPopup}
+        onDontShowAgain={handleDontShowFeedbackAgain}
       />
     </View>
   );
