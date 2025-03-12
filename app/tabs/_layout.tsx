@@ -1,19 +1,44 @@
-import React from "react";
-import { Tabs } from "expo-router";
+import React, { useEffect } from "react";
+import { Tabs, useRouter } from "expo-router";
+import { BackHandler } from "react-native";
 import FireIcon from "../../assets/icons/fire.svg";
 import MapIcon from "../../assets/icons/map.svg";
 import SettingsIcon from "../../assets/icons/settings.svg";
 import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
 import { useHaptics } from "../components/Utils/useHaptics";
+import { useNavigationHistory } from "../components/Utils/navigationHistoryContext";
 
 export default function TabLayout(): React.ReactElement {
   const iconSize: number = 28;
-
   const { triggerHaptic } = useHaptics();
+  const router = useRouter();
+  const { goBack } = useNavigationHistory();
 
   const handleTabPress = async () => {
     await triggerHaptic("light");
   };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        const previousTab = goBack();
+        if (previousTab) {
+          if (previousTab === "fitness") {
+            router.replace("/tabs/fitness");
+          } else if (previousTab === "map") {
+            router.replace("/tabs/map");
+          } else if (previousTab === "settings") {
+            router.replace("/tabs/settings");
+          }
+          return true;
+        }
+        return false;
+      }
+    );
+
+    return () => backHandler.remove();
+  }, [router, goBack]);
 
   const screenOptions: BottomTabNavigationOptions = {
     headerShown: false,
