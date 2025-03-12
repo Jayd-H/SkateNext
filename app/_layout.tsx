@@ -5,6 +5,7 @@ import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as Notifications from "expo-notifications";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { NavigationHistoryProvider } from "./components/Utils/navigationHistoryContext";
 
 const BackgroundView: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -83,16 +84,18 @@ export default function Layout(): React.ReactElement | null {
   }
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <BackgroundView>
-        <View style={styles.container} onLayout={onLayoutRootView}>
-          <StatusBar barStyle="light-content" backgroundColor="#0F1413" />
-          <SafeAreaView style={styles.container}>
-            <Slot />
-          </SafeAreaView>
-        </View>
-      </BackgroundView>
-    </GestureHandlerRootView>
+    <NavigationHistoryProvider>
+      <GestureHandlerRootView style={styles.container}>
+        <BackgroundView>
+          <View style={styles.container} onLayout={onLayoutRootView}>
+            <StatusBar barStyle="light-content" backgroundColor="#0F1413" />
+            <SafeAreaView style={styles.container}>
+              <Slot />
+            </SafeAreaView>
+          </View>
+        </BackgroundView>
+      </GestureHandlerRootView>
+    </NavigationHistoryProvider>
   );
 }
 
