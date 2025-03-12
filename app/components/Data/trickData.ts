@@ -1353,7 +1353,7 @@ export const TRICK_DATA: Trick[] = [
     common_mistakes:
       "[Lost sight of landing] Keep your head turned to track the landing. [Poor rotation speed] Maintain consistent spin.",
     difficulty: "8",
-    video_link: "https://www.youtube.com/watch?v=uCOI352jvBQ",
+    video_link: "https://www.youtube.com/watch?v=JG_IpNESuAs",
     alt_names: "FS 360",
   },
   {
