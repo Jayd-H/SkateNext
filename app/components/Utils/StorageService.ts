@@ -65,6 +65,7 @@ export const STORAGE_KEYS = {
   HAPTICS_ENABLED: "haptics_enabled",
   RECENT_TRICKS: "recent_tricks",
   SAFETY_POPUP_PREFS: "safety_popup_prefs",
+  BLACKLISTED_TRICKS: "blacklisted_tricks",
 } as const;
 
 const BOSS_TRICKS = {
@@ -207,6 +208,51 @@ class StorageService {
     } catch (error) {
       console.error("Error checking setup status:", error);
       return false;
+    }
+  }
+
+  // Get the list of blacklisted trick IDs
+  static async getBlacklistedTricks(): Promise<string[]> {
+    try {
+      const blacklistedTricks = await AsyncStorage.getItem(
+        STORAGE_KEYS.BLACKLISTED_TRICKS
+      );
+      return blacklistedTricks ? JSON.parse(blacklistedTricks) : [];
+    } catch (error) {
+      console.error("Error getting blacklisted tricks:", error);
+      return [];
+    }
+  }
+
+  // Add a trick to the blacklist
+  static async addTrickToBlacklist(trickId: string): Promise<void> {
+    try {
+      const blacklistedTricks = await this.getBlacklistedTricks();
+      if (!blacklistedTricks.includes(trickId)) {
+        blacklistedTricks.push(trickId);
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.BLACKLISTED_TRICKS,
+          JSON.stringify(blacklistedTricks)
+        );
+      }
+    } catch (error) {
+      console.error("Error adding trick to blacklist:", error);
+      throw error;
+    }
+  }
+
+  // Remove a trick from the blacklist
+  static async removeTrickFromBlacklist(trickId: string): Promise<void> {
+    try {
+      const blacklistedTricks = await this.getBlacklistedTricks();
+      const updatedBlacklist = blacklistedTricks.filter((id) => id !== trickId);
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.BLACKLISTED_TRICKS,
+        JSON.stringify(updatedBlacklist)
+      );
+    } catch (error) {
+      console.error("Error removing trick from blacklist:", error);
+      throw error;
     }
   }
 
@@ -532,6 +578,7 @@ class StorageService {
         STORAGE_KEYS.HAPTICS_ENABLED,
         STORAGE_KEYS.RECENT_TRICKS,
         STORAGE_KEYS.SAFETY_POPUP_PREFS,
+        STORAGE_KEYS.BLACKLISTED_TRICKS,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);
@@ -706,6 +753,44 @@ export function useModalVisitStates() {
   };
 
   return { modalVisitStates, isLoading, updateModalVisitState };
+}
+
+export function useBlacklistedTricks() {
+  const [blacklistedTricks, setBlacklistedTricks] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadBlacklistedTricks();
+  }, []);
+
+  const loadBlacklistedTricks = async () => {
+    try {
+      const tricks = await StorageService.getBlacklistedTricks();
+      setBlacklistedTricks(tricks);
+    } catch (error) {
+      console.error("Error loading blacklisted tricks:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const addTrickToBlacklist = async (trickId: string) => {
+    await StorageService.addTrickToBlacklist(trickId);
+    setBlacklistedTricks((prev) => [...prev, trickId]);
+  };
+
+  const removeTrickFromBlacklist = async (trickId: string) => {
+    await StorageService.removeTrickFromBlacklist(trickId);
+    setBlacklistedTricks((prev) => prev.filter((id) => id !== trickId));
+  };
+
+  return {
+    blacklistedTricks,
+    isLoading,
+    addTrickToBlacklist,
+    removeTrickFromBlacklist,
+    refreshBlacklistedTricks: loadBlacklistedTricks,
+  };
 }
 
 export function useInfoStates() {

@@ -114,7 +114,6 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
               Feeling Lucky?
             </Text>
           </View>
-
           <View className="relative mb-8">
             {/* Glow effect */}
             <View
@@ -157,7 +156,6 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
               </Pressable>
             </View>
           </View>
-
           <View className="flex-row items-center mb-6">
             <View className="flex-1 h-[2px] bg-accent-bright opacity-30" />
             <Text className="text-lg text-text-muted font-montserrat-alt-light tracking-widest mx-4">
@@ -165,25 +163,21 @@ const LuckyModal: React.FC<LuckyModalProps> = ({
             </Text>
             <View className="flex-1 h-[2px] bg-accent-bright opacity-30" />
           </View>
-
           <Button
             topText="A L L  T R I C K S"
             bottomText="Get a trick from all available tricks"
             onPress={handleRandomTrick}
           />
-
           <Button
             topText="M A S T E R E D  O N L Y"
             bottomText="Get a trick you've already mastered"
             onPress={handleMasteredTrick}
           />
-
           <Button
             topText="I N  P R O G R E S S"
             bottomText="Get a trick you've landed before"
             onPress={handleInProgressTrick}
           />
-
           <Button
             topText="N O T  S T A R T E D"
             bottomText="Get a trick you've never landed"

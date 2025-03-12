@@ -28,6 +28,10 @@ import SearchModal from "../components/Modals/SearchModal";
 import RecommendationsModal from "../components/Modals/RecommendationsModal";
 import ActListModal from "../components/Modals/ActListModal";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { STORAGE_KEYS } from "../components/Utils/StorageService";
+import { getRecommendedTricks } from "../components/Utils/trickRecommender";
+
 const PAGES = ["1", "2", "3", "4"];
 const STAGGER_DELAY = 100;
 const ICON_SIZE = 28;
@@ -397,6 +401,15 @@ export default function Map() {
         onTrickSelect={handleTrickPress}
         recommendations={recommendations}
         trickCompletionStates={trickStates}
+        onRefreshRecommendations={async () => {
+          const age = await AsyncStorage.getItem(STORAGE_KEYS.USER_AGE);
+          const userAge = age ? parseInt(age) : 25;
+          const newRecommendations = await getRecommendedTricks(
+            trickStates,
+            userAge
+          );
+          setRecommendations(newRecommendations);
+        }}
       />
 
       <ActListModal

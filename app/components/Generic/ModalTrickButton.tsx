@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, TouchableOpacity } from "react-native";
 import { useHaptics } from "../Utils/useHaptics";
 import BurningSkull from "../../../assets/icons/burning-skull.svg";
 import CrownedSkull from "../../../assets/icons/crowned-skull.svg";
@@ -10,6 +10,9 @@ interface ModalTrickButtonProps {
   difficulty: string;
   completionState: number;
   onPress: () => void;
+  showBlacklistButton?: boolean;
+  onBlacklist?: () => void;
+  isBlacklisted?: boolean;
 }
 
 export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
@@ -18,6 +21,9 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
   difficulty,
   completionState,
   onPress,
+  showBlacklistButton = false,
+  onBlacklist,
+  isBlacklisted = false,
 }) => {
   const getStyleClasses = () => {
     switch (completionState) {
@@ -46,7 +52,6 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
   };
 
   const styles = getStyleClasses();
-
   const { triggerHaptic } = useHaptics();
 
   const handlePress = async () => {
@@ -54,9 +59,16 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
     onPress();
   };
 
+  const handleBlacklist = async (e: any) => {
+    e.stopPropagation();
+    await triggerHaptic("medium");
+    if (onBlacklist) {
+      onBlacklist();
+    }
+  };
+
   const renderDifficulty = () => {
     const difficultyNumber = parseInt(difficulty, 10);
-
     if (difficultyNumber === 11) {
       return (
         <View className="flex-row items-center">
@@ -64,10 +76,8 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
         </View>
       );
     }
-
     const fullSkulls = Math.floor(difficultyNumber / 2);
     const hasHalfSkull = difficultyNumber % 2 !== 0;
-
     return (
       <View className="flex-row items-center">
         {[...Array(fullSkulls)].map((_, index) => (
@@ -91,6 +101,18 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
   return (
     <View className="w-full mb-4">
       <View className="relative">
+        {/* Blacklist button */}
+        {showBlacklistButton && (
+          <TouchableOpacity
+            onPress={handleBlacklist}
+            className="absolute -top-2 -right-2 z-10 py-[1px] px-[6px] bg-accent-surface border-warning-dark border-2 rounded-full"
+          >
+            <Text className="text-warning-dark text-base font-montserrat-alt-bold">
+              X
+            </Text>
+          </TouchableOpacity>
+        )}
+
         {/* bottom */}
         <View
           className={`
@@ -101,6 +123,7 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
             h-[72px]
             rounded-3xl
             ${styles.shadow}
+            ${isBlacklisted ? "opacity-50" : ""}
           `}
         />
 
@@ -118,6 +141,7 @@ export const ModalTrickButton: React.FC<ModalTrickButtonProps> = ({
             active:translate-y-1
             px-6
             justify-center
+            ${isBlacklisted ? "opacity-50" : ""}
           `}
         >
           <View className="flex-row items-start justify-between">
