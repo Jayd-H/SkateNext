@@ -141,6 +141,51 @@ class StorageService {
           AsyncStorage.setItem(key, JSON.stringify(value))
         )
       );
+
+      // Handle calories from backup
+      if (backupData.totalCalories > 0) {
+        // Get existing calorie logs
+        const existingLogs = await this.getAllCalorieLogs();
+
+        // Calculate current total calories from logs
+        const currentTotalCalories = Object.values(existingLogs).reduce(
+          (sum, log) => sum + (log?.totalCalories || 0),
+          0
+        );
+
+        // Check if we need to add calories (only if backup has more)
+        if (backupData.totalCalories > currentTotalCalories) {
+          const missingCalories =
+            backupData.totalCalories - currentTotalCalories;
+
+          // Create a migration entry for the missing calories
+          const today = new Date().toISOString().split("T")[0];
+
+          // Check if we already have a log for today
+          const todayLog = await this.getCalorieLog(today);
+
+          const migrationSession = {
+            timestamp: Date.now(),
+            duration: 0,
+            caloriesBurned: missingCalories,
+          };
+
+          const updatedLog = todayLog
+            ? {
+                ...todayLog,
+                sessions: [...todayLog.sessions, migrationSession],
+                totalCalories: todayLog.totalCalories + missingCalories,
+              }
+            : {
+                date: today,
+                sessions: [migrationSession],
+                totalCalories: missingCalories,
+              };
+
+          await this.updateCalorieLog(today, updatedLog);
+          console.log(`Restored ${missingCalories} calories from backup`);
+        }
+      }
     } catch (error) {
       console.error("Error restoring backup:", error);
       throw error;

@@ -20,6 +20,7 @@ import BackgroundWave from "./BackgroundWave";
 import WelcomeAnimation from "./WelcomeAnimation";
 import LoadBackupModal from "../Modals/LoadBackupModal";
 import Button from "../Generic/Button";
+import { StorageService } from "../Utils/StorageService";
 
 interface AgeSelectorProps {
   onComplete: (age: number) => void;
@@ -82,8 +83,14 @@ const AgeSelector: React.FC<AgeSelectorProps> = ({
   };
 
   const handleBackupLoad = async (backupString: string) => {
-    setShowLoadBackup(false);
-    router.replace("/tabs/map");
+    try {
+      await StorageService.restoreFromBackup(backupString);
+
+      setShowLoadBackup(false);
+      router.replace("/tabs/map");
+    } catch (error) {
+      console.error("Error loading backup:", error);
+    }
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
