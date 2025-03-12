@@ -67,7 +67,14 @@ export const STORAGE_KEYS = {
   SAFETY_POPUP_PREFS: "safety_popup_prefs",
   BLACKLISTED_TRICKS: "blacklisted_tricks",
   MAP_TUTORIAL_COMPLETED: "map_tutorial_completed",
+  FEEDBACK_POPUP_PREFS: "feedback_popup_prefs",
 } as const;
+
+interface FeedbackPopupPreferences {
+  dontShowAgain: boolean;
+  lastShownTimestamp: number;
+  firstAppLaunchTimestamp: number;
+}
 
 const BOSS_TRICKS = {
   ollie: { id: "ollie", difficulty: 2 },
@@ -229,6 +236,55 @@ class StorageService {
       await AsyncStorage.setItem(STORAGE_KEYS.MAP_TUTORIAL_COMPLETED, "true");
     } catch (error) {
       console.error("Error completing map tutorial:", error);
+      throw error;
+    }
+  }
+
+  static async getFeedbackPopupPreferences(): Promise<FeedbackPopupPreferences> {
+    try {
+      const prefs = await AsyncStorage.getItem(
+        STORAGE_KEYS.FEEDBACK_POPUP_PREFS
+      );
+      if (prefs) {
+        return JSON.parse(prefs);
+      } else {
+        // Initialize with current timestamp if not set
+        const initialPrefs = {
+          dontShowAgain: false,
+          lastShownTimestamp: 0,
+          firstAppLaunchTimestamp: Date.now(),
+        };
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.FEEDBACK_POPUP_PREFS,
+          JSON.stringify(initialPrefs)
+        );
+        return initialPrefs;
+      }
+    } catch (error) {
+      console.error("Error getting feedback popup preferences:", error);
+      return {
+        dontShowAgain: false,
+        lastShownTimestamp: 0,
+        firstAppLaunchTimestamp: Date.now(),
+      };
+    }
+  }
+
+  static async updateFeedbackPopupPreferences(
+    prefs: Partial<FeedbackPopupPreferences>
+  ): Promise<void> {
+    try {
+      const currentPrefs = await this.getFeedbackPopupPreferences();
+      const updatedPrefs = {
+        ...currentPrefs,
+        ...prefs,
+      };
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.FEEDBACK_POPUP_PREFS,
+        JSON.stringify(updatedPrefs)
+      );
+    } catch (error) {
+      console.error("Error updating feedback popup preferences:", error);
       throw error;
     }
   }
@@ -602,6 +658,7 @@ class StorageService {
         STORAGE_KEYS.SAFETY_POPUP_PREFS,
         STORAGE_KEYS.BLACKLISTED_TRICKS,
         STORAGE_KEYS.MAP_TUTORIAL_COMPLETED,
+        STORAGE_KEYS.FEEDBACK_POPUP_PREFS,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);
@@ -776,6 +833,47 @@ export function useModalVisitStates() {
   };
 
   return { modalVisitStates, isLoading, updateModalVisitState };
+}
+
+export function useFeedbackPopupPreferences() {
+  const [feedbackPopupPrefs, setFeedbackPopupPrefs] =
+    useState<FeedbackPopupPreferences>({
+      dontShowAgain: false,
+      lastShownTimestamp: 0,
+      firstAppLaunchTimestamp: Date.now(),
+    });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadFeedbackPopupPreferences();
+  }, []);
+
+  const loadFeedbackPopupPreferences = async () => {
+    try {
+      const prefs = await StorageService.getFeedbackPopupPreferences();
+      setFeedbackPopupPrefs(prefs);
+    } catch (error) {
+      console.error("Error loading feedback popup preferences:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateFeedbackPopupPreferences = async (
+    prefs: Partial<FeedbackPopupPreferences>
+  ) => {
+    await StorageService.updateFeedbackPopupPreferences(prefs);
+    setFeedbackPopupPrefs((prev) => ({
+      ...prev,
+      ...prefs,
+    }));
+  };
+
+  return {
+    feedbackPopupPrefs,
+    isLoading,
+    updateFeedbackPopupPreferences,
+  };
 }
 
 export function useBlacklistedTricks() {

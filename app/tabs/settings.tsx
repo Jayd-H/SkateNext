@@ -1,6 +1,13 @@
 import { useRouter } from "expo-router";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { View, BackHandler, Pressable, Text, TextInput } from "react-native";
+import {
+  View,
+  BackHandler,
+  Pressable,
+  Text,
+  TextInput,
+  Linking,
+} from "react-native";
 import Modal from "../components/Modals/GenericModal";
 import TrophyModal from "../components/Modals/TrophyModal";
 import TrickModal from "../components/Modals/TrickModal";
@@ -20,9 +27,6 @@ import { StorageService } from "../components/Utils/StorageService";
 import { TROPHY_DATA } from "../components/Data/trophyData";
 import SaveBackupModal from "../components/Modals/SaveBackupModal";
 import LoadBackupModal from "../components/Modals/LoadBackupModal";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { STORAGE_KEYS } from "../components/Utils/StorageService";
-
 const MODAL_Z_INDEXES = {
   preferences: 1,
   info: 1,
@@ -35,7 +39,6 @@ const MODAL_Z_INDEXES = {
   delete: 4,
   blacklistedTricks: 2,
 };
-
 export default function Settings() {
   const router = useRouter();
   const { trickStates, updateTrickState } = useTrickStates();
@@ -62,17 +65,14 @@ export default function Settings() {
   const [blacklistedTricksModalVisible, setBlacklistedTricksModalVisible] =
     useState(false);
   const { triggerHaptic } = useHaptics();
-
   useEffect(() => {
     setBlacklistedTricksCount(blacklistedTricks.length);
   }, [blacklistedTricks]);
-
   useEffect(() => {
     if (preferencesModalVisible) {
       refreshBlacklistedTricks();
     }
   }, [preferencesModalVisible]);
-
   useEffect(() => {
     const loadUserStats = async () => {
       const stats = await StorageService.getUserStats();
@@ -81,7 +81,6 @@ export default function Settings() {
     };
     loadUserStats();
   }, []);
-
   // Memoized trophy progress calculation
   const trophyProgress = useMemo(() => {
     const progress: Record<string, number> = {};
@@ -95,7 +94,6 @@ export default function Settings() {
     });
     return progress;
   }, [trickStates]);
-
   // Get active modal - memoized to prevent unnecessary recalculations
   const getActiveModal = useCallback(() => {
     if (modalVisible) return "generic";
@@ -121,7 +119,6 @@ export default function Settings() {
     loadBackupModalVisible,
     blacklistedTricksModalVisible,
   ]);
-
   // Close active modal - memoized for back handler
   const closeActiveModal = useCallback(() => {
     const activeModal = getActiveModal();
@@ -161,7 +158,6 @@ export default function Settings() {
     }
     return true;
   }, [getActiveModal]);
-
   // Back handler setup
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -170,33 +166,27 @@ export default function Settings() {
     );
     return () => backHandler.remove();
   }, [closeActiveModal]);
-
   // Modal handlers
   const handleTrophyPress = useCallback((trophyId: string) => {
     setSelectedTrophyId(trophyId);
   }, []);
-
   const handleTrickSelect = useCallback((trickId: string) => {
     setSelectedTrickId(trickId);
   }, []);
-
   const handleShowAllTrophies = useCallback(() => {
     setIsAllTrophiesVisible(true);
   }, []);
-
   const handleTrickCompletion = useCallback(
     async (trickId: string, state: number) => {
       await updateTrickState(trickId, state);
     },
     [updateTrickState]
   );
-
   const handleBlacklistedTricksOpen = useCallback(async () => {
     await triggerHaptic("light");
     await refreshBlacklistedTricks(); // Refresh before opening
     setBlacklistedTricksModalVisible(true);
   }, [triggerHaptic, refreshBlacklistedTricks]);
-
   const handleDeleteData = useCallback(async () => {
     try {
       await StorageService.clearAllData();
@@ -205,12 +195,10 @@ export default function Settings() {
       console.error("Error deleting data:", error);
     }
   }, [router]);
-
   const openInfoModal = useCallback((title: string, content: string) => {
     setModalContent({ title, content });
     setModalVisible(true);
   }, []);
-
   const generateBackupString = useCallback(async () => {
     try {
       const backupString = await StorageService.getAllDataForBackup();
@@ -219,11 +207,9 @@ export default function Settings() {
       console.error("Error generating backup:", error);
     }
   }, []);
-
   const handleLoadBackupPress = useCallback(() => {
     setLoadBackupModalVisible(true);
   }, []);
-
   const handleLoadFromBackup = useCallback(
     async (backupString: string) => {
       try {
@@ -240,12 +226,19 @@ export default function Settings() {
     },
     [router]
   );
-
   // Add this handler for the button in UserStats
   const handleSaveProgress = useCallback(async () => {
     await generateBackupString();
     setSaveProgressModalVisible(true);
   }, [generateBackupString]);
+
+  const handleOpenGithub = useCallback(() => {
+    Linking.openURL("https://github.com/Jayd-H/SkateNext");
+  }, []);
+
+  const handleOpenFeedback = useCallback(() => {
+    Linking.openURL("https://forms.gle/yuZeZXVonV1fhckq5");
+  }, []);
 
   return (
     <>
@@ -444,6 +437,8 @@ export default function Settings() {
                 )
               }
             />
+            <Button topText="GitHub Repository" onPress={handleOpenGithub} />
+            <Button topText="Submit Feedback" onPress={handleOpenFeedback} />
           </View>
         }
       />

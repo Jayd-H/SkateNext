@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, TouchableOpacity } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,6 +8,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { useHaptics } from "../Utils/useHaptics";
+import BossSkullIcon from "../../../assets/icons/boss-skull.svg";
 
 interface DeleteConfirmModalProps {
   isVisible: boolean;
@@ -71,57 +72,88 @@ const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
 
   if (!isVisible) return null;
 
+  const iconSize = 26;
+
   return (
     <View
       className="flex-1 h-full w-full absolute top-0 left-0 right-0 bottom-0"
       style={{ zIndex }}
     >
-      <Pressable className="flex-1" onPress={handleClose}>
+      <TouchableOpacity
+        className="flex-1 bg-black/50"
+        activeOpacity={1}
+        onPress={handleClose}
+      >
         <View className="flex-1 flex justify-center items-center">
-          <Animated.View
-            style={[animatedStyle]}
-            className="w-5/6 bg-bg-elevated border-2 border-warning rounded-3xl p-6 shadow-lg"
-          >
-            <Text className="text-xl text-text font-montserrat-alt-semibold mb-2 text-center">
-              DELETE ALL DATA?
-            </Text>
-            <Text className="text-sm text-text-muted font-montserrat mb-6 text-center">
-              This will reset all your progress and return you to the initial
-              setup. This action cannot be undone.
-            </Text>
-            <View className="flex-row justify-center space-x-4">
-              {/* Cancel Button */}
-              <View className="flex-1">
-                <View className="relative">
-                  <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-accent-dark" />
-                  <Pressable
-                    onPress={handleClose}
-                    className="relative rounded-3xl w-full border-2 border-accent-muted bg-accent-surface active:translate-y-1 px-6 py-3"
-                  >
-                    <Text className="text-text font-montserrat-alt-semibold text-center text-base">
-                      Cancel
-                    </Text>
-                  </Pressable>
+          <Animated.View style={[animatedStyle]} className="w-5/6">
+            <View className="relative">
+              {/* Bottom shadow layer similar to InfoModal */}
+              <View className="absolute inset-0 translate-y-1 bg-warning-dark rounded-2xl opacity-80" />
+
+              {/* Main content layer */}
+              <View className="bg-bg-elevated border-2 border-warning rounded-2xl">
+                {/* Centered Icon Container */}
+                <View className="absolute -top-5 left-0 w-full flex items-center">
+                  <View className="w-10 h-10 rounded-xl bg-bg-elevated border-2 border-warning items-center justify-center">
+                    <BossSkullIcon
+                      width={iconSize}
+                      height={iconSize}
+                      fill="#FF3333"
+                    />
+                  </View>
                 </View>
-              </View>
-              {/* Delete Button */}
-              <View className="flex-1">
-                <View className="relative">
-                  <View className="absolute top-1 left-0 right-0 h-full rounded-3xl bg-warning-dark" />
-                  <Pressable
-                    onPress={handleConfirm}
-                    className="relative rounded-3xl w-full border-2 border-warning bg-bg-elevated active:translate-y-1 px-6 py-3"
-                  >
-                    <Text className="text-text font-montserrat-alt-semibold text-center text-base">
-                      Delete
+
+                {/* Content Container */}
+                <View className="pt-8 pb-5 px-5">
+                  {/* Title */}
+                  <Text className="text-center text-warning font-montserrat-alt-bold text-lg uppercase tracking-[6px] mb-1">
+                    Warning
+                  </Text>
+
+                  {/* Subtle Separator */}
+                  <View className="w-1/4 h-0.5 rounded-lg bg-warning-dark mx-auto mb-4 opacity-80" />
+
+                  {/* Description Container */}
+                  <View className="bg-bg-surface border-t border-b border-warning-dark -mx-5 px-5 py-3 mb-4">
+                    <Text className="text-text-muted font-montserrat text-sm leading-5 text-center mb-1">
+                      Are you sure you want to delete all data?
                     </Text>
-                  </Pressable>
+                    <Text className="text-text-dim font-montserrat text-xs leading-4 text-center">
+                      This will reset all your progress and return you to the
+                      initial setup. This action cannot be undone.
+                    </Text>
+                  </View>
+
+                  {/* Action Buttons - Stacked */}
+                  <View className="space-y-3 mb-2">
+                    {/* Delete Button - Primary Warning */}
+                    <TouchableOpacity
+                      onPress={handleConfirm}
+                      activeOpacity={0.8}
+                      className="bg-bg-surface border border-warning rounded-xl py-3 px-4"
+                    >
+                      <Text className="text-warning font-montserrat-alt-semibold text-center text-sm">
+                        DELETE ALL DATA
+                      </Text>
+                    </TouchableOpacity>
+
+                    {/* Cancel Button - Secondary */}
+                    <TouchableOpacity
+                      onPress={handleClose}
+                      activeOpacity={0.8}
+                      className="bg-accent-surface border border-accent-muted rounded-xl py-3 px-4"
+                    >
+                      <Text className="text-text font-montserrat-alt-semibold text-center text-sm">
+                        CANCEL
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>
           </Animated.View>
         </View>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 };
