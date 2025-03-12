@@ -1,7 +1,5 @@
 import { deflate, inflate } from "pako";
 
-//! for some reason the total calories are not being restored correctly, will return to this eventually
-
 export interface IBackupData {
   version: number;
   trickStates: { [key: string]: number };
