@@ -35,6 +35,11 @@ interface RecentTrickUpdate {
   timestamp: number;
 }
 
+interface SafetyPopupPreferences {
+  dontShowAgain: boolean;
+  lastShownTimestamp: number;
+}
+
 interface BackupData {
   version: number;
   timestamp: number;
@@ -59,6 +64,7 @@ export const STORAGE_KEYS = {
   TIMER_STATE: "timer_state",
   HAPTICS_ENABLED: "haptics_enabled",
   RECENT_TRICKS: "recent_tricks",
+  SAFETY_POPUP_PREFS: "safety_popup_prefs",
 } as const;
 
 const BOSS_TRICKS = {
@@ -201,6 +207,37 @@ class StorageService {
     } catch (error) {
       console.error("Error checking setup status:", error);
       return false;
+    }
+  }
+
+  static async getSafetyPopupPreferences(): Promise<SafetyPopupPreferences> {
+    try {
+      const prefs = await AsyncStorage.getItem(STORAGE_KEYS.SAFETY_POPUP_PREFS);
+      return prefs
+        ? JSON.parse(prefs)
+        : { dontShowAgain: false, lastShownTimestamp: 0 };
+    } catch (error) {
+      console.error("Error getting safety popup preferences:", error);
+      return { dontShowAgain: false, lastShownTimestamp: 0 };
+    }
+  }
+
+  static async updateSafetyPopupPreferences(
+    prefs: Partial<SafetyPopupPreferences>
+  ): Promise<void> {
+    try {
+      const currentPrefs = await this.getSafetyPopupPreferences();
+      const updatedPrefs = {
+        ...currentPrefs,
+        ...prefs,
+      };
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.SAFETY_POPUP_PREFS,
+        JSON.stringify(updatedPrefs)
+      );
+    } catch (error) {
+      console.error("Error updating safety popup preferences:", error);
+      throw error;
     }
   }
 
@@ -494,6 +531,7 @@ class StorageService {
         STORAGE_KEYS.TIMER_STATE,
         STORAGE_KEYS.HAPTICS_ENABLED,
         STORAGE_KEYS.RECENT_TRICKS,
+        STORAGE_KEYS.SAFETY_POPUP_PREFS,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);
@@ -566,6 +604,46 @@ class StorageService {
       throw error;
     }
   }
+}
+
+export function useSafetyPopupPreferences() {
+  const [safetyPopupPrefs, setSafetyPopupPrefs] =
+    useState<SafetyPopupPreferences>({
+      dontShowAgain: false,
+      lastShownTimestamp: 0,
+    });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadSafetyPopupPreferences();
+  }, []);
+
+  const loadSafetyPopupPreferences = async () => {
+    try {
+      const prefs = await StorageService.getSafetyPopupPreferences();
+      setSafetyPopupPrefs(prefs);
+    } catch (error) {
+      console.error("Error loading safety popup preferences:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateSafetyPopupPreferences = async (
+    prefs: Partial<SafetyPopupPreferences>
+  ) => {
+    await StorageService.updateSafetyPopupPreferences(prefs);
+    setSafetyPopupPrefs((prev) => ({
+      ...prev,
+      ...prefs,
+    }));
+  };
+
+  return {
+    safetyPopupPrefs,
+    isLoading,
+    updateSafetyPopupPreferences,
+  };
 }
 
 export function useTrickStates() {
