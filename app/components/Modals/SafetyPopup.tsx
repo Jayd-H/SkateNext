@@ -80,43 +80,79 @@ const SafetyPopup: React.FC<SafetyPopupProps> = ({
     onDontShowAgain();
   };
 
-  const iconSize = 28;
+  const iconSize = 36;
 
   return (
     <Animated.View
-      className="absolute bottom-10 left-4 right-4 z-50"
+      className="absolute bottom-10 left-5 right-5 z-50"
       style={animatedStyle}
     >
-      <View className="bg-bg-elevated px-4 py-4 rounded-xl shadow-lg border border-accent-dark">
-        <View className="mb-3 justify-between flex-row">
-          <Text className="text-accent-bright font-montserrat-alt-semibold text-base tracking-widest ml-2">
-            Safety Reminder
-          </Text>
-          <BossSkullIcon width={iconSize} height={iconSize} fill="#2A9E8A" />
-        </View>
+      <View className="relative">
+        {/* Shadow/accent border effect */}
+        <View className="absolute top-[3px] left-[3px] right-[3px] bottom-0 bg-warning-dark opacity-70 rounded-3xl" />
 
-        <Text className="text-text-muted font-montserrat mb-4 leading-5">
-          {getMessage()}
-        </Text>
+        {/* Main popup container */}
+        <View className="bg-bg-elevated px-4 py-4 rounded-3xl border border-warning overflow-hidden">
+          {/* Decorative accent bubbles */}
+          <View className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-warning opacity-10" />
+          <View className="absolute -bottom-14 -left-14 w-24 h-24 rounded-full bg-warning opacity-5" />
 
-        <View className="flex-row justify-between items-center">
-          <TouchableOpacity
-            onPress={handleDontShowAgainPress}
-            className="py-2 px-3"
-          >
-            <Text className="text-text-dim font-montserrat-alt text-sm">
-              Don't show again
+          {/* Header with icon */}
+          <View className="flex-row items-center mb-3.5">
+            <View className="mr-3 relative">
+              <View className="absolute -inset-1 bg-warning opacity-20 rounded-full" />
+              <View className="bg-bg-elevated p-2 rounded-full border border-warning-dark">
+                <BossSkullIcon
+                  width={iconSize}
+                  height={iconSize}
+                  fill="#FF3333"
+                />
+              </View>
+            </View>
+
+            <View className="flex-1">
+              <Text className="text-warning font-montserrat-alt-semibold text-base tracking-wide">
+                Safety Reminder
+              </Text>
+              <Text className="text-text-muted font-montserrat text-xs mt-1 leading-4">
+                Taking precautions helps prevent injuries
+              </Text>
+            </View>
+          </View>
+
+          {/* Message text */}
+          <View className="bg-bg-surface px-3.5 py-3 mb-3.5 rounded-xl border border-warning-dark opacity-90">
+            <Text className="text-text-muted font-montserrat text-sm leading-5">
+              {getMessage()}
             </Text>
-          </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity
-            onPress={handleClosePress}
-            className="bg-accent py-2 px-4 rounded-md"
-          >
-            <Text className="text-background font-montserrat-alt-semibold">
-              Got it
-            </Text>
-          </TouchableOpacity>
+          {/* Vertical button stack */}
+          <View className="space-y-2.5">
+            {/* Primary action button */}
+            <TouchableOpacity
+              onPress={handleClosePress}
+              className="bg-warning w-full py-3.5 px-4 rounded-2xl relative overflow-hidden"
+              activeOpacity={0.8}
+            >
+              {/* Inner accent glow */}
+              <View className="absolute top-0 left-0 right-0 h-1/2 bg-warning opacity-20 rounded-t-xl" />
+              <Text className="text-background font-montserrat-alt-bold text-base text-center">
+                Got It
+              </Text>
+            </TouchableOpacity>
+
+            {/* Tertiary text-only button */}
+            <TouchableOpacity
+              onPress={handleDontShowAgainPress}
+              className="py-2 px-2"
+              activeOpacity={0.7}
+            >
+              <Text className="text-text-dim font-montserrat-alt text-xs text-center">
+                Don't show safety reminders again
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Animated.View>

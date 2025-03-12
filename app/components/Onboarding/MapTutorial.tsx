@@ -35,7 +35,6 @@ interface TutorialStep {
 }
 
 //! this file is quite a mess, could be cleaned up but life is too short
-
 const tutorialSteps: TutorialStep[] = [
   {
     spotlightPosition: { x: 51, y: 8, width: 48, height: 6 },
@@ -106,7 +105,6 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { triggerHaptic } = useHaptics();
   const [currentStep, setCurrentStep] = useState(0);
-
   const opacity = useSharedValue(0);
   const spotlightX = useSharedValue(0);
   const spotlightY = useSharedValue(0);
@@ -151,14 +149,11 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
   const handleScrollForStep = () => {
     const step = tutorialSteps[currentStep];
     if (!step) return;
-
     if (actScrollViewRef?.current) {
       if (step.scrollToBottom) {
         opacity.value = withTiming(0, { duration: 200 });
-
         setTimeout(() => {
           actScrollViewRef.current?.scrollToEnd({ animated: true });
-
           setTimeout(() => {
             opacity.value = withTiming(1, { duration: 300 });
           }, 500);
@@ -168,10 +163,8 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
         tutorialSteps[currentStep - 1]?.scrollToBottom
       ) {
         opacity.value = withTiming(0, { duration: 200 });
-
         setTimeout(() => {
           actScrollViewRef.current?.scrollTo({ y: 0, animated: true });
-
           setTimeout(() => {
             opacity.value = withTiming(1, { duration: 300 });
           }, 500);
@@ -183,15 +176,12 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
   const moveToStep = (stepIndex: number) => {
     const step = tutorialSteps[stepIndex];
     if (!step) return;
-
     const { x, y, width, height } = step.spotlightPosition;
-
     const newX = (x / 100) * SCREEN_WIDTH - ((width / 100) * SCREEN_WIDTH) / 2;
     const newY =
       (y / 100) * SCREEN_HEIGHT - ((height / 100) * SCREEN_HEIGHT) / 2;
     const newWidth = (width / 100) * SCREEN_WIDTH;
     const newHeight = (height / 100) * SCREEN_HEIGHT;
-
     spotlightX.value = withTiming(newX, {
       duration: 400,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
@@ -214,7 +204,6 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
     if (actScrollViewRef?.current) {
       actScrollViewRef.current.scrollTo({ y: 0, animated: true });
     }
-
     setTimeout(() => {
       completeTutorial();
     }, 300);
@@ -222,7 +211,6 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
 
   const handleNextStep = async () => {
     await triggerHaptic("light");
-
     if (currentStep < tutorialSteps.length - 1) {
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
@@ -236,7 +224,6 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
 
   const handleSkipTutorial = async () => {
     await triggerHaptic("light");
-
     opacity.value = withTiming(0, { duration: 300 }, () => {
       runOnJS(handleFinishTutorial)();
     });
@@ -312,9 +299,7 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
   const getTextBoxPosition = () => {
     const step = tutorialSteps[currentStep];
     if (!step) return {};
-
     const { x, y } = step.textBoxPosition;
-
     return {
       position: "absolute" as const,
       top: (y / 100) * SCREEN_HEIGHT - 60,
@@ -324,10 +309,8 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
   };
 
   if (!showTutorial || isLoading) return null;
-
   const step = tutorialSteps[currentStep];
-
-  const iconSize = 22;
+  const iconSize = 20;
 
   return (
     <View style={styles.fullScreenContainer}>
@@ -336,38 +319,46 @@ const MapTutorial: React.FC<MapTutorialProps> = ({ actScrollViewRef }) => {
         <Animated.View style={bottomMaskStyle} />
         <Animated.View style={leftMaskStyle} />
         <Animated.View style={rightMaskStyle} />
-
         <Animated.View style={spotlightStyle} />
 
-        <View style={[styles.textBox, getTextBoxPosition()]}>
-          <View className="flex-row justify-between">
-            <Text className="font-montserrat-alt-medium tracking-widest text-base text-text mb-2">
-              {step.title}
-            </Text>
-            <InfoIcon width={iconSize} height={iconSize} fill="#2A9E8A" />
-          </View>
-          <Text className="font-montserrat text-sm text-text-muted mb-4">
-            {step.description}
-          </Text>
+        <View style={[styles.textBoxContainer, getTextBoxPosition()]}>
+          {/* Shadow/accent layer */}
+          <View style={styles.textBoxShadow} />
 
-          <View className="flex-row justify-between items-center">
-            <TouchableOpacity
-              onPress={handleSkipTutorial}
-              className="bg-bg-elevated py-2 px-3 rounded-lg"
-            >
-              <Text className="font-montserrat-medium text-sm text-text-dim">
-                Skip Tutorial
-              </Text>
-            </TouchableOpacity>
+          {/* Main text box */}
+          <View style={styles.textBox}>
+            {/* Decorative bubble */}
+            <View style={styles.decorativeBubble} />
 
-            <TouchableOpacity
-              onPress={handleNextStep}
-              className="bg-accent-dark py-2 px-4 rounded-lg"
-            >
-              <Text className="font-montserrat-medium text-sm text-text">
-                {currentStep < tutorialSteps.length - 1 ? "Next" : "Done"}
-              </Text>
-            </TouchableOpacity>
+            {/* Header */}
+            <View style={styles.headerContainer}>
+              <Text style={styles.title}>{step.title}</Text>
+              <View style={styles.iconContainer}>
+                <InfoIcon width={iconSize} height={iconSize} fill="#4FEDE2" />
+              </View>
+            </View>
+
+            {/* Description */}
+            <Text style={styles.description}>{step.description}</Text>
+
+            {/* Buttons */}
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={handleSkipTutorial}
+                style={styles.skipButton}
+              >
+                <Text style={styles.skipButtonText}>Skip</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleNextStep}
+                style={styles.nextButton}
+              >
+                <Text style={styles.nextButtonText}>
+                  {currentStep < tutorialSteps.length - 1 ? "Next" : "Done"}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -394,13 +385,91 @@ const styles = StyleSheet.create({
     height: "100%",
     zIndex: 9999,
   },
-  textBox: {
-    backgroundColor: "#162120",
-    borderWidth: 2,
-    borderColor: "#1D7267",
-    borderRadius: 16,
-    padding: 16,
+  textBoxContainer: {
+    position: "relative",
     zIndex: 30,
+  },
+  textBoxShadow: {
+    position: "absolute",
+    top: 2,
+    left: 2,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#1D7267", // accent-dark
+    opacity: 0.7,
+    borderRadius: 18,
+  },
+  textBox: {
+    backgroundColor: "#162120", // bg-surface
+    borderWidth: 1.5,
+    borderColor: "#34CDB3", // accent
+    borderRadius: 18,
+    padding: 12,
+    overflow: "hidden",
+  },
+  decorativeBubble: {
+    position: "absolute",
+    top: -30,
+    right: -30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#34CDB3", // accent
+    opacity: 0.1,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  title: {
+    fontFamily: "MontserratAlternates-SemiBold",
+    fontSize: 14,
+    color: "#4FEDE2", // accent-bright
+    letterSpacing: 0.5,
+  },
+  iconContainer: {
+    backgroundColor: "#152925", // accent-surface
+    padding: 4,
+    borderRadius: 12,
+  },
+  description: {
+    fontFamily: "Montserrat",
+    fontSize: 12,
+    lineHeight: 16,
+    color: "#B4D2CF", // text-muted
+    marginBottom: 8,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  skipButton: {
+    backgroundColor: "#1B2524", // bg-elevated
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+  },
+  skipButtonText: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 11,
+    color: "#7A9E9B", // text-dim
+  },
+  nextButton: {
+    backgroundColor: "#1D7267", // accent-dark
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    overflow: "hidden",
+    position: "relative",
+  },
+  nextButtonText: {
+    fontFamily: "MontserratAlternates-SemiBold",
+    fontSize: 12,
+    color: "#EEFFFE", // text
   },
   touchArea: {
     position: "absolute",
