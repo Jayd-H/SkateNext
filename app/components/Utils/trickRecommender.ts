@@ -69,7 +69,7 @@ const memoizedScores = new Map<string, any>();
 function isNoComplyTrick(trick: TrickComponents): boolean {
   const trickId = trick.id.toLowerCase();
 
-  if (trickId.includes("nc")) {
+  if (trickId.includes("nc") || trickId.includes("biebelheimer")) {
     return true;
   } else {
     return false;
@@ -86,7 +86,14 @@ export async function getRecommendedTricks(
   const inProgressTricks = TRICK_COMPONENTS.filter(
     (trick) => trickStates[trick.id] === 1
   );
+
+  // Get blacklisted tricks
+  const blacklistedTricks = await StorageService.getBlacklistedTricks();
+
   let availableTricks = TRICK_COMPONENTS.filter((trick) => {
+    // Skip blacklisted tricks
+    if (blacklistedTricks.includes(trick.id)) return false;
+
     if (!trickStates[trick.id] || trickStates[trick.id] < 2) {
       if (ollieLevel < 1 && trick.complexity > 3) return false;
       if (kickflipLevel < 1 && trick.complexity > 7) return false;
@@ -94,6 +101,7 @@ export async function getRecommendedTricks(
     }
     return false;
   });
+
   const recommendations: string[] = [];
   const recentTricks = await StorageService.getRecentTrickUpdates();
   for (
