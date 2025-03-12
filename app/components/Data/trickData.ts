@@ -2023,4 +2023,15 @@ export const TRICK_DATA: Trick[] = [
     video_link: "https://www.youtube.com/watch?v=R84dTWmZKFM",
     alt_names: "Switch Back Bigspin, Switch BS Big Spin",
   },
+  {
+    id: "biebelheimer",
+    name: "Biebelheimer",
+    description:
+      "A standing trick in which you throw the skateboard down deck upside, having it pop back over and land on its wheels. Then you catch it with your feet by jumping on the board.",
+    common_mistakes:
+      "[Not Committing] Commit to the trick. It is a fun trick to learn and can feel entirely based on luck at first.",
+    difficulty: "1",
+    video_link: "https://www.youtube.com/watch?v=QfbzHBgUlJA",
+    alt_names: "Biebel",
+  },
 ];
