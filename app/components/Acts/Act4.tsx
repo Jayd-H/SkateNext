@@ -2,7 +2,7 @@ import React from "react";
 import ActGrid, { ActNodeData, ActConnectionData } from "./ActGrid";
 import { View } from "react-native";
 import Gems from "../../../assets/icons/gems.svg";
-import { G } from "react-native-svg";
+import { ScrollView } from "react-native";
 
 const ICON_CONFIG = {
   SIZE: 400,
@@ -333,6 +333,7 @@ interface Act4Props {
   onFolderPress: (id: string) => void;
   trickCompletionStates: Record<string, number>;
   infoCompletionStates: Record<string, boolean>;
+  scrollViewRef?: React.RefObject<ScrollView>;
 }
 
 const Act4: React.FC<Act4Props> = (props) => {

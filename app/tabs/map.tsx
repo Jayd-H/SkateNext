@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, BackHandler } from "react-native";
 import Animated from "react-native-reanimated";
 import ChevronRight from "../../assets/icons/chevron-right.svg";
@@ -27,6 +27,9 @@ import LuckyModal from "../components/Modals/LuckyModal";
 import SearchModal from "../components/Modals/SearchModal";
 import RecommendationsModal from "../components/Modals/RecommendationsModal";
 import ActListModal from "../components/Modals/ActListModal";
+
+import { ScrollView } from "react-native";
+import MapTutorial from "../components/Onboarding/MapTutorial";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { STORAGE_KEYS } from "../components/Utils/StorageService";
@@ -65,6 +68,8 @@ export default function Map() {
   const [isActListModalVisible, setIsActListModalVisible] = useState(false);
 
   const [recommendations, setRecommendations] = useState<string[]>([]);
+
+  const actScrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     if (!tricksLoading && !infoLoading) {
@@ -225,18 +230,19 @@ export default function Map() {
       infoCompletionStates: infoStates,
     };
 
-    switch (currentPage) {
-      case 0:
-        return <Act1 {...commonProps} />;
-      case 1:
-        return <Act2 {...commonProps} />;
-      case 2:
-        return <Act3 {...commonProps} />;
-      case 3:
-        return <Act4 {...commonProps} />;
-      default:
-        return null;
-    }
+    return (
+      <View className="flex-1">
+        {currentPage === 0 ? (
+          <Act1 {...commonProps} scrollViewRef={actScrollViewRef} />
+        ) : currentPage === 1 ? (
+          <Act2 {...commonProps} scrollViewRef={actScrollViewRef} />
+        ) : currentPage === 2 ? (
+          <Act3 {...commonProps} scrollViewRef={actScrollViewRef} />
+        ) : (
+          <Act4 {...commonProps} scrollViewRef={actScrollViewRef} />
+        )}
+      </View>
+    );
   };
 
   const handleTrickCompletion = (trickId: string, state: number) => {
@@ -259,6 +265,7 @@ export default function Map() {
 
   return (
     <View className="flex-1 bg-background">
+      <MapTutorial actScrollViewRef={actScrollViewRef} />
       <Animated.View
         style={[headerAnim.animatedStyle]}
         className="w-full py-2 mt-8"
