@@ -15,6 +15,10 @@ import { useModalTheme } from "./useModalTheme";
 import { useAnimations } from "./useAnimations";
 import { TrickModalProps } from "./types";
 
+import { shouldShowSafetyPopup } from "../../Utils/safetyUtils";
+import { useSafetyPopupPreferences } from "../../Utils/StorageService";
+import SafetyPopup from "../SafetyPopup";
+
 const TrickModal: React.FC<TrickModalProps> = ({
   isVisible,
   onClose,
@@ -28,6 +32,43 @@ const TrickModal: React.FC<TrickModalProps> = ({
   const trick = TRICK_DATA.find((t: any) => t.id === trickId);
   const theme = useModalTheme(trick?.difficulty || "1");
   const { waveValues, glowOpacity } = useAnimations(theme, isVisible);
+
+  const [showSafetyPopup, setShowSafetyPopup] = useState(false);
+  const [safetyReason, setSafetyReason] = useState("");
+  const { safetyPopupPrefs, updateSafetyPopupPreferences } =
+    useSafetyPopupPreferences();
+
+  useEffect(() => {
+    if (isVisible && trickId) {
+      checkSafetyPopup();
+    }
+  }, [isVisible, trickId]);
+
+  // Function to check if safety popup should be shown
+  const checkSafetyPopup = async () => {
+    const { shouldShow, reason } = await shouldShowSafetyPopup(trickId);
+
+    if (shouldShow) {
+      setSafetyReason(reason);
+      setShowSafetyPopup(true);
+
+      // Update timestamp of when popup was last shown
+      updateSafetyPopupPreferences({
+        lastShownTimestamp: Date.now(),
+      });
+    }
+  };
+
+  // Handlers for the safety popup
+  const handleCloseSafetyPopup = () => {
+    setShowSafetyPopup(false);
+  };
+
+  const handleDontShowSafetyPopupAgain = () => {
+    // Disable all safety popups permanently
+    updateSafetyPopupPreferences({ dontShowAgain: true });
+    setShowSafetyPopup(false);
+  };
 
   useEffect(() => {
     const checkConnection = async () => {
@@ -168,6 +209,13 @@ const TrickModal: React.FC<TrickModalProps> = ({
       }
     >
       {modalContent}
+      <SafetyPopup
+        isVisible={showSafetyPopup}
+        trickId={trickId}
+        reason={safetyReason}
+        onClose={handleCloseSafetyPopup}
+        onDontShowAgain={handleDontShowSafetyPopupAgain}
+      />
     </DraggableModal>
   );
 };
