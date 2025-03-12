@@ -66,6 +66,7 @@ export const STORAGE_KEYS = {
   RECENT_TRICKS: "recent_tricks",
   SAFETY_POPUP_PREFS: "safety_popup_prefs",
   BLACKLISTED_TRICKS: "blacklisted_tricks",
+  MAP_TUTORIAL_COMPLETED: "map_tutorial_completed",
 } as const;
 
 const BOSS_TRICKS = {
@@ -208,6 +209,27 @@ class StorageService {
     } catch (error) {
       console.error("Error checking setup status:", error);
       return false;
+    }
+  }
+
+  static async isMapTutorialCompleted(): Promise<boolean> {
+    try {
+      const tutorialCompleted = await AsyncStorage.getItem(
+        STORAGE_KEYS.MAP_TUTORIAL_COMPLETED
+      );
+      return tutorialCompleted === "true";
+    } catch (error) {
+      console.error("Error checking map tutorial status:", error);
+      return false;
+    }
+  }
+
+  static async completeMapTutorial(): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.MAP_TUTORIAL_COMPLETED, "true");
+    } catch (error) {
+      console.error("Error completing map tutorial:", error);
+      throw error;
     }
   }
 
@@ -579,6 +601,7 @@ class StorageService {
         STORAGE_KEYS.RECENT_TRICKS,
         STORAGE_KEYS.SAFETY_POPUP_PREFS,
         STORAGE_KEYS.BLACKLISTED_TRICKS,
+        STORAGE_KEYS.MAP_TUTORIAL_COMPLETED,
       ]);
     } catch (error) {
       console.error("Error clearing data:", error);
@@ -791,6 +814,37 @@ export function useBlacklistedTricks() {
     removeTrickFromBlacklist,
     refreshBlacklistedTricks: loadBlacklistedTricks,
   };
+}
+
+export function useMapTutorial() {
+  const [showTutorial, setShowTutorial] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    checkTutorialStatus();
+  }, []);
+
+  const checkTutorialStatus = async () => {
+    try {
+      const isCompleted = await StorageService.isMapTutorialCompleted();
+      setShowTutorial(!isCompleted);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error checking tutorial status:", error);
+      setIsLoading(false);
+    }
+  };
+
+  const completeTutorial = async () => {
+    try {
+      await StorageService.completeMapTutorial();
+      setShowTutorial(false);
+    } catch (error) {
+      console.error("Error completing tutorial:", error);
+    }
+  };
+
+  return { showTutorial, isLoading, completeTutorial };
 }
 
 export function useInfoStates() {

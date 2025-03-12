@@ -1,6 +1,7 @@
 import React from "react";
 import ActGrid, { ActNodeData, ActConnectionData } from "./ActGrid";
 import Emerald from "../../../assets/icons/emerald.svg";
+import { ScrollView } from "react-native";
 
 const ICON_CONFIG = {
   SIZE: 400,
@@ -196,6 +197,7 @@ interface Act2Props {
   onFolderPress: (id: string) => void;
   trickCompletionStates: Record<string, number>;
   infoCompletionStates: Record<string, boolean>;
+  scrollViewRef?: React.RefObject<ScrollView>;
 }
 
 const Act2: React.FC<Act2Props> = (props) => {

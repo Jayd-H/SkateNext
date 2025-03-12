@@ -1,6 +1,7 @@
 import React from "react";
 import ActGrid, { ActNodeData, ActConnectionData } from "./ActGrid";
 import Gyroscope from "../../../assets/icons/gyroscope.svg";
+import { ScrollView } from "react-native";
 
 const ICON_CONFIG = {
   SIZE: 400,
@@ -191,6 +192,7 @@ interface Act1Props {
   onFolderPress: (id: string) => void;
   trickCompletionStates: Record<string, number>;
   infoCompletionStates: Record<string, boolean>;
+  scrollViewRef?: React.RefObject<ScrollView>;
 }
 
 const Act1: React.FC<Act1Props> = (props) => {

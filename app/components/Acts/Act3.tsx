@@ -1,6 +1,7 @@
 import React from "react";
 import ActGrid, { ActNodeData, ActConnectionData } from "./ActGrid";
 import Minerals from "../../../assets/icons/minerals.svg";
+import { ScrollView } from "react-native";
 
 const ICON_CONFIG = {
   SIZE: 400,
@@ -302,6 +303,7 @@ interface Act3Props {
   onFolderPress: (id: string) => void;
   trickCompletionStates: Record<string, number>;
   infoCompletionStates: Record<string, boolean>;
+  scrollViewRef?: React.RefObject<ScrollView>;
 }
 
 const Act3: React.FC<Act3Props> = (props) => {

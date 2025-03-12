@@ -67,6 +67,7 @@ interface ActGridProps {
   infoCompletionStates: Record<string, boolean>;
   backgroundElements?: BackgroundElement[];
   actNumber: number;
+  scrollViewRef?: React.RefObject<ScrollView>;
 }
 
 const ActGrid: React.FC<ActGridProps> = ({
@@ -80,6 +81,7 @@ const ActGrid: React.FC<ActGridProps> = ({
   infoCompletionStates,
   backgroundElements = [],
   actNumber,
+  scrollViewRef,
 }) => {
   // State
   const [contentHeight, setContentHeight] = useState(0);
@@ -235,6 +237,7 @@ const ActGrid: React.FC<ActGridProps> = ({
 
   return (
     <ScrollView
+      ref={scrollViewRef}
       style={styles.container}
       contentContainerStyle={[styles.scrollContent, { minHeight }]}
     >
