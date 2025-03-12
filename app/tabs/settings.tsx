@@ -6,11 +6,15 @@ import TrophyModal from "../components/Modals/TrophyModal";
 import TrickModal from "../components/Modals/TrickModal";
 import AllTrophiesModal from "../components/Modals/AllTrophiesModal";
 import DeleteConfirmModal from "../components/Modals/DeleteConfirmModal";
+import BlacklistedTricksModal from "../components/Modals/BlacklistedTricksModal";
 import UserStats from "../components/Generic/UserStats";
 import UserTrophies from "../components/Generic/UserTrophies";
 import Button from "../components/Generic/Button";
 import ToggleSwitch from "../components/Generic/ToggleSwitch";
-import { useTrickStates } from "../components/Utils/StorageService";
+import {
+  useTrickStates,
+  useBlacklistedTricks,
+} from "../components/Utils/StorageService";
 import { useHaptics } from "../components/Utils/useHaptics";
 import { StorageService } from "../components/Utils/StorageService";
 import { TROPHY_DATA } from "../components/Data/trophyData";
@@ -29,13 +33,16 @@ const MODAL_Z_INDEXES = {
   trophy: 2,
   trick: 3,
   delete: 4,
+  blacklistedTricks: 2,
 };
 
 export default function Settings() {
   const router = useRouter();
   const { trickStates, updateTrickState } = useTrickStates();
+  const { blacklistedTricks, refreshBlacklistedTricks } =
+    useBlacklistedTricks();
+  const [blacklistedTricksCount, setBlacklistedTricksCount] = useState(0);
   const { isEnabled: hapticsEnabled, toggleHaptics } = useHaptics();
-
   const [selectedTrophyId, setSelectedTrophyId] = useState<string | null>(null);
   const [selectedTrickId, setSelectedTrickId] = useState<string | null>(null);
   const [isAllTrophiesVisible, setIsAllTrophiesVisible] = useState(false);
@@ -52,8 +59,19 @@ export default function Settings() {
   const [userWeight, setUserWeight] = useState<string>("");
   const [isEditingAge, setIsEditingAge] = useState(false);
   const [isEditingWeight, setIsEditingWeight] = useState(false);
-
+  const [blacklistedTricksModalVisible, setBlacklistedTricksModalVisible] =
+    useState(false);
   const { triggerHaptic } = useHaptics();
+
+  useEffect(() => {
+    setBlacklistedTricksCount(blacklistedTricks.length);
+  }, [blacklistedTricks]);
+
+  useEffect(() => {
+    if (preferencesModalVisible) {
+      refreshBlacklistedTricks();
+    }
+  }, [preferencesModalVisible]);
 
   useEffect(() => {
     const loadUserStats = async () => {
@@ -89,6 +107,7 @@ export default function Settings() {
     if (preferencesModalVisible) return "preferences";
     if (saveProgressModalVisible) return "saveProgress";
     if (loadBackupModalVisible) return "loadBackup";
+    if (blacklistedTricksModalVisible) return "blacklistedTricks";
     return null;
   }, [
     modalVisible,
@@ -100,13 +119,13 @@ export default function Settings() {
     preferencesModalVisible,
     saveProgressModalVisible,
     loadBackupModalVisible,
+    blacklistedTricksModalVisible,
   ]);
 
   // Close active modal - memoized for back handler
   const closeActiveModal = useCallback(() => {
     const activeModal = getActiveModal();
     if (!activeModal) return false;
-
     switch (activeModal) {
       case "trophy":
         setSelectedTrophyId(null);
@@ -134,6 +153,10 @@ export default function Settings() {
         break;
       case "loadBackup":
         setLoadBackupModalVisible(false);
+        break;
+      case "blacklistedTricks":
+        setBlacklistedTricksModalVisible(false);
+        refreshBlacklistedTricks();
         break;
     }
     return true;
@@ -168,6 +191,12 @@ export default function Settings() {
     [updateTrickState]
   );
 
+  const handleBlacklistedTricksOpen = useCallback(async () => {
+    await triggerHaptic("light");
+    await refreshBlacklistedTricks(); // Refresh before opening
+    setBlacklistedTricksModalVisible(true);
+  }, [triggerHaptic, refreshBlacklistedTricks]);
+
   const handleDeleteData = useCallback(async () => {
     try {
       await StorageService.clearAllData();
@@ -201,12 +230,9 @@ export default function Settings() {
         if (!StorageService.validateBackupString(backupString)) {
           throw new Error("Invalid backup code");
         }
-
         await StorageService.restoreFromBackup(backupString);
-
         setLoadBackupModalVisible(false);
         setSaveProgressModalVisible(false);
-
         router.replace("/");
       } catch (error) {
         console.error("Error loading backup:", error);
@@ -226,11 +252,9 @@ export default function Settings() {
       <View className="flex-1 bg-background px-4">
         <View className="pt-10 flex-1">
           <View className="mb-6"></View>
-
           <View className="mb-12">
             <UserStats onSaveProgress={handleSaveProgress} />
           </View>
-
           <View className="mb-6">
             <UserTrophies
               onTrophyPress={handleTrophyPress}
@@ -313,7 +337,6 @@ export default function Settings() {
                     />
                   )}
                 </View>
-
                 <View className="flex-1">
                   {isEditingWeight ? (
                     <View className="relative">
@@ -359,7 +382,6 @@ export default function Settings() {
                 </View>
               </View>
             </View>
-
             <View className="space-y-4">
               <Text className="text-accent-bright font-montserrat-alt-semibold tracking-wide text-sm">
                 APP SETTINGS
@@ -370,6 +392,13 @@ export default function Settings() {
                   onToggle={toggleHaptics}
                   topText="H A P T I C S"
                   bottomText="Toggle haptic feedback throughout the app"
+                />
+                <Button
+                  topText="Blacklisted Tricks"
+                  bottomText={`${blacklistedTricksCount} trick${
+                    blacklistedTricksCount !== 1 ? "s" : ""
+                  } blacklisted`}
+                  onPress={handleBlacklistedTricksOpen}
                 />
                 <Button
                   topText="Delete All Data"
@@ -418,7 +447,6 @@ export default function Settings() {
           </View>
         }
       />
-
       <Modal
         isVisible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -468,6 +496,14 @@ export default function Settings() {
         onClose={() => setLoadBackupModalVisible(false)}
         onLoad={handleLoadFromBackup}
         zIndex={MODAL_Z_INDEXES.loadBackup}
+      />
+      <BlacklistedTricksModal
+        isVisible={blacklistedTricksModalVisible}
+        onClose={() => {
+          setBlacklistedTricksModalVisible(false);
+          refreshBlacklistedTricks(); // Refresh when closing
+        }}
+        trickCompletionStates={trickStates}
       />
     </>
   );
