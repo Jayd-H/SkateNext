@@ -172,7 +172,7 @@ const Timer: React.FC<TimerProps> = ({ onTimeUpdate, onTimerStop, style }) => {
   }));
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+    let intervalId: ReturnType<typeof setInterval>;
     //* to save the timer state periodically
     if (isTimerRunning && startTimeRef.current) {
       intervalId = setInterval(() => {
