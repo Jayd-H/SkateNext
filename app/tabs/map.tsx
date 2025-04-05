@@ -84,6 +84,12 @@ export default function Map() {
     }
 
     const checkFeedbackEligibility = async () => {
+      const userAgeStr = await AsyncStorage.getItem(STORAGE_KEYS.USER_AGE);
+      const userAge = userAgeStr ? parseInt(userAgeStr) : 0;
+      if (userAge < 16) {
+        return;
+      }
+
       const now = Date.now();
       const MIN_APP_USE_TIME = 100000;
       const MIN_TIME_BETWEEN_PROMPTS = 3600000;
