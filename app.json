@@ -37,7 +37,8 @@
       "package": "com.jaydchw.SkateNext",
       "navigationBar": {
         "backgroundColor": "#0F1413"
-      }
+      },
+      "versionCode": 3
     },
     "theme": {
       "backgroundColor": "#0F1413"
