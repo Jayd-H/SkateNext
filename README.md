@@ -26,7 +26,7 @@ Each trick includes detailed descriptions, common mistakes to avoid, and tutoria
 ## Installation
 1. Clone the repository:
 ```bash
-git clone [repository-url]
+git clone https://github.com/Jayd-H/SkateNext
 ```
 
 2. Navigate to the project directory:
