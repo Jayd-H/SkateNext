@@ -82,12 +82,18 @@ const calculateSkatingMET = (
   trickStates: { [key: string]: number },
   trickComponents: any[]
 ): number => {
+  // 1. Calculate trick proficiency metrics
   const proficientTricks = Object.entries(trickStates).filter(
     ([_, state]) => state > 0
   ).length;
   const totalTricks = Object.keys(trickStates).length;
   const proficiencyRatio = proficientTricks / totalTricks;
+  const masteredTricks = Object.entries(trickStates).filter(
+    ([_, state]) => state === 2
+  ).length;
+  const masteryRatio = masteredTricks / totalTricks;
 
+  // Get known tricks and calculate averages
   const knownTricks = trickComponents.filter(
     (trick) => trickStates[trick.id] > 0
   );
@@ -98,12 +104,31 @@ const calculateSkatingMET = (
     knownTricks.reduce((sum, trick) => sum + trick.impactLevel, 0) /
     (knownTricks.length || 1);
 
+  // 2. Determine base skating intensity based on complexity
   let baseMET = SKATING_METS.CASUAL;
   if (avgComplexity > 7) baseMET = SKATING_METS.EXTREME;
   else if (avgComplexity > 5) baseMET = SKATING_METS.INTENSE;
   else if (avgComplexity > 3) baseMET = SKATING_METS.MODERATE;
 
-  const adjustedMET = baseMET * SKILL_MULTIPLIERS[skillLevel];
+  // 3. Apply skill level multiplier
+  const skillMultiplier = SKILL_MULTIPLIERS[skillLevel];
+
+  // 4. Calculate trick proficiency factor
+  // Known trick count influence (0.8-1.2 range)
+  const knownTrickFactor = 0.8 + Math.min(proficiencyRatio, 1) * 0.4;
+
+  // Impact level influence (0.9-1.3 range)
+  const impactFactor = 0.9 + Math.min(avgImpact / 10, 1) * 0.4;
+
+  // Mastery ratio influence (0.95-1.1 range, smaller effect)
+  const masteryFactor = 0.95 + Math.min(masteryRatio, 1) * 0.15;
+
+  // 5. Combine all factors to calculate final MET
+  const trickProficiencyFactor =
+    knownTrickFactor * 0.35 + impactFactor * 0.35 + masteryFactor * 0.3;
+
+  // Final adjusted MET value
+  const adjustedMET = baseMET * skillMultiplier * trickProficiencyFactor;
 
   return Number(adjustedMET.toFixed(1));
 };
