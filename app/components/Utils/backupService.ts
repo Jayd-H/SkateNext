@@ -24,11 +24,6 @@ export class BackupService {
     return encoder.encode(str);
   }
 
-  private static uint8ArrayToString(array: Uint8Array): string {
-    const decoder = new TextDecoder();
-    return decoder.decode(array);
-  }
-
   private static toBase64(uint8Array: Uint8Array): string {
     const binaryString = Array.from(uint8Array)
       .map((byte) => String.fromCharCode(byte))

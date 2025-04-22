@@ -40,19 +40,6 @@ interface SafetyPopupPreferences {
   lastShownTimestamp: number;
 }
 
-interface BackupData {
-  version: number;
-  timestamp: number;
-  trickStates: TrickState;
-  infoStates: InfoState;
-  modalVisits: ModalVisitState;
-  userAge: number;
-  userWeight: number;
-  calorieLogs: { [date: string]: DailyCalorieLog };
-  hapticsEnabled: boolean;
-  recentTricks: RecentTrickUpdate[];
-}
-
 export const STORAGE_KEYS = {
   TRICK_STATES: "trick_states",
   INFO_STATES: "info_states",
